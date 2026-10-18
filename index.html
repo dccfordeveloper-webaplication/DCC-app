@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DCC Monitor — Darussalam Computer Center</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { background-color: #121824; color: #e2e8f0; font-family: sans-serif; }
+    .card { background-color: #1e293b; border-radius: 0.75rem; border: 1px solid #334155; }
+    .sidebar-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border-radius: 0.5rem; color: #94a3b8; transition: all 0.2s; cursor: pointer; }
+    .sidebar-item:hover, .sidebar-item.active { background-color: #334155; color: #ffffff; }
+
+    /* Toast Notification */
+    #toast {
+      position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999;
+      padding: 0.75rem 1.25rem; border-radius: 0.5rem; font-size: 0.875rem;
+      font-weight: 500; display: none; align-items: center; gap: 0.5rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4); transition: all 0.3s;
+    }
+    #toast.success { background: #064e3b; color: #6ee7b7; border: 1px solid #059669; display: flex; }
+    #toast.error   { background: #450a0a; color: #fca5a5; border: 1px solid #dc2626; display: flex; }
+
+    /* Pulse dot animation */
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .dot-pulse { animation: pulse 1.5s ease-in-out infinite; }
+  </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between p-4 shrink-0">
+    <div>
+      <div class="flex items-center gap-3 px-2 py-4 mb-6">
+        <i class="fa-solid fa-desktop text-indigo-500 text-2xl"></i>
+        <span class="font-bold text-lg tracking-wider text-white">DCC MONITOR</span>
+      </div>
+      <nav class="space-y-1">
+        <div id="navComputers" onclick="switchTab('computers')" class="sidebar-item active">
+          <i class="fa-solid fa-server w-5"></i><span>Stok Komputer</span>
+        </div>
+        <div id="navChat" onclick="switchTab('chat')" class="sidebar-item">
+          <i class="fa-solid fa-comments w-5"></i><span>BBM Chat</span>
+          <span id="chatBadge" class="hidden ml-auto bg-indigo-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">!</span>
+        </div>
+      </nav>
+    </div>
+
+    <!-- Realtime Status Indicator -->
+    <div class="space-y-2">
+      <div id="realtimeStatus" class="flex items-center gap-2 text-xs text-slate-500 px-2 py-2">
+        <span class="w-2 h-2 rounded-full bg-slate-600 dot-pulse"></span>
+        <span>Menghubungkan...</span>
+      </div>
+      <div class="text-xs text-slate-500 text-center py-2 border-t border-slate-800">
+        Darussalam Computer Center
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 flex flex-col h-full overflow-y-auto">
+    <!-- HEADER -->
+    <header class="h-16 border-b border-slate-800 bg-slate-900/50 flex items-center justify-between px-8 sticky top-0 z-10 backdrop-blur-md">
+      <h1 id="pageTitle" class="text-xl font-bold text-white">Stok Komputer</h1>
+      <div id="headerAction">
+        <button onclick="openModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-4 py-2 rounded-lg flex items-center gap-2 transition">
+          <i class="fa-solid fa-plus"></i> Unit Baru
+        </button>
+      </div>
+    </header>
+
+    <!-- CONTENT BODY -->
+    <div class="p-8 flex-1 flex flex-col overflow-hidden">
+
+      <!-- VIEW: STOK KOMPUTER -->
+      <div id="viewComputers" class="tab-content flex-1 overflow-y-auto space-y-6">
+
+        <!-- Summary Stats -->
+        <div class="grid grid-cols-3 gap-4">
+          <div class="card p-4 flex items-center gap-4">
+            <div class="w-10 h-10 rounded-lg bg-indigo-500/10 flex items-center justify-center">
+              <i class="fa-solid fa-server text-indigo-400"></i>
+            </div>
+            <div>
+              <div id="statTotal" class="text-2xl font-bold text-white">—</div>
+              <div class="text-xs text-slate-400">Total Unit</div>
+            </div>
+          </div>
+          <div class="card p-4 flex items-center gap-4">
+            <div class="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+              <i class="fa-solid fa-circle-check text-emerald-400"></i>
+            </div>
+            <div>
+              <div id="statAvailable" class="text-2xl font-bold text-white">—</div>
+              <div class="text-xs text-slate-400">Tersedia</div>
+            </div>
+          </div>
+          <div class="card p-4 flex items-center gap-4">
+            <div class="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
+              <i class="fa-solid fa-arrow-right-arrow-left text-amber-400"></i>
+            </div>
+            <div>
+              <div id="statBorrowed" class="text-2xl font-bold text-white">—</div>
+              <div class="text-xs text-slate-400">Dipinjam</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card p-6">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b border-slate-700 text-slate-400 text-sm">
+                  <th class="pb-3 px-4">Kode PC</th>
+                  <th class="pb-3 px-4">Status</th>
+                  <th class="pb-3 px-4">Kelengkapan</th>
+                  <th class="pb-3 px-4">Spesifikasi</th>
+                  <th class="pb-3 px-4 text-center">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="pcTableBody" class="divide-y divide-slate-800 text-sm">
+                <tr><td colspan="5" class="py-8 text-center text-slate-500">
+                  <i class="fa-solid fa-spinner fa-spin mr-2"></i>Memuat data...
+                </td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW: CHAT ROOM -->
+      <div id="viewChat" class="tab-content hidden flex-1 flex flex-col card overflow-hidden">
+        <div id="chatContainer" class="flex-1 p-6 overflow-y-auto space-y-3">
+          <div class="text-center text-slate-500">
+            <i class="fa-solid fa-spinner fa-spin mr-2"></i>Memuat pesan...
+          </div>
+        </div>
+        <!-- Chat Input Form -->
+        <div class="p-4 bg-slate-900/80 border-t border-slate-800 space-y-2">
+          <div class="flex gap-2 items-center">
+            <label class="text-xs text-slate-400 whitespace-nowrap">Nama:</label>
+            <input type="text" id="chatSender" value="DCC ADMIN" maxlength="30"
+              class="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-white text-xs w-40 focus:outline-none focus:border-indigo-500">
+          </div>
+          <form onsubmit="sendMessage(event)" class="flex gap-3">
+            <input type="text" id="chatInput" autocomplete="off" placeholder="Tulis pesan BBM..."
+              class="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-indigo-500">
+            <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2 rounded-lg font-medium transition flex items-center gap-2">
+              <i class="fa-solid fa-paper-plane"></i> Kirim
+            </button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- MODAL TAMBAH UNIT -->
+  <div id="unitModal" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50 p-4 backdrop-blur-sm">
+    <div class="card w-full max-w-lg p-6 space-y-4">
+      <div class="flex justify-between items-center border-b border-slate-700 pb-3">
+        <h3 class="text-lg font-bold text-white">Tambah Unit Komputer</h3>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+      </div>
+
+      <form id="addUnitForm" onsubmit="saveUnit(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Kode PC</label>
+          <input type="text" id="pcCode" required placeholder="Contoh: DCC-004"
+            class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Spesifikasi / Notes</label>
+          <textarea id="pcSpec" rows="2" placeholder="Intel Core i5, RAM 16GB..."
+            class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500"></textarea>
+        </div>
+        <div class="space-y-2 border-t border-slate-800 pt-3">
+          <label class="block text-xs font-medium text-slate-400">Kelengkapan Komponen</label>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <label class="flex items-center gap-2 bg-slate-800 p-2 rounded cursor-pointer border border-slate-700">
+              <input type="checkbox" id="chkComp" checked class="rounded text-indigo-600"> Komputer (CPU)
+            </label>
+            <label class="flex items-center gap-2 bg-slate-800 p-2 rounded cursor-pointer border border-slate-700">
+              <input type="checkbox" id="chkMon" checked class="rounded text-indigo-600"> Monitor
+            </label>
+            <label class="flex items-center gap-2 bg-slate-800 p-2 rounded cursor-pointer border border-slate-700">
+              <input type="checkbox" id="chkMou" checked class="rounded text-indigo-600"> Mouse
+            </label>
+            <label class="flex items-center gap-2 bg-slate-800 p-2 rounded cursor-pointer border border-slate-700">
+              <input type="checkbox" id="chkKey" checked class="rounded text-indigo-600"> Keyboard
+            </label>
+            <label class="flex items-center gap-2 bg-slate-800 p-2 rounded cursor-pointer border border-slate-700 col-span-2">
+              <input type="checkbox" id="chkUps" checked class="rounded text-indigo-600"> UPS / Power Supply
+            </label>
+          </div>
+        </div>
+        <div class="flex justify-end gap-3 border-t border-slate-800 pt-4">
+          <button type="button" onclick="closeModal()" class="px-4 py-2 text-sm text-slate-400 hover:text-white">Batal</button>
+          <button type="submit" id="btnSave" class="px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-medium flex items-center gap-2">
+            <i class="fa-solid fa-floppy-disk"></i> Simpan
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- SCRIPT APLIKASI -->
+  <script>
+    // ============================================================
+    // FIX #1: Supabase Anon Key yang valid
+    // ============================================================
+    const SUPABASE_URL     = 'https://bjvqubzmlsofswavnlxd.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJqdnF1YnptbHNvZnN3YXZubHhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIxOTE4MTQsImV4cCI6MjEwNzc2NzgxNH0.xGesmc_AdPUh885TOlBtX8SpRJFGxVWgnQuyEaejmVQ';
+
+    let _supabase = null;
+    try {
+      if (window.supabase) {
+        _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      }
+    } catch (e) {
+      console.error("Gagal inisialisasi Supabase:", e);
+    }
+
+    // ============================================================
+    // Toast Notification Helper
+    // ============================================================
+    let toastTimer = null;
+    function showToast(msg, type = 'success') {
+      const toast = document.getElementById('toast');
+      const icon  = type === 'success' ? 'fa-circle-check' : 'fa-circle-xmark';
+      toast.innerHTML = `<i class="fa-solid ${icon}"></i> ${msg}`;
+      toast.className = type;
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { toast.className = ''; toast.style.display = 'none'; }, 3500);
+    }
+
+    // ============================================================
+    // Tab Switcher
+    // ============================================================
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+      const headerAction = document.getElementById('headerAction');
+
+      if (tabName === 'computers') {
+        document.getElementById('viewComputers').classList.remove('hidden');
+        document.getElementById('navComputers').classList.add('active');
+        document.getElementById('pageTitle').innerText = 'Stok Komputer';
+        headerAction.innerHTML = `
+          <button onclick="openModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-4 py-2 rounded-lg flex items-center gap-2 transition">
+            <i class="fa-solid fa-plus"></i> Unit Baru
+          </button>`;
+        fetchComputers();
+      } else if (tabName === 'chat') {
+        document.getElementById('viewChat').classList.remove('hidden');
+        document.getElementById('navChat').classList.add('active');
+        document.getElementById('pageTitle').innerText = 'BBM Chat Room';
+        headerAction.innerHTML = '';
+        document.getElementById('chatBadge').classList.add('hidden');
+        fetchMessages();
+      }
+    }
+
+    // ============================================================
+    // Modal Control
+    // ============================================================
+    function openModal() {
+      document.getElementById('unitModal').classList.remove('hidden');
+      document.getElementById('unitModal').classList.add('flex');
+    }
+    function closeModal() {
+      document.getElementById('unitModal').classList.add('hidden');
+      document.getElementById('unitModal').classList.remove('flex');
+    }
+
+    // ============================================================
+    // Badge Render
+    // ============================================================
+    function renderBadge(label, active) {
+      const cls = active
+        ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+        : 'bg-rose-500/10 text-rose-400 border-rose-500/20 line-through opacity-50';
+      return `<span class="px-1.5 py-0.5 text-[10px] rounded border ${cls} font-mono">${label}</span>`;
+    }
+
+    // ============================================================
+    // FIX #3: Fetch & Render Computers + Stats
+    // ============================================================
+    async function fetchComputers() {
+      const tbody = document.getElementById('pcTableBody');
+      if (!_supabase) {
+        tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-rose-400"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Supabase tidak terhubung.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-slate-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Memuat data...</td></tr>`;
+
+      const { data, error } = await _supabase.from('computers').select('*').order('code', { ascending: true });
+
+      if (error) {
+        tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-rose-400"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Gagal memuat: ${error.message}</td></tr>`;
+        return;
+      }
+      if (!data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-slate-500">Belum ada data unit. Klik <strong>Unit Baru</strong> untuk menambahkan.</td></tr>`;
+        updateStats(0, 0, 0);
+        return;
+      }
+
+      const total     = data.length;
+      const available = data.filter(d => d.status === 'available').length;
+      const borrowed  = total - available;
+      updateStats(total, available, borrowed);
+
+      tbody.innerHTML = data.map(item => `
+        <tr class="hover:bg-slate-800/50 transition group">
+          <td class="py-3 px-4 font-bold text-indigo-400">${escHtml(item.code)}</td>
+          <td class="py-3 px-4">
+            <!-- FIX #2: Tombol toggle status -->
+            <button onclick="toggleStatus(${item.id}, '${item.status}')"
+              title="Klik untuk ubah status"
+              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition hover:opacity-80 ${item.status === 'available' ? 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20' : 'bg-amber-500/10 text-amber-400 hover:bg-amber-500/20'}">
+              <span class="w-1.5 h-1.5 rounded-full ${item.status === 'available' ? 'bg-emerald-400' : 'bg-amber-400'}"></span>
+              ${item.status === 'available' ? 'Tersedia' : 'Dipinjam'}
+              <i class="fa-solid fa-arrows-rotate text-[9px] opacity-60 group-hover:opacity-100"></i>
+            </button>
+          </td>
+          <td class="py-3 px-4">
+            <div class="flex flex-wrap gap-1">
+              ${renderBadge('CPU', item.comp)}
+              ${renderBadge('MON', item.mon)}
+              ${renderBadge('MOU', item.mou)}
+              ${renderBadge('KEY', item.key)}
+              ${renderBadge('UPS', item.ups)}
+            </div>
+          </td>
+          <td class="py-3 px-4 text-slate-300 max-w-xs truncate" title="${escHtml(item.spec || '')}">${escHtml(item.spec) || '<span class="text-slate-600">—</span>'}</td>
+          <td class="py-3 px-4 text-center">
+            <button onclick="deleteUnit(${item.id}, '${escHtml(item.code)}')" class="text-slate-500 hover:text-rose-400 p-1.5 transition" title="Hapus unit">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function updateStats(total, available, borrowed) {
+      document.getElementById('statTotal').innerText     = total;
+      document.getElementById('statAvailable').innerText = available;
+      document.getElementById('statBorrowed').innerText  = borrowed;
+    }
+
+    // ============================================================
+    // FIX #2: Toggle Status (Tersedia ↔ Dipinjam)
+    // ============================================================
+    async function toggleStatus(id, currentStatus) {
+      const newStatus = currentStatus === 'available' ? 'borrowed' : 'available';
+      const { error } = await _supabase.from('computers').update({ status: newStatus }).eq('id', id);
+      if (error) {
+        showToast('Gagal ubah status: ' + error.message, 'error');
+      } else {
+        showToast(`Status diubah ke ${newStatus === 'available' ? 'Tersedia' : 'Dipinjam'}`, 'success');
+        // Realtime akan otomatis refresh, tapi kita fetch manual sebagai fallback
+        fetchComputers();
+      }
+    }
+
+    // ============================================================
+    // Save Unit
+    // ============================================================
+    async function saveUnit(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnSave');
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...`;
+
+      const payload = {
+        code:   document.getElementById('pcCode').value.trim(),
+        spec:   document.getElementById('pcSpec').value.trim(),
+        comp:   document.getElementById('chkComp').checked,
+        mon:    document.getElementById('chkMon').checked,
+        mou:    document.getElementById('chkMou').checked,
+        key:    document.getElementById('chkKey').checked,
+        ups:    document.getElementById('chkUps').checked,
+        status: 'available'
+      };
+
+      const { error } = await _supabase.from('computers').insert([payload]);
+      btn.disabled = false;
+      btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Simpan`;
+
+      if (error) {
+        showToast('Gagal menyimpan: ' + error.message, 'error');
+      } else {
+        showToast(`Unit ${payload.code} berhasil ditambahkan!`, 'success');
+        closeModal();
+        document.getElementById('addUnitForm').reset();
+        fetchComputers();
+      }
+    }
+
+    // ============================================================
+    // Delete Unit
+    // ============================================================
+    async function deleteUnit(id, code) {
+      if (!confirm(`Hapus unit ${code}? Tindakan ini tidak bisa dibatalkan.`)) return;
+      const { error } = await _supabase.from('computers').delete().eq('id', id);
+      if (error) {
+        showToast('Gagal menghapus: ' + error.message, 'error');
+      } else {
+        showToast(`Unit ${code} berhasil dihapus.`, 'success');
+        fetchComputers();
+      }
+    }
+
+    // ============================================================
+    // Chat Functions — FIX #3: Input nama pengirim
+    // ============================================================
+    async function fetchMessages() {
+      const container = document.getElementById('chatContainer');
+      if (!_supabase) return;
+
+      const { data, error } = await _supabase
+        .from('messages').select('*').order('created_at', { ascending: true });
+
+      if (error) {
+        container.innerHTML = `<div class="text-center text-rose-400"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Gagal memuat chat: ${error.message}</div>`;
+        return;
+      }
+      if (!data || data.length === 0) {
+        container.innerHTML = `<div class="text-center text-slate-500 mt-8">Belum ada pesan. Mulai obrolan! 💬</div>`;
+        return;
+      }
+
+      container.innerHTML = data.map(m => {
+        const time = new Date(m.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+        const date = new Date(m.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+        return `
+          <div class="flex flex-col mb-2">
+            <div class="flex items-center gap-2 mb-1">
+              <div class="w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center text-[10px] font-bold text-white">
+                ${escHtml(m.sender).charAt(0).toUpperCase()}
+              </div>
+              <span class="text-xs font-bold text-indigo-400">${escHtml(m.sender)}</span>
+              <span class="text-[10px] text-slate-500">${date} · ${time}</span>
+            </div>
+            <div class="ml-8 bg-slate-800 text-slate-200 text-sm p-3 rounded-lg border border-slate-700/50 shadow-sm max-w-xl">
+              ${escHtml(m.message)}
+            </div>
+          </div>`;
+      }).join('');
+      container.scrollTop = container.scrollHeight;
+    }
+
+    async function sendMessage(e) {
+      e.preventDefault();
+      const input  = document.getElementById('chatInput');
+      const sender = document.getElementById('chatSender').value.trim() || 'Anonymous';
+      const text   = input.value.trim();
+      if (!text || !_supabase) return;
+
+      input.value = '';
+      const { error } = await _supabase.from('messages').insert([{ sender, message: text }]);
+      if (error) {
+        showToast('Gagal kirim pesan: ' + error.message, 'error');
+        input.value = text; // kembalikan teks jika gagal
+      }
+      // Realtime akan auto-refresh
+    }
+
+    // ============================================================
+    // FIX #4: Realtime untuk KEDUA tabel (computers & messages)
+    // ============================================================
+    function setupRealtime() {
+      if (!_supabase) return;
+
+      // Realtime untuk tabel computers
+      _supabase.channel('realtime:computers')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'computers' }, () => {
+          const isComputersVisible = !document.getElementById('viewComputers').classList.contains('hidden');
+          if (isComputersVisible) fetchComputers();
+        })
+        .subscribe(status => {
+          updateRealtimeStatus(status);
+        });
+
+      // Realtime untuk tabel messages
+      _supabase.channel('realtime:messages')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, () => {
+          const isChatVisible = !document.getElementById('viewChat').classList.contains('hidden');
+          if (isChatVisible) {
+            fetchMessages();
+          } else {
+            // Tampilkan badge notifikasi di sidebar
+            document.getElementById('chatBadge').classList.remove('hidden');
+          }
+        })
+        .subscribe();
+    }
+
+    function updateRealtimeStatus(status) {
+      const el   = document.getElementById('realtimeStatus');
+      const dot  = el.querySelector('span:first-child');
+      const text = el.querySelector('span:last-child');
+
+      if (status === 'SUBSCRIBED') {
+        dot.className  = 'w-2 h-2 rounded-full bg-emerald-400';
+        text.innerText = 'Realtime aktif';
+        el.classList.remove('text-slate-500');
+        el.classList.add('text-emerald-500');
+      } else if (status === 'CHANNEL_ERROR' || status === 'CLOSED') {
+        dot.className  = 'w-2 h-2 rounded-full bg-rose-400';
+        text.innerText = 'Realtime terputus';
+        el.classList.remove('text-slate-500', 'text-emerald-500');
+        el.classList.add('text-rose-500');
+      }
+    }
+
+    // ============================================================
+    // Utility: Escape HTML untuk mencegah XSS
+    // ============================================================
+    function escHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // ============================================================
+    // Init
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchComputers();
+      setupRealtime();
+    });
+  </script>
+</body>
+</html>
