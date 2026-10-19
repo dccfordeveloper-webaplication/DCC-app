@@ -1,545 +1,951 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DCC Monitor — Darussalam Computer Center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Orbitron:wght@500;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            platinum: { 50: "#F7F8F9", 100: "#EEEFF1", 200: "#D9DDE1", 300: "#C5C9CE", 400: "#A8AEB5" },
+            silver: "#B7BCC2",
+            charcoal: { 800: "#3A4046", 900: "#24282C", 950: "#16181B" },
+            ping: "#FF6A00",
+            steel: "#6E7B86"
+          },
+          fontFamily: {
+            sans: ['"IBM Plex Sans"', "Segoe UI", "Tahoma", "sans-serif"],
+            display: ['Orbitron', "Segoe UI", "sans-serif"]
+          },
+          boxShadow: {
+            metal: "inset 0 1px 0 rgba(255,255,255,.55), 0 8px 24px rgba(22,24,27,.28)",
+            bezel: "inset 0 0 0 1px rgba(255,255,255,.35), 0 12px 40px rgba(0,0,0,.35)"
+          }
+        }
+      }
+    };
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <style>
-    body { background-color: #121824; color: #e2e8f0; font-family: sans-serif; }
-    .card { background-color: #1e293b; border-radius: 0.75rem; border: 1px solid #334155; }
-    .sidebar-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border-radius: 0.5rem; color: #94a3b8; transition: all 0.2s; cursor: pointer; }
-    .sidebar-item:hover, .sidebar-item.active { background-color: #334155; color: #ffffff; }
-
-    /* Toast Notification */
-    #toast {
-      position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999;
-      padding: 0.75rem 1.25rem; border-radius: 0.5rem; font-size: 0.875rem;
-      font-weight: 500; display: none; align-items: center; gap: 0.5rem;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.4); transition: all 0.3s;
+    :root { color-scheme: light; }
+    body {
+      background:
+        radial-gradient(1200px 500px at 10% -10%, rgba(255,255,255,.5), transparent 50%),
+        linear-gradient(165deg, #8f959c 0%, #5c636a 42%, #2c3136 100%);
     }
-    #toast.success { background: #064e3b; color: #6ee7b7; border: 1px solid #059669; display: flex; }
-    #toast.error   { background: #450a0a; color: #fca5a5; border: 1px solid #dc2626; display: flex; }
-
-    /* Pulse dot animation */
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-    .dot-pulse { animation: pulse 1.5s ease-in-out infinite; }
+    .bbm-shell {
+      background: linear-gradient(180deg, #dfe3e7 0%, #c5cad0 18%, #aeb4bb 100%);
+    }
+    .bbm-bar {
+      background: linear-gradient(180deg, #f4f6f8 0%, #cfd4d9 48%, #aeb4ba 100%);
+      border-bottom: 1px solid #8b9198;
+    }
+    .bbm-input {
+      background: linear-gradient(180deg, #fbfbfc, #e7eaed);
+      box-shadow: inset 0 1px 2px rgba(0,0,0,.18);
+    }
+    .bubble-in {
+      background: linear-gradient(180deg, #f2f3f5, #d9dde2);
+      border: 1px solid #b7bdc4;
+    }
+    .bubble-out {
+      background: linear-gradient(180deg, #3e454c, #23272b);
+      color: #f3f4f6;
+    }
+    .ping-card {
+      background: linear-gradient(180deg, #ff8a2b, #ff6a00);
+      box-shadow: 0 6px 16px rgba(255,106,0,.35);
+    }
+    .nav-item.active { background: linear-gradient(180deg, #3f464d, #1f2327); color: #f8fafc; }
+    .hide { display: none !important; }
+    .chat-scroll::-webkit-scrollbar { width: 8px; }
+    .chat-scroll::-webkit-scrollbar-thumb { background: #7c848c; border-radius: 8px; }
   </style>
 </head>
-<body class="flex h-screen overflow-hidden">
-
-  <!-- TOAST NOTIFICATION -->
-  <div id="toast"></div>
-
-  <!-- SIDEBAR -->
-  <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between p-4 shrink-0">
-    <div>
-      <div class="flex items-center gap-3 px-2 py-4 mb-6">
-        <i class="fa-solid fa-desktop text-indigo-500 text-2xl"></i>
-        <span class="font-bold text-lg tracking-wider text-white">DCC MONITOR</span>
-      </div>
-      <nav class="space-y-1">
-        <div id="navComputers" onclick="switchTab('computers')" class="sidebar-item active">
-          <i class="fa-solid fa-server w-5"></i><span>Stok Komputer</span>
-        </div>
-        <div id="navChat" onclick="switchTab('chat')" class="sidebar-item">
-          <i class="fa-solid fa-comments w-5"></i><span>BBM Chat</span>
-          <span id="chatBadge" class="hidden ml-auto bg-indigo-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">!</span>
-        </div>
-      </nav>
-    </div>
-
-    <!-- Realtime Status Indicator -->
-    <div class="space-y-2">
-      <div id="realtimeStatus" class="flex items-center gap-2 text-xs text-slate-500 px-2 py-2">
-        <span class="w-2 h-2 rounded-full bg-slate-600 dot-pulse"></span>
-        <span>Menghubungkan...</span>
-      </div>
-      <div class="text-xs text-slate-500 text-center py-2 border-t border-slate-800">
-        Darussalam Computer Center
-      </div>
-    </div>
-  </aside>
-
-  <!-- MAIN CONTENT -->
-  <main class="flex-1 flex flex-col h-full overflow-y-auto">
-    <!-- HEADER -->
-    <header class="h-16 border-b border-slate-800 bg-slate-900/50 flex items-center justify-between px-8 sticky top-0 z-10 backdrop-blur-md">
-      <h1 id="pageTitle" class="text-xl font-bold text-white">Stok Komputer</h1>
-      <div id="headerAction">
-        <button onclick="openModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-4 py-2 rounded-lg flex items-center gap-2 transition">
-          <i class="fa-solid fa-plus"></i> Unit Baru
-        </button>
-      </div>
-    </header>
-
-    <!-- CONTENT BODY -->
-    <div class="p-8 flex-1 flex flex-col overflow-hidden">
-
-      <!-- VIEW: STOK KOMPUTER -->
-      <div id="viewComputers" class="tab-content flex-1 overflow-y-auto space-y-6">
-
-        <!-- Summary Stats -->
-        <div class="grid grid-cols-3 gap-4">
-          <div class="card p-4 flex items-center gap-4">
-            <div class="w-10 h-10 rounded-lg bg-indigo-500/10 flex items-center justify-center">
-              <i class="fa-solid fa-server text-indigo-400"></i>
-            </div>
-            <div>
-              <div id="statTotal" class="text-2xl font-bold text-white">—</div>
-              <div class="text-xs text-slate-400">Total Unit</div>
-            </div>
-          </div>
-          <div class="card p-4 flex items-center gap-4">
-            <div class="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-              <i class="fa-solid fa-circle-check text-emerald-400"></i>
-            </div>
-            <div>
-              <div id="statAvailable" class="text-2xl font-bold text-white">—</div>
-              <div class="text-xs text-slate-400">Tersedia</div>
-            </div>
-          </div>
-          <div class="card p-4 flex items-center gap-4">
-            <div class="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
-              <i class="fa-solid fa-arrow-right-arrow-left text-amber-400"></i>
-            </div>
-            <div>
-              <div id="statBorrowed" class="text-2xl font-bold text-white">—</div>
-              <div class="text-xs text-slate-400">Dipinjam</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card p-6">
-          <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-              <thead>
-                <tr class="border-b border-slate-700 text-slate-400 text-sm">
-                  <th class="pb-3 px-4">Kode PC</th>
-                  <th class="pb-3 px-4">Status</th>
-                  <th class="pb-3 px-4">Kelengkapan</th>
-                  <th class="pb-3 px-4">Spesifikasi</th>
-                  <th class="pb-3 px-4 text-center">Aksi</th>
-                </tr>
-              </thead>
-              <tbody id="pcTableBody" class="divide-y divide-slate-800 text-sm">
-                <tr><td colspan="5" class="py-8 text-center text-slate-500">
-                  <i class="fa-solid fa-spinner fa-spin mr-2"></i>Memuat data...
-                </td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+<body class="min-h-screen font-sans text-charcoal-900">
+  <div class="mx-auto max-w-6xl px-3 py-4 md:py-8">
+    <div class="bbm-shell shadow-bezel rounded-[28px] overflow-hidden border border-white/40">
+      <div class="bbm-bar flex items-center justify-between px-4 py-2 text-[11px] tracking-widest text-charcoal-800">
+        <span class="font-display">BLACKBERRY</span>
+        <span id="clock">00:00</span>
+        <span><i class="fa-solid fa-signal mr-2"></i><i class="fa-solid fa-battery-three-quarters"></i></span>
       </div>
 
-      <!-- VIEW: CHAT ROOM -->
-      <div id="viewChat" class="tab-content hidden flex-1 flex flex-col card overflow-hidden">
-        <div id="chatContainer" class="flex-1 p-6 overflow-y-auto space-y-3">
-          <div class="text-center text-slate-500">
-            <i class="fa-solid fa-spinner fa-spin mr-2"></i>Memuat pesan...
+      <!-- AUTH SCREEN -->
+      <section id="screen-auth" class="min-h-[78vh] grid md:grid-cols-2">
+        <div class="p-8 md:p-12 bg-charcoal-950 text-platinum-100">
+          <p class="text-ping font-display text-xs tracking-[0.35em]">DCC GONTOR</p>
+          <h1 class="mt-3 text-3xl md:text-4xl font-display leading-tight">Darussalam<br />Computer Center</h1>
+          <p class="mt-4 text-platinum-300 max-w-sm">Sistem monitor stok, peminjaman, pengecekan, servis, rekap, dan BBM Chat Room dengan fitur lengkap.</p>
+          <div class="mt-8 space-y-3 text-sm text-platinum-300">
+            <p><i class="fa-solid fa-laptop mr-2 text-ping"></i>Manajemen unit komputer</p>
+            <p><i class="fa-solid fa-handshake mr-2 text-ping"></i>Peminjaman & pengembalian</p>
+            <p><i class="fa-solid fa-comments mr-2 text-ping"></i>Realtime chat, emoji, reply, avatar & upload file</p>
           </div>
         </div>
-        <!-- Chat Input Form -->
-        <div class="p-4 bg-slate-900/80 border-t border-slate-800 space-y-2">
-          <div class="flex gap-2 items-center">
-            <label class="text-xs text-slate-400 whitespace-nowrap">Nama:</label>
-            <input type="text" id="chatSender" value="DCC ADMIN" maxlength="30"
-              class="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-white text-xs w-40 focus:outline-none focus:border-indigo-500">
+        <div class="p-8 md:p-12 bg-platinum-100">
+          <div class="flex gap-2 mb-6">
+            <button id="tab-login" class="flex-1 py-2 rounded-lg bbm-bar font-semibold">Masuk</button>
+            <button id="tab-register" class="flex-1 py-2 rounded-lg text-steel">Daftar</button>
           </div>
-          <form onsubmit="sendMessage(event)" class="flex gap-3">
-            <input type="text" id="chatInput" autocomplete="off" placeholder="Tulis pesan BBM..."
-              class="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-indigo-500">
-            <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2 rounded-lg font-medium transition flex items-center gap-2">
-              <i class="fa-solid fa-paper-plane"></i> Kirim
-            </button>
+          <form id="form-login" class="space-y-4">
+            <label class="block text-sm">Email
+              <input required type="email" id="login-email" class="mt-1 w-full rounded-lg bbm-input px-3 py-2 outline-none" placeholder="staff@dcc.gontor" />
+            </label>
+            <label class="block text-sm">Kata sandi
+              <input required type="password" id="login-pass" class="mt-1 w-full rounded-lg bbm-input px-3 py-2 outline-none" />
+            </label>
+            <button class="w-full py-3 rounded-lg bg-charcoal-900 text-white font-semibold shadow-metal">Masuk ke DCC</button>
           </form>
+          <form id="form-register" class="space-y-4 hide">
+            <label class="block text-sm">Nama lengkap
+              <input required id="reg-name" class="mt-1 w-full rounded-lg bbm-input px-3 py-2 outline-none" />
+            </label>
+            <label class="block text-sm">Email
+              <input required type="email" id="reg-email" class="mt-1 w-full rounded-lg bbm-input px-3 py-2 outline-none" />
+            </label>
+            <label class="block text-sm">Kata sandi
+              <input required minlength="6" type="password" id="reg-pass" class="mt-1 w-full rounded-lg bbm-input px-3 py-2 outline-none" />
+            </label>
+            <button class="w-full py-3 rounded-lg bg-charcoal-900 text-white font-semibold shadow-metal">Daftarkan akun</button>
+          </form>
+          <p id="auth-msg" class="mt-4 text-sm text-red-700 min-h-[1.25rem]"></p>
         </div>
-      </div>
+      </section>
 
-    </div>
-  </main>
-
-  <!-- MODAL TAMBAH UNIT -->
-  <div id="unitModal" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50 p-4 backdrop-blur-sm">
-    <div class="card w-full max-w-lg p-6 space-y-4">
-      <div class="flex justify-between items-center border-b border-slate-700 pb-3">
-        <h3 class="text-lg font-bold text-white">Tambah Unit Komputer</h3>
-        <button onclick="closeModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
-      </div>
-
-      <form id="addUnitForm" onsubmit="saveUnit(event)" class="space-y-4">
-        <div>
-          <label class="block text-xs font-medium text-slate-400 mb-1">Kode PC</label>
-          <input type="text" id="pcCode" required placeholder="Contoh: DCC-004"
-            class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500">
-        </div>
-        <div>
-          <label class="block text-xs font-medium text-slate-400 mb-1">Spesifikasi / Notes</label>
-          <textarea id="pcSpec" rows="2" placeholder="Intel Core i5, RAM 16GB..."
-            class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500"></textarea>
-        </div>
-        <div class="space-y-2 border-t border-slate-800 pt-3">
-          <label class="block text-xs font-medium text-slate-400">Kelengkapan Komponen</label>
-          <div class="grid grid-cols-2 gap-2 text-xs">
-            <label class="flex items-center gap-2 bg-slate-800 p-2 rounded cursor-pointer border border-slate-700">
-              <input type="checkbox" id="chkComp" checked class="rounded text-indigo-600"> Komputer (CPU)
-            </label>
-            <label class="flex items-center gap-2 bg-slate-800 p-2 rounded cursor-pointer border border-slate-700">
-              <input type="checkbox" id="chkMon" checked class="rounded text-indigo-600"> Monitor
-            </label>
-            <label class="flex items-center gap-2 bg-slate-800 p-2 rounded cursor-pointer border border-slate-700">
-              <input type="checkbox" id="chkMou" checked class="rounded text-indigo-600"> Mouse
-            </label>
-            <label class="flex items-center gap-2 bg-slate-800 p-2 rounded cursor-pointer border border-slate-700">
-              <input type="checkbox" id="chkKey" checked class="rounded text-indigo-600"> Keyboard
-            </label>
-            <label class="flex items-center gap-2 bg-slate-800 p-2 rounded cursor-pointer border border-slate-700 col-span-2">
-              <input type="checkbox" id="chkUps" checked class="rounded text-indigo-600"> UPS / Power Supply
-            </label>
+      <!-- APP MAIN SCREEN -->
+      <section id="screen-app" class="hide">
+        <header class="bbm-bar px-4 py-3 flex items-center gap-3">
+          <div class="h-10 w-10 rounded-lg bg-charcoal-900 text-platinum-100 grid place-items-center font-display">DCC</div>
+          <div class="flex-1 min-w-0">
+            <h2 class="font-display text-sm tracking-wide">DCC MONITOR</h2>
+            <p id="whoami" class="text-xs text-charcoal-800 truncate">Staff</p>
           </div>
+          <button id="btn-logout" class="text-xs px-3 py-2 rounded-md bg-charcoal-900 text-white"><i class="fa-solid fa-right-from-bracket mr-1"></i>Keluar</button>
+        </header>
+
+        <div class="grid md:grid-cols-[220px_1fr] min-h-[72vh]">
+          <nav class="bg-platinum-200/80 p-3 space-y-1 border-r border-silver">
+            <button data-view="home" class="nav-item active w-full text-left px-3 py-2 rounded-lg text-sm"><i class="fa-solid fa-house mr-2 w-5"></i>Beranda</button>
+            <button data-view="computers" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm"><i class="fa-solid fa-computer mr-2 w-5"></i>Stok Komputer</button>
+            <button data-view="loans" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm"><i class="fa-solid fa-handshake mr-2 w-5"></i>Peminjaman</button>
+            <button data-view="checking" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm"><i class="fa-solid fa-clipboard-check mr-2 w-5"></i>Pengecekan</button>
+            <button data-view="services" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm"><i class="fa-solid fa-screwdriver-wrench mr-2 w-5"></i>Servis</button>
+            <button data-view="recap" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm"><i class="fa-solid fa-chart-column mr-2 w-5"></i>Rekap Statistik</button>
+            <button data-view="chat" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm"><i class="fa-solid fa-comments mr-2 w-5"></i>BBM Chat</button>
+          </nav>
+
+          <main class="bg-platinum-50">
+            <!-- VIEW: HOME -->
+            <section id="view-home" class="p-5 space-y-4">
+              <h3 class="font-display text-lg">Ringkasan operasional</h3>
+              <div id="home-cards" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3"></div>
+              <div class="bg-white rounded-2xl p-4 shadow-metal">
+                <canvas id="home-chart" height="110"></canvas>
+              </div>
+            </section>
+
+            <!-- VIEW: COMPUTERS -->
+            <section id="view-computers" class="p-5 hide">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="font-display">Stok komputer</h3>
+                <button data-open="modal-computer" class="px-3 py-2 rounded-lg bg-charcoal-900 text-white text-sm"><i class="fa-solid fa-plus mr-1"></i>Unit baru</button>
+              </div>
+              <div class="overflow-auto rounded-2xl bg-white shadow-metal">
+                <table class="w-full text-sm">
+                  <thead class="bbm-bar text-left">
+                    <tr><th class="p-3">ID</th><th>Model</th><th>Tipe</th><th>Status</th><th>Kondisi</th><th></th></tr>
+                  </thead>
+                  <tbody id="tbl-computers"></tbody>
+                </table>
+              </div>
+            </section>
+
+            <!-- VIEW: LOANS -->
+            <section id="view-loans" class="p-5 hide">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="font-display">Peminjaman</h3>
+                <button data-open="modal-loan" class="px-3 py-2 rounded-lg bg-charcoal-900 text-white text-sm"><i class="fa-solid fa-plus mr-1"></i>Catat pinjam</button>
+              </div>
+              <div class="overflow-auto rounded-2xl bg-white shadow-metal">
+                <table class="w-full text-sm">
+                  <thead class="bbm-bar text-left">
+                    <tr><th class="p-3">Unit</th><th>Peminjam</th><th>Keperluan</th><th>Status</th><th></th></tr>
+                  </thead>
+                  <tbody id="tbl-loans"></tbody>
+                </table>
+              </div>
+            </section>
+
+            <!-- VIEW: CHECKING -->
+            <section id="view-checking" class="p-5 hide">
+              <h3 class="font-display mb-2">Pengecekan unit</h3>
+              <p class="text-sm text-steel mb-4">Hasil pengecekan memperbarui kondisi/status komputer dan tercatat di layanan servis sebagai log inspeksi.</p>
+              <form id="form-checking" class="bg-white rounded-2xl p-4 shadow-metal grid sm:grid-cols-2 gap-3">
+                <label class="text-sm">Unit
+                  <select id="chk-unit" class="mt-1 w-full bbm-input rounded-lg px-3 py-2"></select>
+                </label>
+                <label class="text-sm">Kondisi
+                  <select id="chk-condition" class="mt-1 w-full bbm-input rounded-lg px-3 py-2">
+                    <option>Sangat Baik</option><option>Baik</option><option>Cukup</option><option>Rusak Ringan</option><option>Rusak Berat</option>
+                  </select>
+                </label>
+                <label class="text-sm">Status setelah cek
+                  <select id="chk-status" class="mt-1 w-full bbm-input rounded-lg px-3 py-2">
+                    <option value="available">available</option>
+                    <option value="checking">checking</option>
+                    <option value="maintenance">maintenance</option>
+                    <option value="borrowed">borrowed</option>
+                  </select>
+                </label>
+                <label class="text-sm sm:col-span-2">Catatan
+                  <input id="chk-notes" class="mt-1 w-full bbm-input rounded-lg px-3 py-2" placeholder="Keyboard aus, pendingin berisik, ..." />
+                </label>
+                <button class="sm:col-span-2 py-2 rounded-lg bg-charcoal-900 text-white">Simpan pengecekan</button>
+              </form>
+            </section>
+
+            <!-- VIEW: SERVICES -->
+            <section id="view-services" class="p-5 hide">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="font-display">Servis</h3>
+                <button data-open="modal-service" class="px-3 py-2 rounded-lg bg-charcoal-900 text-white text-sm"><i class="fa-solid fa-plus mr-1"></i>Tiket servis</button>
+              </div>
+              <div id="svc-list" class="grid gap-3"></div>
+            </section>
+
+            <!-- VIEW: RECAP -->
+            <section id="view-recap" class="p-5 hide">
+              <h3 class="font-display mb-4">Rekam statistik</h3>
+              <div class="grid md:grid-cols-2 gap-4">
+                <div class="bg-white rounded-2xl p-4 shadow-metal"><canvas id="chart-status"></canvas></div>
+                <div class="bg-white rounded-2xl p-4 shadow-metal"><canvas id="chart-type"></canvas></div>
+                <div class="bg-white rounded-2xl p-4 shadow-metal md:col-span-2"><canvas id="chart-ops" height="110"></canvas></div>
+              </div>
+            </section>
+
+            <!-- VIEW: CHAT ROOM -->
+            <section id="view-chat" class="hide flex flex-col h-[72vh] bg-[#d8dde2] relative">
+              <div class="bbm-bar px-3 py-2 flex items-center gap-2 relative">
+                <img id="chat-header-avatar" src="" alt="" class="h-9 w-9 rounded-md object-cover bg-charcoal-800 hidden" />
+                <div class="flex-1 min-w-0">
+                  <p id="chat-title" class="font-semibold text-sm truncate">DCC Chat Room</p>
+                  <p id="chat-sub" class="text-[11px] text-charcoal-800">BBM · realtime</p>
+                </div>
+                <button id="btn-menu" class="h-9 w-9 rounded-md hover:bg-black/10" title="Menu">
+                  <i class="fa-solid fa-ellipsis-vertical"></i>
+                </button>
+                <div id="chat-menu" class="hide absolute right-2 top-12 z-20 w-52 rounded-xl overflow-hidden shadow-bezel bg-platinum-50 border border-silver">
+                  <button id="menu-ping" class="w-full text-left px-4 py-3 hover:bg-platinum-200 text-sm"><i class="fa-solid fa-bolt text-ping mr-2"></i>PING!</button>
+                  <button id="menu-select" class="w-full text-left px-4 py-3 hover:bg-platinum-200 text-sm"><i class="fa-solid fa-user-group mr-2"></i>Select Chat</button>
+                  <button id="menu-profile" class="w-full text-left px-4 py-3 hover:bg-platinum-200 text-sm"><i class="fa-solid fa-id-badge mr-2"></i>Edit Profile</button>
+                </div>
+              </div>
+
+              <div id="chat-stream" class="flex-1 overflow-y-auto chat-scroll p-4 space-y-3"></div>
+
+              <!-- REPLY PREVIEW BOX -->
+              <div id="reply-preview" class="hide px-3 py-1.5 bg-platinum-200 border-t border-silver flex items-center justify-between text-xs">
+                <div class="truncate">
+                  <span class="font-semibold text-ping">Membalas <span id="reply-to-sender"></span>:</span>
+                  <p id="reply-to-text" class="text-charcoal-800 truncate"></p>
+                </div>
+                <button type="button" id="cancel-reply" class="text-steel hover:text-charcoal-900 px-2"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+
+              <!-- ATTACHMENT PREVIEW BOX -->
+              <div id="attach-preview" class="hide px-3 py-1.5 bg-platinum-200 border-t border-silver flex items-center justify-between text-xs">
+                <div class="flex items-center gap-2 truncate">
+                  <img id="attach-thumb" class="h-8 w-8 object-cover rounded hidden" alt="thumb" />
+                  <i id="attach-icon" class="fa-solid fa-file text-base"></i>
+                  <span id="attach-filename" class="truncate font-semibold text-charcoal-900"></span>
+                </div>
+                <button type="button" id="cancel-attach" class="text-steel hover:text-charcoal-900 px-2"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+
+              <!-- EMOJI PICKER POPUP -->
+              <div id="emoji-picker" class="hide absolute bottom-16 left-3 z-30 bg-white border border-silver rounded-2xl shadow-bezel p-3 grid grid-cols-8 gap-2 w-72 text-lg"></div>
+
+              <form id="form-chat" class="p-3 flex items-center gap-2 bg-platinum-200 relative">
+                <button type="button" id="btn-emoji" class="h-10 w-10 rounded-full hover:bg-black/10 text-steel" title="Emoji"><i class="fa-regular fa-face-smile text-lg"></i></button>
+                <button type="button" id="btn-attach" class="h-10 w-10 rounded-full hover:bg-black/10 text-steel" title="Lampirkan File/Foto"><i class="fa-solid fa-paperclip text-lg"></i></button>
+                <input type="file" id="chat-file" class="hide" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" />
+                <input id="chat-text" class="flex-1 rounded-full bbm-input px-4 py-2 outline-none" placeholder="Tulis pesan BBM..." autocomplete="off" />
+                <button class="h-10 w-10 rounded-full bg-charcoal-900 text-white"><i class="fa-solid fa-paper-plane"></i></button>
+              </form>
+            </section>
+          </main>
         </div>
-        <div class="flex justify-end gap-3 border-t border-slate-800 pt-4">
-          <button type="button" onclick="closeModal()" class="px-4 py-2 text-sm text-slate-400 hover:text-white">Batal</button>
-          <button type="submit" id="btnSave" class="px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-medium flex items-center gap-2">
-            <i class="fa-solid fa-floppy-disk"></i> Simpan
-          </button>
-        </div>
-      </form>
+      </section>
     </div>
+    <p class="text-center text-platinum-100/80 text-xs mt-4">Darussalam Computer Center · Pondok Modern Darussalam Gontor</p>
   </div>
 
-  <!-- SCRIPT APLIKASI -->
+  <!-- MODALS -->
+  <dialog id="modal-computer" class="rounded-2xl p-0 w-[min(92vw,480px)] shadow-bezel">
+    <form id="form-computer" class="p-5 space-y-3 bg-platinum-50">
+      <h4 class="font-display">Unit komputer</h4>
+      <input id="pc-id" required placeholder="DCC-006" class="w-full bbm-input rounded-lg px-3 py-2" />
+      <input id="pc-model" required placeholder="Model" class="w-full bbm-input rounded-lg px-3 py-2" />
+      <input id="pc-type" required placeholder="Laptop / Desktop" class="w-full bbm-input rounded-lg px-3 py-2" />
+      <input id="pc-specs" placeholder="Spesifikasi" class="w-full bbm-input rounded-lg px-3 py-2" />
+      <select id="pc-status" class="w-full bbm-input rounded-lg px-3 py-2">
+        <option>available</option><option>borrowed</option><option>maintenance</option><option>checking</option>
+      </select>
+      <input id="pc-condition" placeholder="Kondisi" class="w-full bbm-input rounded-lg px-3 py-2" />
+      <div class="flex gap-2 justify-end">
+        <button type="button" data-close class="px-3 py-2">Batal</button>
+        <button class="px-4 py-2 bg-charcoal-900 text-white rounded-lg">Simpan</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="modal-loan" class="rounded-2xl p-0 w-[min(92vw,480px)] shadow-bezel">
+    <form id="form-loan" class="p-5 space-y-3 bg-platinum-50">
+      <h4 class="font-display">Peminjaman baru</h4>
+      <select id="loan-unit" class="w-full bbm-input rounded-lg px-3 py-2"></select>
+      <input id="loan-borrower" required placeholder="Nama peminjam" class="w-full bbm-input rounded-lg px-3 py-2" />
+      <input id="loan-purpose" required placeholder="Keperluan" class="w-full bbm-input rounded-lg px-3 py-2" />
+      <div class="flex gap-2 justify-end">
+        <button type="button" data-close class="px-3 py-2">Batal</button>
+        <button class="px-4 py-2 bg-charcoal-900 text-white rounded-lg">Simpan</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="modal-service" class="rounded-2xl p-0 w-[min(92vw,480px)] shadow-bezel">
+    <form id="form-service" class="p-5 space-y-3 bg-platinum-50">
+      <h4 class="font-display">Tiket servis</h4>
+      <select id="svc-unit" class="w-full bbm-input rounded-lg px-3 py-2"></select>
+      <input id="svc-problem" required placeholder="Kerusakan / keluhan" class="w-full bbm-input rounded-lg px-3 py-2" />
+      <input id="svc-tech" placeholder="Teknisi" class="w-full bbm-input rounded-lg px-3 py-2" />
+      <input id="svc-notes" placeholder="Catatan" class="w-full bbm-input rounded-lg px-3 py-2" />
+      <select id="svc-status" class="w-full bbm-input rounded-lg px-3 py-2">
+        <option>open</option><option>in_progress</option><option>done</option>
+      </select>
+      <div class="flex gap-2 justify-end">
+        <button type="button" data-close class="px-3 py-2">Batal</button>
+        <button class="px-4 py-2 bg-charcoal-900 text-white rounded-lg">Simpan</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="modal-select" class="rounded-2xl p-0 w-[min(92vw,420px)] shadow-bezel">
+    <div class="p-5 bg-platinum-50">
+      <h4 class="font-display mb-3">Select Chat</h4>
+      <button id="select-room" class="w-full mb-2 px-3 py-2 rounded-lg bbm-bar text-left">DCC Chat Room (semua)</button>
+      <div id="select-list" class="space-y-1 max-h-72 overflow-auto"></div>
+      <button data-close class="mt-3 text-sm">Tutup</button>
+    </div>
+  </dialog>
+
+  <dialog id="modal-profile" class="rounded-2xl p-0 w-[min(92vw,420px)] shadow-bezel">
+    <form id="form-profile" class="p-5 space-y-3 bg-platinum-50">
+      <h4 class="font-display">Edit Profile</h4>
+      <div class="flex items-center gap-3">
+        <img id="prof-preview" class="h-16 w-16 rounded-lg object-cover bg-charcoal-800" alt="avatar" />
+        <input id="prof-file" type="file" accept="image/*" class="text-xs" />
+      </div>
+      <input id="prof-name" required class="w-full bbm-input rounded-lg px-3 py-2" />
+      <div class="flex gap-2 justify-end">
+        <button type="button" data-close class="px-3 py-2">Batal</button>
+        <button class="px-4 py-2 bg-charcoal-900 text-white rounded-lg">Simpan profil</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- SUPABASE & APP LOGIC -->
   <script>
-    // ============================================================
-    // FIX #1: Supabase Anon Key yang valid
-    // ============================================================
-    const SUPABASE_URL     = 'https://bjvqubzmlsofswavnlxd.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJqdnF1YnptbHNvZnN3YXZubHhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIxOTE4MTQsImV4cCI6MjEwNzc2NzgxNH0.xGesmc_AdPUh885TOlBtX8SpRJFGxVWgnQuyEaejmVQ';
+    const SUPABASE_URL = "https://bjvqubzmlsofswavnlxd.supabase.co";
+    const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJqdnF1YnptbHNvZnN3YXZubHhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEyMzgwOTUsImV4cCI6MjA1NjgxNDA5NX0.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJqdnF1YnptbHNvZnN3YXZubHhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEyMzgwOTUsImV4cCI6MjA1NjgxNDA5NX0";
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-    let _supabase = null;
-    try {
-      if (window.supabase) {
-        _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      }
-    } catch (e) {
-      console.error("Gagal inisialisasi Supabase:", e);
+    const state = {
+      member: null,
+      computers: [],
+      loans: [],
+      services: [],
+      members: [],
+      messages: [],
+      filterSender: null,
+      replyingTo: null,
+      attachmentData: null,
+      charts: {}
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const show = (el, on) => el.classList.toggle("hide", !on);
+
+    function toast(msg, el = $("auth-msg")) {
+      if (el) el.textContent = msg || "";
+      if (msg) console.warn(msg);
     }
 
-    // ============================================================
-    // Toast Notification Helper
-    // ============================================================
-    let toastTimer = null;
-    function showToast(msg, type = 'success') {
-      const toast = document.getElementById('toast');
-      const icon  = type === 'success' ? 'fa-circle-check' : 'fa-circle-xmark';
-      toast.innerHTML = `<i class="fa-solid ${icon}"></i> ${msg}`;
-      toast.className = type;
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => { toast.className = ''; toast.style.display = 'none'; }, 3500);
+    function tick() {
+      const d = new Date();
+      $("clock").textContent = d.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
     }
+    tick();
+    setInterval(tick, 1000);
 
-    // ============================================================
-    // Tab Switcher
-    // ============================================================
-    function switchTab(tabName) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
-      const headerAction = document.getElementById('headerAction');
+    $("tab-login").onclick = () => { show($("form-login"), true); show($("form-register"), false); $("tab-login").classList.add("bbm-bar","font-semibold"); $("tab-register").classList.remove("bbm-bar","font-semibold"); };
+    $("tab-register").onclick = () => { show($("form-login"), false); show($("form-register"), true); $("tab-register").classList.add("bbm-bar","font-semibold"); $("tab-login").classList.remove("bbm-bar","font-semibold"); };
 
-      if (tabName === 'computers') {
-        document.getElementById('viewComputers').classList.remove('hidden');
-        document.getElementById('navComputers').classList.add('active');
-        document.getElementById('pageTitle').innerText = 'Stok Komputer';
-        headerAction.innerHTML = `
-          <button onclick="openModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-4 py-2 rounded-lg flex items-center gap-2 transition">
-            <i class="fa-solid fa-plus"></i> Unit Baru
-          </button>`;
-        fetchComputers();
-      } else if (tabName === 'chat') {
-        document.getElementById('viewChat').classList.remove('hidden');
-        document.getElementById('navChat').classList.add('active');
-        document.getElementById('pageTitle').innerText = 'BBM Chat Room';
-        headerAction.innerHTML = '';
-        document.getElementById('chatBadge').classList.add('hidden');
-        fetchMessages();
-      }
-    }
+    document.querySelectorAll("[data-open]").forEach((b) => b.onclick = () => $(b.dataset.open).showModal());
+    document.querySelectorAll("[data-close]").forEach((b) => b.onclick = () => b.closest("dialog").close());
 
-    // ============================================================
-    // Modal Control
-    // ============================================================
-    function openModal() {
-      document.getElementById('unitModal').classList.remove('hidden');
-      document.getElementById('unitModal').classList.add('flex');
-    }
-    function closeModal() {
-      document.getElementById('unitModal').classList.add('hidden');
-      document.getElementById('unitModal').classList.remove('flex');
-    }
+    document.querySelectorAll(".nav-item").forEach((btn) => {
+      btn.onclick = () => {
+        document.querySelectorAll(".nav-item").forEach((x) => x.classList.remove("active"));
+        btn.classList.add("active");
+        ["home","computers","loans","checking","services","recap","chat"].forEach((v) => show($("view-" + v), v === btn.dataset.view));
+        if (btn.dataset.view === "recap" || btn.dataset.view === "home") renderCharts();
+        if (btn.dataset.view === "chat") scrollChat();
+      };
+    });
 
-    // ============================================================
-    // Badge Render
-    // ============================================================
-    function renderBadge(label, active) {
-      const cls = active
-        ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-        : 'bg-rose-500/10 text-rose-400 border-rose-500/20 line-through opacity-50';
-      return `<span class="px-1.5 py-0.5 text-[10px] rounded border ${cls} font-mono">${label}</span>`;
-    }
+    $("form-register").onsubmit = async (e) => {
+      e.preventDefault();
+      toast("Mendaftarkan...");
+      const full_name = $("reg-name").value.trim();
+      const email = $("reg-email").value.trim();
+      const password = $("reg-pass").value;
+      const { error: authErr } = await sb.auth.signUp({ email, password });
+      if (authErr) return toast(authErr.message);
+      const { error: memErr } = await sb.from("members").insert({ full_name, email, role: "member" });
+      if (memErr && !/duplicate/i.test(memErr.message)) return toast(memErr.message);
+      toast("Akun dibuat. Silakan masuk.");
+      $("tab-login").click();
+      $("login-email").value = email;
+    };
 
-    // ============================================================
-    // FIX #3: Fetch & Render Computers + Stats
-    // ============================================================
-    async function fetchComputers() {
-      const tbody = document.getElementById('pcTableBody');
-      if (!_supabase) {
-        tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-rose-400"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Supabase tidak terhubung.</td></tr>`;
-        return;
-      }
-      tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-slate-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Memuat data...</td></tr>`;
-
-      const { data, error } = await _supabase.from('computers').select('*').order('code', { ascending: true });
-
+    $("form-login").onsubmit = async (e) => {
+      e.preventDefault();
+      toast("Memeriksa...");
+      const email = $("login-email").value.trim();
+      const password = $("login-pass").value;
+      const { error } = await sb.auth.signInWithPassword({ email, password });
       if (error) {
-        tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-rose-400"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Gagal memuat: ${error.message}</td></tr>`;
+        const { data } = await sb.from("members").select("*").eq("email", email).maybeSingle();
+        if (!data) return toast(error.message + " — email tidak ada di tabel members.");
+        return toast(error.message);
+      }
+      await boot();
+    };
+
+    $("btn-logout").onclick = async () => {
+      await sb.auth.signOut();
+      state.member = null;
+      show($("screen-app"), false);
+      show($("screen-auth"), true);
+    };
+
+    async function loadMember(email) {
+      const { data } = await sb.from("members").select("*").eq("email", email).maybeSingle();
+      if (data) return data;
+      const { data: inserted } = await sb.from("members").insert({
+        full_name: email.split("@")[0],
+        email,
+        role: "member"
+      }).select().single();
+      return inserted;
+    }
+
+    async function boot() {
+      const { data: sess } = await sb.auth.getSession();
+      if (!sess.session) {
+        show($("screen-app"), false);
+        show($("screen-auth"), true);
         return;
       }
-      if (!data || data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-slate-500">Belum ada data unit. Klik <strong>Unit Baru</strong> untuk menambahkan.</td></tr>`;
-        updateStats(0, 0, 0);
-        return;
-      }
+      state.member = await loadMember(sess.session.user.email);
+      $("whoami").textContent = (state.member?.full_name || sess.session.user.email) + " · " + (state.member?.role || "member");
+      show($("screen-auth"), false);
+      show($("screen-app"), true);
+      await refreshAll();
+      listenChat();
+    }
 
-      const total     = data.length;
-      const available = data.filter(d => d.status === 'available').length;
-      const borrowed  = total - available;
-      updateStats(total, available, borrowed);
+    async function refreshAll() {
+      const [c, l, s, m, ch] = await Promise.all([
+        sb.from("computers").select("*").order("id"),
+        sb.from("loans").select("*"),
+        sb.from("services").select("*"),
+        sb.from("members").select("*").order("full_name"),
+        sb.from("chat_messages").select("*").order("created_at", { ascending: true }).limit(200)
+      ]);
+      state.computers = c.data || [];
+      state.loans = l.data || [];
+      state.services = s.data || [];
+      state.members = m.data || [];
+      state.messages = ch.data || [];
+      renderAll();
+    }
 
-      tbody.innerHTML = data.map(item => `
-        <tr class="hover:bg-slate-800/50 transition group">
-          <td class="py-3 px-4 font-bold text-indigo-400">${escHtml(item.code)}</td>
-          <td class="py-3 px-4">
-            <!-- FIX #2: Tombol toggle status -->
-            <button onclick="toggleStatus(${item.id}, '${item.status}')"
-              title="Klik untuk ubah status"
-              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition hover:opacity-80 ${item.status === 'available' ? 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20' : 'bg-amber-500/10 text-amber-400 hover:bg-amber-500/20'}">
-              <span class="w-1.5 h-1.5 rounded-full ${item.status === 'available' ? 'bg-emerald-400' : 'bg-amber-400'}"></span>
-              ${item.status === 'available' ? 'Tersedia' : 'Dipinjam'}
-              <i class="fa-solid fa-arrows-rotate text-[9px] opacity-60 group-hover:opacity-100"></i>
-            </button>
-          </td>
-          <td class="py-3 px-4">
-            <div class="flex flex-wrap gap-1">
-              ${renderBadge('CPU', item.comp)}
-              ${renderBadge('MON', item.mon)}
-              ${renderBadge('MOU', item.mou)}
-              ${renderBadge('KEY', item.key)}
-              ${renderBadge('UPS', item.ups)}
-            </div>
-          </td>
-          <td class="py-3 px-4 text-slate-300 max-w-xs truncate" title="${escHtml(item.spec || '')}">${escHtml(item.spec) || '<span class="text-slate-600">—</span>'}</td>
-          <td class="py-3 px-4 text-center">
-            <button onclick="deleteUnit(${item.id}, '${escHtml(item.code)}')" class="text-slate-500 hover:text-rose-400 p-1.5 transition" title="Hapus unit">
-              <i class="fa-solid fa-trash-can"></i>
-            </button>
+    function fillUnitSelects() {
+      const opts = state.computers.map((x) => `<option value="${x.id}">${x.id} — ${x.model}</option>`).join("");
+      ["chk-unit","loan-unit","svc-unit"].forEach((id) => { $(id).innerHTML = opts; });
+    }
+
+    function renderAll() {
+      fillUnitSelects();
+      $("home-cards").innerHTML = [
+        ["Unit", state.computers.length, "fa-computer"],
+        ["Tersedia", state.computers.filter((x) => x.status === "available").length, "fa-circle-check"],
+        ["Pinjaman aktif", state.loans.filter((x) => x.status !== "returned").length, "fa-handshake"],
+        ["Tiket servis", state.services.length, "fa-screwdriver-wrench"]
+      ].map(([t, n, i]) => `
+        <div class="rounded-2xl p-4 shadow-metal bg-white">
+          <p class="text-xs text-steel"><i class="fa-solid ${i} mr-1"></i>${t}</p>
+          <p class="font-display text-2xl mt-1">${n}</p>
+        </div>`).join("");
+
+      $("tbl-computers").innerHTML = state.computers.map((x) => `
+        <tr class="border-t border-platinum-200">
+          <td class="p-3 font-semibold">${esc(x.id)}</td>
+          <td>${esc(x.model)}</td>
+          <td>${esc(x.type)}</td>
+          <td><span class="px-2 py-0.5 rounded bg-platinum-200 text-xs">${esc(x.status)}</span></td>
+          <td>${esc(x.condition || "")}</td>
+          <td class="p-3 text-right">
+            <button class="text-steel" onclick="removeComputer('${esc(x.id)}')"><i class="fa-solid fa-trash"></i></button>
           </td>
         </tr>
-      `).join('');
+        <tr class="text-xs text-steel"><td></td><td colspan="5" class="pb-2">${esc(x.specs || "")}</td></tr>`).join("") || `<tr><td class="p-4" colspan="6">Belum ada data.</td></tr>`;
+
+      $("tbl-loans").innerHTML = state.loans.map((x) => `
+        <tr class="border-t border-platinum-200">
+          <td class="p-3">${esc(x.unit_id)}</td>
+          <td>${esc(x.borrower)}</td>
+          <td>${esc(x.purpose)}</td>
+          <td>${esc(x.status)}</td>
+          <td class="p-3">${x.status !== "returned" ? `<button class="text-xs px-2 py-1 rounded bg-charcoal-900 text-white" onclick="returnLoan('${x.id}','${esc(x.unit_id)}')">Kembalikan</button>` : ""}</td>
+        </tr>`).join("") || `<tr><td class="p-4" colspan="5">Belum ada peminjaman.</td></tr>`;
+
+      $("svc-list").innerHTML = state.services.map((x) => `
+        <article class="bg-white rounded-2xl p-4 shadow-metal">
+          <div class="flex justify-between gap-3">
+            <h5 class="font-semibold">${esc(x.unit_id || "Unit")} · ${esc(x.problem)}</h5>
+            <select onchange="setServiceStatus('${x.id}', this.value)" class="bbm-input rounded px-2 py-1 text-xs">
+              ${["open","in_progress","done"].map((s) => `<option ${s===x.status?"selected":""}>${s}</option>`).join("")}
+            </select>
+          </div>
+          <p class="text-sm text-steel mt-1">${esc(x.technician || "-")} · ${esc(x.notes || "")}</p>
+        </article>`).join("") || `<p class="text-steel">Belum ada tiket servis.</p>`;
+
+      renderChat();
+      renderCharts();
     }
 
-    function updateStats(total, available, borrowed) {
-      document.getElementById('statTotal').innerText     = total;
-      document.getElementById('statAvailable').innerText = available;
-      document.getElementById('statBorrowed').innerText  = borrowed;
+    function esc(s) {
+      return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[c]));
     }
 
-    // ============================================================
-    // FIX #2: Toggle Status (Tersedia ↔ Dipinjam)
-    // ============================================================
-    async function toggleStatus(id, currentStatus) {
-      const newStatus = currentStatus === 'available' ? 'borrowed' : 'available';
-      const { error } = await _supabase.from('computers').update({ status: newStatus }).eq('id', id);
-      if (error) {
-        showToast('Gagal ubah status: ' + error.message, 'error');
-      } else {
-        showToast(`Status diubah ke ${newStatus === 'available' ? 'Tersedia' : 'Dipinjam'}`, 'success');
-        // Realtime akan otomatis refresh, tapi kita fetch manual sebagai fallback
-        fetchComputers();
-      }
-    }
-
-    // ============================================================
-    // Save Unit
-    // ============================================================
-    async function saveUnit(e) {
+    $("form-computer").onsubmit = async (e) => {
       e.preventDefault();
-      const btn = document.getElementById('btnSave');
-      btn.disabled = true;
-      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...`;
-
-      const payload = {
-        code:   document.getElementById('pcCode').value.trim(),
-        spec:   document.getElementById('pcSpec').value.trim(),
-        comp:   document.getElementById('chkComp').checked,
-        mon:    document.getElementById('chkMon').checked,
-        mou:    document.getElementById('chkMou').checked,
-        key:    document.getElementById('chkKey').checked,
-        ups:    document.getElementById('chkUps').checked,
-        status: 'available'
+      const row = {
+        id: $("pc-id").value.trim(),
+        model: $("pc-model").value.trim(),
+        type: $("pc-type").value.trim(),
+        specs: $("pc-specs").value.trim(),
+        status: $("pc-status").value,
+        condition: $("pc-condition").value.trim() || "Baik"
       };
+      const { error } = await sb.from("computers").upsert(row);
+      if (error) return alert(error.message);
+      $("modal-computer").close();
+      e.target.reset();
+      await refreshAll();
+    };
 
-      const { error } = await _supabase.from('computers').insert([payload]);
-      btn.disabled = false;
-      btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Simpan`;
+    window.removeComputer = async (id) => {
+      if (!confirm("Hapus unit " + id + "?")) return;
+      const { error } = await sb.from("computers").delete().eq("id", id);
+      if (error) return alert(error.message);
+      await refreshAll();
+    };
 
-      if (error) {
-        showToast('Gagal menyimpan: ' + error.message, 'error');
-      } else {
-        showToast(`Unit ${payload.code} berhasil ditambahkan!`, 'success');
-        closeModal();
-        document.getElementById('addUnitForm').reset();
-        fetchComputers();
-      }
-    }
-
-    // ============================================================
-    // Delete Unit
-    // ============================================================
-    async function deleteUnit(id, code) {
-      if (!confirm(`Hapus unit ${code}? Tindakan ini tidak bisa dibatalkan.`)) return;
-      const { error } = await _supabase.from('computers').delete().eq('id', id);
-      if (error) {
-        showToast('Gagal menghapus: ' + error.message, 'error');
-      } else {
-        showToast(`Unit ${code} berhasil dihapus.`, 'success');
-        fetchComputers();
-      }
-    }
-
-    // ============================================================
-    // Chat Functions — FIX #3: Input nama pengirim
-    // ============================================================
-    async function fetchMessages() {
-      const container = document.getElementById('chatContainer');
-      if (!_supabase) return;
-
-      const { data, error } = await _supabase
-        .from('messages').select('*').order('created_at', { ascending: true });
-
-      if (error) {
-        container.innerHTML = `<div class="text-center text-rose-400"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Gagal memuat chat: ${error.message}</div>`;
-        return;
-      }
-      if (!data || data.length === 0) {
-        container.innerHTML = `<div class="text-center text-slate-500 mt-8">Belum ada pesan. Mulai obrolan! 💬</div>`;
-        return;
-      }
-
-      container.innerHTML = data.map(m => {
-        const time = new Date(m.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-        const date = new Date(m.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
-        return `
-          <div class="flex flex-col mb-2">
-            <div class="flex items-center gap-2 mb-1">
-              <div class="w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center text-[10px] font-bold text-white">
-                ${escHtml(m.sender).charAt(0).toUpperCase()}
-              </div>
-              <span class="text-xs font-bold text-indigo-400">${escHtml(m.sender)}</span>
-              <span class="text-[10px] text-slate-500">${date} · ${time}</span>
-            </div>
-            <div class="ml-8 bg-slate-800 text-slate-200 text-sm p-3 rounded-lg border border-slate-700/50 shadow-sm max-w-xl">
-              ${escHtml(m.message)}
-            </div>
-          </div>`;
-      }).join('');
-      container.scrollTop = container.scrollHeight;
-    }
-
-    async function sendMessage(e) {
+    $("form-loan").onsubmit = async (e) => {
       e.preventDefault();
-      const input  = document.getElementById('chatInput');
-      const sender = document.getElementById('chatSender').value.trim() || 'Anonymous';
-      const text   = input.value.trim();
-      if (!text || !_supabase) return;
+      const unit_id = $("loan-unit").value;
+      const row = {
+        unit_id,
+        borrower: $("loan-borrower").value.trim(),
+        purpose: $("loan-purpose").value.trim(),
+        status: "active"
+      };
+      const { error } = await sb.from("loans").insert(row);
+      if (error) return alert(error.message);
+      await sb.from("computers").update({ status: "borrowed" }).eq("id", unit_id);
+      $("modal-loan").close();
+      e.target.reset();
+      await refreshAll();
+    };
 
-      input.value = '';
-      const { error } = await _supabase.from('messages').insert([{ sender, message: text }]);
-      if (error) {
-        showToast('Gagal kirim pesan: ' + error.message, 'error');
-        input.value = text; // kembalikan teks jika gagal
+    window.returnLoan = async (id, unit) => {
+      const { error } = await sb.from("loans").update({ status: "returned" }).eq("id", id);
+      if (error) return alert(error.message);
+      await sb.from("computers").update({ status: "available" }).eq("id", unit);
+      await refreshAll();
+    };
+
+    $("form-checking").onsubmit = async (e) => {
+      e.preventDefault();
+      const unit_id = $("chk-unit").value;
+      const condition = $("chk-condition").value;
+      const status = $("chk-status").value;
+      const notes = $("chk-notes").value.trim();
+      const { error: uErr } = await sb.from("computers").update({ condition, status }).eq("id", unit_id);
+      if (uErr) return alert(uErr.message);
+      const { error } = await sb.from("services").insert({
+        unit_id,
+        problem: "[CHECKING] " + condition,
+        technician: state.member?.full_name || "staff",
+        notes: notes || "Pengecekan rutin DCC",
+        status: status === "maintenance" ? "open" : "done"
+      });
+      if (error) return alert(error.message);
+      $("chk-notes").value = "";
+      await refreshAll();
+      alert("Pengecekan tersimpan.");
+    };
+
+    $("form-service").onsubmit = async (e) => {
+      e.preventDefault();
+      const unit_id = $("svc-unit").value;
+      const { error } = await sb.from("services").insert({
+        unit_id,
+        problem: $("svc-problem").value.trim(),
+        technician: $("svc-tech").value.trim() || state.member?.full_name,
+        notes: $("svc-notes").value.trim(),
+        status: $("svc-status").value
+      });
+      if (error) return alert(error.message);
+      await sb.from("computers").update({ status: "maintenance" }).eq("id", unit_id);
+      $("modal-service").close();
+      e.target.reset();
+      await refreshAll();
+    };
+
+    window.setServiceStatus = async (id, status) => {
+      const { error } = await sb.from("services").update({ status }).eq("id", id);
+      if (error) return alert(error.message);
+      await refreshAll();
+    };
+
+    function isPing(text) { return /PING!?/i.test(text || ""); }
+
+    // EMOJI, REPLY, ATTACHMENT & EDIT CHAT
+    const emojis = ["😀","😃","😄","😁","😅","😂","🤣","😊","😇","🙂","🙃","😉","😌","😍","🥰","😘","😗","😙","😚","😋","😛","😝","😜","🤪","🤨","🧐","🤓","😎","🤩","🥳","👍","👎","👏","🙌","🤝","🙏","❤️","🧡","💛","💚","💙","🔥","⭐","✨","💡","💻"];
+    
+    $("btn-emoji").onclick = (e) => {
+      e.stopPropagation();
+      const picker = $("emoji-picker");
+      picker.innerHTML = emojis.map(em => `<button type="button" class="hover:scale-125 transition" onclick="insertEmoji('${em}')">${em}</button>`).join("");
+      picker.classList.toggle("hide");
+    };
+
+    window.insertEmoji = (em) => {
+      const input = $("chat-text");
+      input.value += em;
+      input.focus();
+    };
+
+    document.addEventListener("click", () => {
+      $("emoji-picker").classList.add("hide");
+    });
+
+    $("cancel-reply").onclick = () => {
+      state.replyingTo = null;
+      $("reply-preview").classList.add("hide");
+    };
+
+    window.setReply = (id, sender, text) => {
+      state.replyingTo = { id, sender, text };
+      $("reply-to-sender").textContent = sender;
+      $("reply-to-text").textContent = text;
+      $("reply-preview").classList.remove("hide");
+      $("chat-text").focus();
+    };
+
+    $("btn-attach").onclick = () => $("chat-file").click();
+
+    $("chat-file").onchange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (uploadEvent) => {
+        const base64 = uploadEvent.target.result;
+        const isImage = file.type.startsWith("image/");
+        state.attachmentData = {
+          url: base64,
+          name: file.name,
+          type: isImage ? "image" : "document"
+        };
+        $("attach-filename").textContent = file.name;
+        if (isImage) {
+          $("attach-thumb").src = base64;
+          $("attach-thumb").classList.remove("hidden");
+          $("attach-icon").classList.add("hidden");
+        } else {
+          $("attach-thumb").classList.add("hidden");
+          $("attach-icon").classList.remove("hidden");
+        }
+        $("attach-preview").classList.remove("hide");
+      };
+      reader.readAsDataURL(file);
+    };
+
+    $("cancel-attach").onclick = () => {
+      state.attachmentData = null;
+      $("attach-preview").classList.add("hide");
+      $("chat-file").value = "";
+    };
+
+    window.editMessage = async (id, currentText) => {
+      const newText = prompt("Edit pesan:", currentText);
+      if (newText === null || newText.trim() === "" || newText === currentText) return;
+      const { error } = await sb.from("chat_messages").update({ text: newText.trim(), is_edited: true }).eq("id", id);
+      if (error) alert(error.message);
+    };
+
+    window.deleteMessage = async (id) => {
+      if (!confirm("Hapus pesan ini?")) return;
+      const { error } = await sb.from("chat_messages").delete().eq("id", id);
+      if (error) alert(error.message);
+    };
+
+    function renderChat() {
+      const me = state.member?.full_name;
+      let rows = state.messages;
+      if (state.filterSender) {
+        rows = rows.filter((m) => m.sender === state.filterSender || m.sender === me);
+        $("chat-title").textContent = state.filterSender;
+        $("chat-sub").textContent = "Percakapan terpilih";
+      } else {
+        $("chat-title").textContent = "DCC Chat Room";
+        $("chat-sub").textContent = "BBM · " + state.members.length + " member";
       }
-      // Realtime akan auto-refresh
+
+      $("chat-stream").innerHTML = rows.map((m) => {
+        const mine = m.sender === me;
+        const senderMember = state.members.find(mem => mem.full_name === m.sender);
+        const avatarUrl = senderMember?.avatar_url || `https://ui-avatars.com/api/?background=2B2F33&color=eee&name=` + encodeURIComponent(m.sender || "DCC");
+
+        let replyHtml = "";
+        if (m.reply_to) {
+          replyHtml = `<div class="bg-black/10 border-l-2 border-ping p-1.5 mb-1 rounded text-xs">
+            <span class="font-semibold">${esc(m.reply_to.sender)}</span>
+            <p class="truncate opacity-80">${esc(m.reply_to.text)}</p>
+          </div>`;
+        }
+
+        let attachHtml = "";
+        if (m.attachment_url) {
+          if (m.attachment_type === "image") {
+            attachHtml = `<div class="mb-2"><img src="${m.attachment_url}" class="rounded-lg max-h-48 w-full object-cover cursor-pointer" onclick="window.open('${m.attachment_url}')" alt="photo" /></div>`;
+          } else {
+            attachHtml = `<div class="mb-2 bg-black/10 p-2 rounded flex items-center gap-2 text-xs">
+              <i class="fa-solid fa-file-arrow-down text-base"></i>
+              <a href="${m.attachment_url}" download="${esc(m.attachment_name)}" class="underline truncate font-semibold">${esc(m.attachment_name)}</a>
+            </div>`;
+          }
+        }
+
+        const actionsHtml = `<div class="opacity-0 group-hover:opacity-100 transition flex items-center gap-2 mt-1 text-[11px] text-steel justify-end">
+          <button type="button" onclick="setReply('${m.id}','${esc(m.sender)}','${esc(m.text).replace(/'/g, "\\'")}')" class="hover:underline"><i class="fa-solid fa-reply"></i> Balas</button>
+          ${mine ? `<button type="button" onclick="editMessage('${m.id}','${esc(m.text).replace(/'/g, "\\'")}')" class="hover:underline"><i class="fa-solid fa-pen"></i> Edit</button>` : ""}
+          ${mine ? `<button type="button" onclick="deleteMessage('${m.id}')" class="hover:text-red-600"><i class="fa-solid fa-trash"></i> Hapus</button>` : ""}
+        </div>`;
+
+        const avatarImg = !mine ? `<img src="${avatarUrl}" class="h-7 w-7 rounded-full object-cover mr-2 mb-1 bg-charcoal-800 flex-shrink-0 shadow-sm" alt="avatar" />` : "";
+
+        if (isPing(m.text)) {
+          return `<div class="flex ${mine?"justify-end":"justify-start"} group items-end">
+            ${avatarImg}
+            <div class="ping-card text-white rounded-2xl px-4 py-3 max-w-[80%] text-center font-display tracking-widest relative">
+              ${replyHtml}
+              ${attachHtml}
+              PING!<div class="text-[10px] tracking-normal mt-1 opacity-90">${esc(m.sender)} ${m.is_edited?'<span class="italic">(edited)</span>':''}</div>
+              ${actionsHtml}
+            </div></div>`;
+        }
+
+        return `<div class="flex ${mine?"justify-end":"justify-start"} group items-end">
+          ${avatarImg}
+          <div class="${mine?"bubble-out":"bubble-in"} rounded-2xl px-3 py-2 max-w-[80%] shadow relative">
+            ${replyHtml}
+            ${attachHtml}
+            <p class="text-[10px] opacity-70 mb-0.5">${esc(m.sender)} · ${esc(m.role || "")}</p>
+            <p class="break-words">${esc(m.text)} ${m.is_edited?'<span class="text-[10px] opacity-60 italic">(edited)</span>':''}</p>
+            ${actionsHtml}
+          </div></div>`;
+      }).join("");
+      scrollChat();
     }
 
-    // ============================================================
-    // FIX #4: Realtime untuk KEDUA tabel (computers & messages)
-    // ============================================================
-    function setupRealtime() {
-      if (!_supabase) return;
+    function scrollChat() {
+      const el = $("chat-stream");
+      el.scrollTop = el.scrollHeight;
+    }
 
-      // Realtime untuk tabel computers
-      _supabase.channel('realtime:computers')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'computers' }, () => {
-          const isComputersVisible = !document.getElementById('viewComputers').classList.contains('hidden');
-          if (isComputersVisible) fetchComputers();
-        })
-        .subscribe(status => {
-          updateRealtimeStatus(status);
-        });
+    async function sendChat(text) {
+      const payload = {
+        id: Date.now(),
+        sender: state.member?.full_name || "DCC",
+        role: state.member?.role || "member",
+        text: text || (state.attachmentData ? "[" + state.attachmentData.name + "]" : ""),
+        reply_to: state.replyingTo ? { id: state.replyingTo.id, sender: state.replyingTo.sender, text: state.replyingTo.text } : null,
+        attachment_url: state.attachmentData?.url || null,
+        attachment_name: state.attachmentData?.name || null,
+        attachment_type: state.attachmentData?.type || null,
+        is_edited: false
+      };
+      const { error } = await sb.from("chat_messages").insert(payload);
+      if (error) alert(error.message);
+      
+      state.replyingTo = null;
+      state.attachmentData = null;
+      $("reply-preview").classList.add("hide");
+      $("attach-preview").classList.add("hide");
+      $("chat-file").value = "";
+    }
 
-      // Realtime untuk tabel messages
-      _supabase.channel('realtime:messages')
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, () => {
-          const isChatVisible = !document.getElementById('viewChat').classList.contains('hidden');
-          if (isChatVisible) {
-            fetchMessages();
-          } else {
-            // Tampilkan badge notifikasi di sidebar
-            document.getElementById('chatBadge').classList.remove('hidden');
+    $("form-chat").onsubmit = async (e) => {
+      e.preventDefault();
+      const text = $("chat-text").value.trim();
+      if (!text && !state.attachmentData) return;
+      $("chat-text").value = "";
+      await sendChat(text);
+    };
+
+    $("btn-menu").onclick = (e) => {
+      e.stopPropagation();
+      $("chat-menu").classList.toggle("hide");
+    };
+    document.body.addEventListener("click", () => $("chat-menu").classList.add("hide"));
+
+    $("menu-ping").onclick = async () => {
+      $("chat-menu").classList.add("hide");
+      await sendChat("PING!");
+    };
+    $("menu-select").onclick = () => {
+      $("chat-menu").classList.add("hide");
+      $("select-list").innerHTML = state.members.map((m) => `
+        <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-platinum-200" onclick="pickChat('${esc(m.full_name)}')">
+          ${esc(m.full_name)} <span class="text-xs text-steel">${esc(m.email)}</span>
+        </button>`).join("");
+      $("modal-select").showModal();
+    };
+    $("select-room").onclick = () => { state.filterSender = null; $("modal-select").close(); renderChat(); };
+    window.pickChat = (name) => { state.filterSender = name; $("modal-select").close(); renderChat(); };
+
+    $("menu-profile").onclick = () => {
+      $("chat-menu").classList.add("hide");
+      $("prof-name").value = state.member?.full_name || "";
+      $("prof-preview").src = state.member?.avatar_url || "https://ui-avatars.com/api/?background=2B2F33&color=eee&name=" + encodeURIComponent(state.member?.full_name || "DCC");
+      $("modal-profile").showModal();
+    };
+
+    $("prof-file").onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      $("prof-preview").src = await compressImage(file);
+    };
+
+    function compressImage(file) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        const url = URL.createObjectURL(file);
+        img.onload = () => {
+          const c = document.createElement("canvas");
+          const size = 160;
+          c.width = size; c.height = size;
+          const ctx = c.getContext("2d");
+          ctx.drawImage(img, 0, 0, size, size);
+          resolve(c.toDataURL("image/jpeg", 0.7));
+          URL.revokeObjectURL(url);
+        };
+        img.src = url;
+      });
+    }
+
+    $("form-profile").onsubmit = async (e) => {
+      e.preventDefault();
+      if (!state.member) return;
+      const full_name = $("prof-name").value.trim();
+      const avatar_url = $("prof-preview").src;
+      const { error } = await sb.from("members").update({ full_name, avatar_url }).eq("id", state.member.id);
+      if (error) return alert(error.message);
+      state.member.full_name = full_name;
+      state.member.avatar_url = avatar_url;
+      $("whoami").textContent = full_name + " · " + (state.member.role || "member");
+      $("modal-profile").close();
+      await refreshAll();
+    };
+
+    function listenChat() {
+      sb.channel("dcc-chat")
+        .on("postgres_changes", { event: "*", schema: "public", table: "chat_messages" }, async () => {
+          const { data } = await sb.from("chat_messages").select("*").order("created_at", { ascending: true }).limit(200);
+          if (data) {
+            state.messages = data;
+            renderChat();
           }
         })
         .subscribe();
     }
 
-    function updateRealtimeStatus(status) {
-      const el   = document.getElementById('realtimeStatus');
-      const dot  = el.querySelector('span:first-child');
-      const text = el.querySelector('span:last-child');
-
-      if (status === 'SUBSCRIBED') {
-        dot.className  = 'w-2 h-2 rounded-full bg-emerald-400';
-        text.innerText = 'Realtime aktif';
-        el.classList.remove('text-slate-500');
-        el.classList.add('text-emerald-500');
-      } else if (status === 'CHANNEL_ERROR' || status === 'CLOSED') {
-        dot.className  = 'w-2 h-2 rounded-full bg-rose-400';
-        text.innerText = 'Realtime terputus';
-        el.classList.remove('text-slate-500', 'text-emerald-500');
-        el.classList.add('text-rose-500');
-      }
+    function renderCharts() {
+      const statusCount = {};
+      const typeCount = {};
+      state.computers.forEach((c) => {
+        statusCount[c.status] = (statusCount[c.status] || 0) + 1;
+        typeCount[c.type] = (typeCount[c.type] || 0) + 1;
+      });
+      const metal = ["#24282C", "#6E7B86", "#A8AEB5", "#FF6A00", "#3A4046"];
+      draw("home-chart", "bar", {
+        labels: Object.keys(statusCount),
+        datasets: [{ label: "Unit per status", data: Object.values(statusCount), backgroundColor: metal }]
+      });
+      draw("chart-status", "doughnut", {
+        labels: Object.keys(statusCount),
+        datasets: [{ data: Object.values(statusCount), backgroundColor: metal }]
+      });
+      draw("chart-type", "pie", {
+        labels: Object.keys(typeCount),
+        datasets: [{ data: Object.values(typeCount), backgroundColor: metal }]
+      });
+      draw("chart-ops", "bar", {
+        labels: ["Komputer", "Pinjaman", "Servis", "Member"],
+        datasets: [{
+          label: "Rekap DCC",
+          data: [state.computers.length, state.loans.length, state.services.length, state.members.length],
+          backgroundColor: ["#24282C", "#6E7B86", "#FF6A00", "#A8AEB5"]
+        }]
+      });
     }
 
-    // ============================================================
-    // Utility: Escape HTML untuk mencegah XSS
-    // ============================================================
-    function escHtml(str) {
-      if (!str) return '';
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
+    function draw(id, type, data) {
+      const canvas = $(id);
+      if (!canvas) return;
+      if (state.charts[id]) state.charts[id].destroy();
+      state.charts[id] = new Chart(canvas, {
+        type,
+        data,
+        options: { plugins: { legend: { labels: { font: { family: "IBM Plex Sans" } } } } }
+      });
     }
 
-    // ============================================================
-    // Init
-    // ============================================================
-    document.addEventListener('DOMContentLoaded', () => {
-      fetchComputers();
-      setupRealtime();
-    });
+    boot();
   </script>
 </body>
 </html>
