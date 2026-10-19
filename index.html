@@ -551,15 +551,16 @@
     </form>
   </dialog>
 
-  <!-- MODAL RETURN WITH CHECKLIST -->
+  <!-- MODAL RETURN WITH CHECKLIST & PURPOSE -->
   <dialog id="modal-return" class="glass-card rounded-3xl p-6 w-[min(92vw,480px)] shadow-2xl m-auto">
     <form id="form-return" class="space-y-4">
       <h4 class="text-lg font-bold">Cek & Pengembalian Unit Komputer</h4>
       <input type="hidden" id="ret-loan-id" />
       <input type="hidden" id="ret-unit-id" />
-      <div>
-        <p class="text-xs opacity-80 mb-1">Unit PC: <span id="ret-unit-label" class="font-semibold custom-accent-text"></span></p>
-        <p class="text-xs opacity-80 mb-3">Peminjam: <span id="ret-borrower-label" class="font-semibold"></span></p>
+      <div class="space-y-1 bg-black/5 dark:bg-white/5 p-3 rounded-2xl text-xs">
+        <p class="opacity-80">Unit PC: <span id="ret-unit-label" class="font-semibold custom-accent-text text-sm"></span></p>
+        <p class="opacity-80">Peminjam: <span id="ret-borrower-label" class="font-semibold text-sm"></span></p>
+        <p class="opacity-80">Keperluan: <span id="ret-purpose-label" class="font-semibold italic"></span></p>
       </div>
 
       <!-- CHECKLIST KELENGKAPAN SAAT KEMBALI -->
@@ -907,7 +908,7 @@
           <td>${esc(x.borrower)}</td>
           <td>${esc(x.purpose)}</td>
           <td>${esc(x.status)}</td>
-          <td class="p-4 text-right">${x.status !== "returned" ? `<button class="text-xs px-3 py-1.5 rounded-xl custom-accent-bg text-white font-semibold transition shadow-md" onclick="openReturnModal('${x.id}','${esc(x.unit_id)}','${esc(x.borrower)}')">Kembalikan</button>` : "-"}</td>
+          <td class="p-4 text-right">${x.status !== "returned" ? `<button class="text-xs px-3 py-1.5 rounded-xl custom-accent-bg text-white font-semibold transition shadow-md" onclick="openReturnModal('${x.id}','${esc(x.unit_id)}','${esc(x.borrower)}','${esc(x.purpose)}')">Kembalikan</button>` : "-"}</td>
         </tr>`).join("") || `<tr><td class="p-6 text-center opacity-70" colspan="5">Belum ada peminjaman.</td></tr>`;
 
       $("svc-list").innerHTML = state.services.map((x) => `
@@ -993,11 +994,12 @@
       await refreshAll();
     };
 
-    window.openReturnModal = (id, unit, borrower) => {
+    window.openReturnModal = (id, unit, borrower, purpose) => {
       $("ret-loan-id").value = id;
       $("ret-unit-id").value = unit;
       $("ret-unit-label").textContent = unit;
       $("ret-borrower-label").textContent = borrower;
+      $("ret-purpose-label").textContent = purpose;
       ["ret-komputer", "ret-monitor", "ret-mouse", "ret-keyboard", "ret-ups"].forEach(chkId => $(chkId).checked = true);
       $("modal-return").showModal();
     };
