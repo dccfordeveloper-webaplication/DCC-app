@@ -434,7 +434,7 @@
     </div>
   </dialog>
 
-  <!-- MODAL COMPUTER (SIMPLIFIED: KODE PC, STATUS, & KELENGKAPAN) -->
+  <!-- MODAL COMPUTER -->
   <dialog id="modal-computer" class="glass-card rounded-3xl p-6 w-[min(92vw,480px)] shadow-2xl m-auto">
     <form id="form-computer" class="space-y-4">
       <h4 class="text-lg font-bold">Tambah / Perbarui Unit Komputer</h4>
@@ -505,10 +505,10 @@
     </form>
   </dialog>
 
-  <!-- MODAL LOAN -->
+  <!-- MODAL LOAN (WITH CHECKLIST PERIPHERALS) -->
   <dialog id="modal-loan" class="glass-card rounded-3xl p-6 w-[min(92vw,480px)] shadow-2xl m-auto">
     <form id="form-loan" class="space-y-4">
-      <h4 class="text-lg font-bold">Peminjaman Baru</h4>
+      <h4 class="text-lg font-bold">Peminjaman Baru & Cek Kelengkapan</h4>
       <div>
         <label class="block text-xs font-medium mb-1 opacity-80">Pilih Unit Komputer</label>
         <select id="loan-unit" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none"></select>
@@ -521,9 +521,32 @@
         <label class="block text-xs font-medium mb-1 opacity-80">Keperluan</label>
         <input id="loan-purpose" required placeholder="Keperluan peminjaman" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none" />
       </div>
+
+      <!-- CHECKLIST Kelengkapan Peminjaman -->
+      <div class="pt-2 border-t border-black/10 dark:border-white/10">
+        <label class="block text-xs font-semibold mb-2 opacity-90">Ceklis Komponen yang Dipinjam</label>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" id="loan-komputer" checked class="rounded app-input h-4 w-4" /> Komputer
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" id="loan-monitor" checked class="rounded app-input h-4 w-4" /> Monitor
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" id="loan-mouse" checked class="rounded app-input h-4 w-4" /> Mouse
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" id="loan-keyboard" checked class="rounded app-input h-4 w-4" /> Keyboard
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" id="loan-ups" checked class="rounded app-input h-4 w-4" /> UPS
+          </label>
+        </div>
+      </div>
+
       <div class="flex gap-2 justify-end pt-2">
         <button type="button" data-close class="px-4 py-2 text-xs opacity-70 hover:opacity-100">Batal</button>
-        <button class="px-4 py-2 custom-accent-bg text-white text-xs rounded-xl font-semibold shadow-md">Simpan</button>
+        <button class="px-4 py-2 custom-accent-bg text-white text-xs rounded-xl font-semibold shadow-md">Simpan Peminjaman</button>
       </div>
     </form>
   </dialog>
@@ -800,10 +823,10 @@
 
     function renderIndicator(st) {
       let color = 'bg-ios-green shadow-[0_0_8px_rgba(52,199,89,0.6)]';
-      let title = 'Normal / Utuh';
+      let title = 'Normal / Utuh / Tersedia';
       if (st === 'missing') {
         color = 'bg-ios-pink shadow-[0_0_8px_rgba(255,45,85,0.6)]';
-        title = 'Rusak / Tidak Ada';
+        title = 'Dipinjam / Rusak / Tidak Ada';
       } else if (st === 'service') {
         color = 'bg-ios-orange shadow-[0_0_8px_rgba(255,149,0,0.6)]';
         title = 'Dalam Servis';
@@ -898,15 +921,35 @@
     $("form-loan").onsubmit = async (e) => {
       e.preventDefault();
       const unit_id = $("loan-unit").value;
+      const borrower = $("loan-borrower").value.trim();
+      const purpose = $("loan-purpose").value.trim();
+
+      const kChecked = $("loan-komputer").checked;
+      const mChecked = $("loan-monitor").checked;
+      const moChecked = $("loan-mouse").checked;
+      const kbChecked = $("loan-keyboard").checked;
+      const upsChecked = $("loan-ups").checked;
+
       const row = {
         unit_id,
-        borrower: $("loan-borrower").value.trim(),
-        purpose: $("loan-purpose").value.trim(),
+        borrower,
+        purpose,
         status: "active"
       };
       const { error } = await sb.from("loans").insert(row);
       if (error) return alert(error.message);
-      await sb.from("computers").update({ status: "borrowed" }).eq("id", unit_id);
+
+      // Update computer status to 'borrowed' and update component indicators based on loan checklist
+      // Checked = 'missing' (red), Unchecked = 'ok' (green)
+      await sb.from("computers").update({ 
+        status: "borrowed",
+        komputer_st: kChecked ? 'missing' : 'ok',
+        monitor_st: mChecked ? 'missing' : 'ok',
+        mouse_st: moChecked ? 'missing' : 'ok',
+        keyboard_st: kbChecked ? 'missing' : 'ok',
+        ups_st: upsChecked ? 'missing' : 'ok'
+      }).eq("id", unit_id);
+
       $("modal-loan").close();
       e.target.reset();
       await refreshAll();
@@ -915,7 +958,15 @@
     window.returnLoan = async (id, unit) => {
       const { error } = await sb.from("loans").update({ status: "returned" }).eq("id", id);
       if (error) return alert(error.message);
-      await sb.from("computers").update({ status: "available" }).eq("id", unit);
+      // Reset computer status to available and all components back to normal (ok/green)
+      await sb.from("computers").update({ 
+        status: "available",
+        komputer_st: 'ok',
+        monitor_st: 'ok',
+        mouse_st: 'ok',
+        keyboard_st: 'ok',
+        ups_st: 'ok'
+      }).eq("id", unit);
       await refreshAll();
     };
 
