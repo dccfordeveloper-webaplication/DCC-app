@@ -220,13 +220,22 @@
         <!-- COMPUTERS -->
         <section id="view-computers" class="space-y-4 max-w-6xl mx-auto hide">
           <div class="flex items-center justify-between">
-            <h3 class="text-xl font-bold tracking-tight">Stok Komputer</h3>
+            <h3 class="text-xl font-bold tracking-tight">Stok Komputer & Kelengkapan</h3>
             <button data-open="modal-computer" class="px-4 py-2 rounded-xl custom-accent-bg text-white text-xs md:text-sm font-semibold shadow-lg transition flex items-center gap-2"><i class="fa-solid fa-plus"></i>Unit Baru</button>
           </div>
           <div class="glass-card rounded-3xl shadow-lg overflow-x-auto">
             <table class="w-full text-left text-sm">
               <thead class="text-xs uppercase tracking-wider">
-                <tr><th class="p-4">ID</th><th>Model</th><th>Tipe</th><th>Status</th><th>Kondisi</th><th class="text-right p-4">Aksi</th></tr>
+                <tr>
+                  <th class="p-4">Kode PC</th>
+                  <th>Status</th>
+                  <th class="text-center">Komputer</th>
+                  <th class="text-center">Monitor</th>
+                  <th class="text-center">Mouse</th>
+                  <th class="text-center">Keyboard</th>
+                  <th class="text-center">UPS</th>
+                  <th class="text-right p-4">Aksi</th>
+                </tr>
               </thead>
               <tbody id="tbl-computers"></tbody>
             </table>
@@ -300,7 +309,7 @@
           </div>
         </section>
 
-        <!-- CHAT ROOM (FIXED FIT & AUTO RESPONSIVE) -->
+        <!-- CHAT ROOM (LOCKED & STABLE) -->
         <section id="view-chat" class="hide flex flex-col h-[calc(100dvh-8rem)] md:h-[calc(100vh-6rem)] w-full max-w-4xl mx-auto glass-card rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl relative">
           <!-- CHAT HEADER -->
           <div class="bg-black/10 dark:bg-white/5 px-4 md:px-6 py-3 border-b border-black/10 dark:border-white/10 flex items-center justify-between shrink-0">
@@ -425,42 +434,91 @@
     </div>
   </dialog>
 
-  <!-- MODAL COMPUTER -->
-  <dialog id="modal-computer" class="glass-card rounded-3xl p-6 w-[min(92vw,480px)] shadow-2xl m-auto">
+  <!-- MODAL COMPUTER (UPDATED WITH PERIPHERALS INDICATORS) -->
+  <dialog id="modal-computer" class="glass-card rounded-3xl p-6 w-[min(92vw,500px)] shadow-2xl m-auto">
     <form id="form-computer" class="space-y-4">
-      <h4 class="text-lg font-bold">Unit Komputer</h4>
-      <div>
-        <label class="block text-xs font-medium mb-1 opacity-80">ID Unit</label>
-        <input id="pc-id" required placeholder="DCC-006" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none" />
+      <h4 class="text-lg font-bold">Tambah / Perbarui Unit Komputer</h4>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-medium mb-1 opacity-80">ID / Kode PC</label>
+          <input id="pc-id" required placeholder="DCC-006" class="w-full app-input rounded-xl px-3.5 py-2 text-base md:text-sm focus:outline-none" />
+        </div>
+        <div>
+          <label class="block text-xs font-medium mb-1 opacity-80">Model / Tipe</label>
+          <input id="pc-model" required placeholder="Asus ROG" class="w-full app-input rounded-xl px-3.5 py-2 text-base md:text-sm focus:outline-none" />
+        </div>
       </div>
-      <div>
-        <label class="block text-xs font-medium mb-1 opacity-80">Model / Tipe Komputer</label>
-        <input id="pc-model" required placeholder="Asus ROG / ThinkPad X1" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none" />
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-medium mb-1 opacity-80">Kategori</label>
+          <input id="pc-type" required placeholder="Laptop / Desktop" class="w-full app-input rounded-xl px-3.5 py-2 text-base md:text-sm focus:outline-none" />
+        </div>
+        <div>
+          <label class="block text-xs font-medium mb-1 opacity-80">Status Utama</label>
+          <select id="pc-status" class="w-full app-input rounded-xl px-3.5 py-2 text-base md:text-sm focus:outline-none">
+            <option value="available">available (Tersedia)</option>
+            <option value="borrowed">borrowed (Dipinjam)</option>
+            <option value="maintenance">maintenance (Servis)</option>
+          </select>
+        </div>
       </div>
-      <div>
-        <label class="block text-xs font-medium mb-1 opacity-80">Tipe</label>
-        <input id="pc-type" required placeholder="Laptop / Desktop" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none" />
-      </div>
+
       <div>
         <label class="block text-xs font-medium mb-1 opacity-80">Spesifikasi</label>
-        <input id="pc-specs" placeholder="Core i7, RAM 16GB, SSD 512GB" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none" />
+        <input id="pc-specs" placeholder="Core i7, RAM 16GB, SSD 512GB" class="w-full app-input rounded-xl px-3.5 py-2 text-base md:text-sm focus:outline-none" />
       </div>
-      <div>
-        <label class="block text-xs font-medium mb-1 opacity-80">Status</label>
-        <select id="pc-status" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none">
-          <option value="available">available</option>
-          <option value="borrowed">borrowed</option>
-          <option value="maintenance">maintenance</option>
-          <option value="checking">checking</option>
-        </select>
+
+      <!-- KELENGKAPAN LAMPU INDIKATOR -->
+      <div class="pt-2 border-t border-black/10 dark:border-white/10">
+        <label class="block text-xs font-semibold mb-2 opacity-90">Status Kelengkapan Perangkat (Indikator)</label>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs">
+          <div>
+            <span class="block opacity-75 mb-1">Komputer</span>
+            <select id="pc-komputer-st" class="w-full app-input rounded-lg px-2.5 py-1.5 focus:outline-none">
+              <option value="ok">🟢 Normal</option>
+              <option value="missing">🔴 Rusak/Tidak Ada</option>
+              <option value="service">🟡 Servis</option>
+            </select>
+          </div>
+          <div>
+            <span class="block opacity-75 mb-1">Monitor</span>
+            <select id="pc-monitor-st" class="w-full app-input rounded-lg px-2.5 py-1.5 focus:outline-none">
+              <option value="ok">🟢 Normal</option>
+              <option value="missing">🔴 Rusak/Tidak Ada</option>
+              <option value="service">🟡 Servis</option>
+            </select>
+          </div>
+          <div>
+            <span class="block opacity-75 mb-1">Mouse</span>
+            <select id="pc-mouse-st" class="w-full app-input rounded-lg px-2.5 py-1.5 focus:outline-none">
+              <option value="ok">🟢 Normal</option>
+              <option value="missing">🔴 Rusak/Tidak Ada</option>
+              <option value="service">🟡 Servis</option>
+            </select>
+          </div>
+          <div>
+            <span class="block opacity-75 mb-1">Keyboard</span>
+            <select id="pc-keyboard-st" class="w-full app-input rounded-lg px-2.5 py-1.5 focus:outline-none">
+              <option value="ok">🟢 Normal</option>
+              <option value="missing">🔴 Rusak/Tidak Ada</option>
+              <option value="service">🟡 Servis</option>
+            </select>
+          </div>
+          <div>
+            <span class="block opacity-75 mb-1">UPS</span>
+            <select id="pc-ups-st" class="w-full app-input rounded-lg px-2.5 py-1.5 focus:outline-none">
+              <option value="ok">🟢 Normal</option>
+              <option value="missing">🔴 Rusak/Tidak Ada</option>
+              <option value="service">🟡 Servis</option>
+            </select>
+          </div>
+        </div>
       </div>
-      <div>
-        <label class="block text-xs font-medium mb-1 opacity-80">Kondisi</label>
-        <input id="pc-condition" placeholder="Baik / Sangat Baik" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none" />
-      </div>
+
       <div class="flex gap-2 justify-end pt-2">
         <button type="button" data-close class="px-4 py-2 text-xs opacity-70 hover:opacity-100">Batal</button>
-        <button class="px-4 py-2 custom-accent-bg text-white text-xs rounded-xl font-semibold shadow-md">Simpan</button>
+        <button class="px-4 py-2 custom-accent-bg text-white text-xs rounded-xl font-semibold shadow-md">Simpan Unit</button>
       </div>
     </form>
   </dialog>
@@ -758,6 +816,19 @@
       ["chk-unit","loan-unit","svc-unit"].forEach((id) => { $(id).innerHTML = opts; });
     }
 
+    function renderIndicator(st) {
+      let color = 'bg-ios-green shadow-[0_0_8px_rgba(52,199,89,0.6)]';
+      let title = 'Normal / Utuh';
+      if (st === 'missing') {
+        color = 'bg-ios-pink shadow-[0_0_8px_rgba(255,45,85,0.6)]';
+        title = 'Rusak / Tidak Ada';
+      } else if (st === 'service') {
+        color = 'bg-ios-orange shadow-[0_0_8px_rgba(255,149,0,0.6)]';
+        title = 'Dalam Servis';
+      }
+      return `<div class="flex justify-center"><span class="h-3 w-3 rounded-full ${color} inline-block" title="${title}"></span></div>`;
+    }
+
     function renderAll() {
       fillUnitSelects();
       $("home-cards").innerHTML = [
@@ -773,15 +844,17 @@
 
       $("tbl-computers").innerHTML = state.computers.map((x) => `
         <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition">
-          <td class="p-4 font-semibold custom-accent-text">${esc(x.id)}</td>
-          <td>${esc(x.model)}</td>
-          <td>${esc(x.type)}</td>
-          <td><span class="px-2.5 py-1 rounded-full text-xs font-medium ${x.status === 'available' ? 'bg-ios-green/20 text-ios-green' : 'bg-ios-orange/20 text-ios-orange'}">${esc(x.status)}</span></td>
-          <td>${esc(x.condition || "-")}</td>
+          <td class="p-4 font-semibold custom-accent-text">${esc(x.id)}<br/><span class="text-[10px] opacity-70 font-normal">${esc(x.model)}</span></td>
+          <td><span class="px-2.5 py-1 rounded-full text-xs font-medium ${x.status === 'available' ? 'bg-ios-green/20 text-ios-green' : 'bg-ios-pink/20 text-ios-pink'}">${esc(x.status)}</span></td>
+          <td class="text-center">${renderIndicator(x.komputer_st || 'ok')}</td>
+          <td class="text-center">${renderIndicator(x.monitor_st || 'ok')}</td>
+          <td class="text-center">${renderIndicator(x.mouse_st || 'ok')}</td>
+          <td class="text-center">${renderIndicator(x.keyboard_st || 'ok')}</td>
+          <td class="text-center">${renderIndicator(x.ups_st || 'ok')}</td>
           <td class="p-4 text-right">
             <button class="opacity-70 hover:text-ios-pink p-1 transition" onclick="removeComputer('${esc(x.id)}')"><i class="fa-solid fa-trash"></i></button>
           </td>
-        </tr>`).join("") || `<tr><td class="p-6 text-center opacity-70" colspan="6">Belum ada data unit.</td></tr>`;
+        </tr>`).join("") || `<tr><td class="p-6 text-center opacity-70" colspan="8">Belum ada data unit.</td></tr>`;
 
       $("tbl-loans").innerHTML = state.loans.map((x) => `
         <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition">
@@ -819,7 +892,12 @@
         type: $("pc-type").value.trim(),
         specs: $("pc-specs").value.trim(),
         status: $("pc-status").value,
-        condition: $("pc-condition").value.trim() || "Baik"
+        condition: "Baik",
+        komputer_st: $("pc-komputer-st").value,
+        monitor_st: $("pc-monitor-st").value,
+        mouse_st: $("pc-mouse-st").value,
+        keyboard_st: $("pc-keyboard-st").value,
+        ups_st: $("pc-ups-st").value
       };
       const { error } = await sb.from("computers").upsert(row);
       if (error) return alert(error.message);
@@ -905,7 +983,7 @@
 
     function isPing(text) { return /PING!?/i.test(text || ""); }
 
-    // CHAT & EMOJI
+    // CHAT & EMOJI (LOCKED)
     const emojis = ["😀","😃","😄","😁","😅","😂","🤣","😊","😇","🙂","😉","😍","🥰","😘","😋","🤪","😎","🥳","👍","👎","👏","🤝","🙏","❤️","🔥","⭐","💡","💻"];
     
     $("btn-emoji").onclick = (e) => {
