@@ -54,7 +54,7 @@
     /* THEME CARD & MODAL STYLES */
     body.theme-light .glass-card, body.theme-light dialog { background: #ffffff !important; border: 1px solid rgba(0, 0, 0, 0.1); color: #1C1C1E !important; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
     body.theme-dark .glass-card, body.theme-dark dialog { background: #181b22 !important; border: 1px solid rgba(255, 255, 255, 0.12); color: #F2F2F7 !important; box-shadow: 0 15px 35px rgba(0,0,0,0.6); }
-    body.theme-custom .glass-card, body.theme-custom dialog { background: rgba(15, 23, 42, 0.92) !important; border: 1px solid rgba(255, 255, 255, 0.15); color: #f8fafc !important; box-shadow: 0 15px 35px rgba(0,0,0,0.6); }
+    body.theme-custom .glass-card, body.theme-custom dialog { background: rgba(15, 23, 42, 0.95) !important; border: 1px solid rgba(255, 255, 255, 0.15); color: #f8fafc !important; box-shadow: 0 15px 35px rgba(0,0,0,0.6); }
 
     /* THEME INPUT STYLES */
     body.theme-light .app-input { background: #f9f9fb !important; color: #1c1c1e !important; border: 1px solid #d1d1d6 !important; }
@@ -73,6 +73,11 @@
     body.theme-light .nav-item:not(.active) { color: #3A3A3C; }
     body.theme-dark .nav-item:not(.active) { color: #D1D5DB; }
     body.theme-custom .nav-item:not(.active) { color: #cbd5e1; }
+
+    .bottom-nav-btn.active { color: var(--active-accent, #007AFF) !important; }
+    body.theme-light .bottom-nav-btn:not(.active) { color: #8E8E93; }
+    body.theme-dark .bottom-nav-btn:not(.active) { color: #98989D; }
+    body.theme-custom .bottom-nav-btn:not(.active) { color: #94a3b8; }
 
     .custom-accent-bg { background-color: var(--cust-accent); }
     .custom-accent-text { color: var(--cust-accent); }
@@ -145,11 +150,11 @@
   </section>
 
   <!-- APP MAIN SCREEN -->
-  <section id="screen-app" class="hide min-h-screen flex flex-col">
+  <section id="screen-app" class="hide min-h-screen flex flex-col pb-16 md:pb-0">
     <!-- IOS HEADER NAVBAR -->
     <header class="glass glass-card border-b sticky top-0 z-30 h-16 px-4 md:px-8 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <button id="btn-toggle-sidebar" class="md:hidden p-2 rounded-xl hover:bg-black/10 dark:hover:bg-white/10 transition">
+        <button id="btn-toggle-sidebar" class="p-2 rounded-xl hover:bg-black/10 dark:hover:bg-white/10 transition">
           <i class="fa-solid fa-bars text-lg"></i>
         </button>
         <div class="h-9 w-9 rounded-xl custom-accent-bg text-white grid place-items-center font-bold text-sm shadow-md">D</div>
@@ -161,26 +166,30 @@
 
       <div class="flex items-center gap-2">
         <div class="flex bg-black/10 dark:bg-white/10 p-1 rounded-xl text-xs">
-          <button onclick="setTheme('light')" class="px-2.5 py-1.5 rounded-lg transition font-medium" title="Light Mode">☀️</button>
-          <button onclick="setTheme('dark')" class="px-2.5 py-1.5 rounded-lg transition font-medium" title="Dark Mode">🌙</button>
-          <button onclick="setTheme('custom')" class="px-2.5 py-1.5 rounded-lg transition font-medium" title="Custom Theme">🎨</button>
+          <button onclick="setTheme('light')" class="px-2 py-1 rounded-lg transition font-medium" title="Light Mode">☀️</button>
+          <button onclick="setTheme('dark')" class="px-2 py-1 rounded-lg transition font-medium" title="Dark Mode">🌙</button>
+          <button onclick="setTheme('custom')" class="px-2 py-1 rounded-lg transition font-medium" title="Custom Theme">🎨</button>
         </div>
         
-        <button id="btn-grading" onclick="$('modal-grading').showModal()" class="hide px-3 py-2 rounded-xl bg-black/10 dark:bg-white/10 hover:bg-black/20 text-xs font-semibold transition flex items-center gap-1.5" title="Atur Warna / Color Grading">
-          <i class="fa-solid fa-palette"></i> <span class="hidden md:inline">Grading</span>
+        <button id="btn-grading" onclick="$('modal-grading').showModal()" class="hide px-2.5 py-1.5 rounded-xl bg-black/10 dark:bg-white/10 hover:bg-black/20 text-xs font-semibold transition flex items-center gap-1.5" title="Atur Warna / Color Grading">
+          <i class="fa-solid fa-palette"></i>
         </button>
 
-        <button id="btn-logout" class="text-xs px-3 py-2 rounded-xl bg-ios-pink/10 hover:bg-ios-pink/20 text-ios-pink font-medium transition">
-          <i class="fa-solid fa-right-from-bracket mr-1"></i>Keluar
+        <button id="btn-logout" class="text-xs px-2.5 py-1.5 rounded-xl bg-ios-pink/10 hover:bg-ios-pink/20 text-ios-pink font-medium transition">
+          <i class="fa-solid fa-right-from-bracket"></i>
         </button>
       </div>
     </header>
 
     <!-- MAIN BODY -->
     <div class="flex-1 flex overflow-hidden relative">
-      <!-- SIDEBAR -->
-      <aside id="sidebar" class="glass glass-card fixed md:static inset-y-0 left-0 z-25 w-64 border-r p-4 space-y-1.5 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out shrink-0 flex flex-col justify-between">
-        <nav class="space-y-1.5">
+      <!-- SIDEBAR DRAWER MOBILE & DESKTOP -->
+      <aside id="sidebar" class="glass-card fixed md:static inset-y-0 left-0 z-50 w-64 border-r p-4 space-y-1.5 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out shrink-0 flex flex-col justify-between h-full">
+        <div class="flex items-center justify-between pb-3 md:hidden border-b border-black/10 dark:border-white/10 mb-2">
+          <span class="font-bold text-sm">Menu DCC</span>
+          <button id="btn-close-sidebar" class="p-1 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+        </div>
+        <nav class="space-y-1.5 flex-1">
           <button data-view="home" class="nav-item active w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center transition"><i class="fa-solid fa-house w-6 text-center mr-2.5"></i>Beranda</button>
           <button data-view="computers" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center transition"><i class="fa-solid fa-computer w-6 text-center mr-2.5"></i>Stok Komputer</button>
           <button data-view="loans" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center transition"><i class="fa-solid fa-handshake w-6 text-center mr-2.5"></i>Peminjaman</button>
@@ -194,8 +203,8 @@
         </div>
       </aside>
 
-      <!-- BACKDROP -->
-      <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-20 hidden md:hidden"></div>
+      <!-- BACKDROP overlay -->
+      <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden transition-opacity"></div>
 
       <!-- CONTENT VIEWS -->
       <main class="flex-1 overflow-y-auto p-4 md:p-8">
@@ -292,7 +301,7 @@
         </section>
 
         <!-- CHAT ROOM -->
-        <section id="view-chat" class="hide flex flex-col h-[calc(100vh-6rem)] max-w-4xl mx-auto glass-card rounded-3xl overflow-hidden shadow-2xl relative">
+        <section id="view-chat" class="hide flex flex-col h-[calc(100vh-10rem)] md:h-[calc(100vh-6rem)] max-w-4xl mx-auto glass-card rounded-3xl overflow-hidden shadow-2xl relative">
           <div class="bg-black/10 dark:bg-white/5 px-6 py-4 border-b border-black/10 dark:border-white/10 flex items-center justify-between shrink-0">
             <div class="flex items-center gap-3">
               <div class="h-10 w-10 rounded-full bg-black/10 dark:bg-white/10 custom-accent-text grid place-items-center"><i class="fa-solid fa-comments text-lg"></i></div>
@@ -342,6 +351,30 @@
         </section>
       </main>
     </div>
+
+    <!-- IOS BOTTOM NAVIGATION BAR FOR MOBILE (Hanya Tampil di Mobile) -->
+    <nav class="md:hidden fixed bottom-0 inset-x-0 glass-card border-t z-30 h-16 flex items-center justify-around px-2">
+      <button data-view="home" class="bottom-nav-btn active flex flex-col items-center gap-1 text-[10px] font-medium transition">
+        <i class="fa-solid fa-house text-base"></i>
+        <span>Beranda</span>
+      </button>
+      <button data-view="computers" class="bottom-nav-btn flex flex-col items-center gap-1 text-[10px] font-medium transition">
+        <i class="fa-solid fa-computer text-base"></i>
+        <span>Stok</span>
+      </button>
+      <button data-view="loans" class="bottom-nav-btn flex flex-col items-center gap-1 text-[10px] font-medium transition">
+        <i class="fa-solid fa-handshake text-base"></i>
+        <span>Pinjam</span>
+      </button>
+      <button data-view="services" class="bottom-nav-btn flex flex-col items-center gap-1 text-[10px] font-medium transition">
+        <i class="fa-solid fa-screwdriver-wrench text-base"></i>
+        <span>Servis</span>
+      </button>
+      <button data-view="chat" class="bottom-nav-btn flex flex-col items-center gap-1 text-[10px] font-medium transition">
+        <i class="fa-solid fa-comments text-base"></i>
+        <span>Chat</span>
+      </button>
+    </nav>
   </section>
 
   <!-- MODAL COLOR GRADING -->
@@ -593,7 +626,7 @@
     loadGrading();
     setTheme(savedTheme);
 
-    // SIDEBAR MOBILE TOGGLE
+    // SIDEBAR MOBILE TOGGLE LOGIC
     const sidebar = $("sidebar");
     const overlay = $("sidebar-overlay");
     function toggleSidebar() {
@@ -601,6 +634,7 @@
       overlay.classList.toggle("hidden");
     }
     $("btn-toggle-sidebar").onclick = toggleSidebar;
+    $("btn-close-sidebar").onclick = toggleSidebar;
     overlay.onclick = toggleSidebar;
 
     $("tab-login").onclick = () => { 
@@ -617,15 +651,22 @@
     document.querySelectorAll("[data-open]").forEach((b) => b.onclick = () => $(b.dataset.open).showModal());
     document.querySelectorAll("[data-close]").forEach((b) => b.onclick = () => b.closest("dialog").close());
 
-    document.querySelectorAll(".nav-item").forEach((btn) => {
-      btn.onclick = () => {
-        document.querySelectorAll(".nav-item").forEach((x) => x.classList.remove("active"));
-        btn.classList.add("active");
-        ["home","computers","loans","checking","services","recap","chat"].forEach((v) => show($("view-" + v), v === btn.dataset.view));
-        if (btn.dataset.view === "recap" || btn.dataset.view === "home") renderCharts();
-        if (btn.dataset.view === "chat") scrollChat();
-        if (window.innerWidth < 768) toggleSidebar();
-      };
+    // NAVIGASI DUA ARAH (SIDEBAR & BOTTOM NAV)
+    function switchView(targetView) {
+      document.querySelectorAll(".nav-item").forEach((x) => x.classList.toggle("active", x.dataset.view === targetView));
+      document.querySelectorAll(".bottom-nav-btn").forEach((x) => x.classList.toggle("active", x.dataset.view === targetView));
+      
+      ["home","computers","loans","checking","services","recap","chat"].forEach((v) => show($("view-" + v), v === targetView));
+      if (targetView === "recap" || targetView === "home") renderCharts();
+      if (targetView === "chat") scrollChat();
+      
+      if (!sidebar.classList.contains("-translate-x-full") && window.innerWidth < 768) {
+        toggleSidebar();
+      }
+    }
+
+    document.querySelectorAll(".nav-item, .bottom-nav-btn").forEach((btn) => {
+      btn.onclick = () => switchView(btn.dataset.view);
     });
 
     $("form-register").onsubmit = async (e) => {
