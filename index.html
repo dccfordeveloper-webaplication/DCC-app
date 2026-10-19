@@ -434,39 +434,21 @@
     </div>
   </dialog>
 
-  <!-- MODAL COMPUTER (UPDATED WITH PERIPHERALS INDICATORS) -->
-  <dialog id="modal-computer" class="glass-card rounded-3xl p-6 w-[min(92vw,500px)] shadow-2xl m-auto">
+  <!-- MODAL COMPUTER (SIMPLIFIED: KODE PC, STATUS, & KELENGKAPAN) -->
+  <dialog id="modal-computer" class="glass-card rounded-3xl p-6 w-[min(92vw,480px)] shadow-2xl m-auto">
     <form id="form-computer" class="space-y-4">
       <h4 class="text-lg font-bold">Tambah / Perbarui Unit Komputer</h4>
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="block text-xs font-medium mb-1 opacity-80">ID / Kode PC</label>
-          <input id="pc-id" required placeholder="DCC-006" class="w-full app-input rounded-xl px-3.5 py-2 text-base md:text-sm focus:outline-none" />
-        </div>
-        <div>
-          <label class="block text-xs font-medium mb-1 opacity-80">Model / Tipe</label>
-          <input id="pc-model" required placeholder="Asus ROG" class="w-full app-input rounded-xl px-3.5 py-2 text-base md:text-sm focus:outline-none" />
-        </div>
-      </div>
-
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="block text-xs font-medium mb-1 opacity-80">Kategori</label>
-          <input id="pc-type" required placeholder="Laptop / Desktop" class="w-full app-input rounded-xl px-3.5 py-2 text-base md:text-sm focus:outline-none" />
-        </div>
-        <div>
-          <label class="block text-xs font-medium mb-1 opacity-80">Status Utama</label>
-          <select id="pc-status" class="w-full app-input rounded-xl px-3.5 py-2 text-base md:text-sm focus:outline-none">
-            <option value="available">available (Tersedia)</option>
-            <option value="borrowed">borrowed (Dipinjam)</option>
-            <option value="maintenance">maintenance (Servis)</option>
-          </select>
-        </div>
-      </div>
-
       <div>
-        <label class="block text-xs font-medium mb-1 opacity-80">Spesifikasi</label>
-        <input id="pc-specs" placeholder="Core i7, RAM 16GB, SSD 512GB" class="w-full app-input rounded-xl px-3.5 py-2 text-base md:text-sm focus:outline-none" />
+        <label class="block text-xs font-medium mb-1 opacity-80">Kode PC</label>
+        <input id="pc-id" required placeholder="DCC-001" class="w-full app-input rounded-xl px-3.5 py-2 text-base md:text-sm focus:outline-none" />
+      </div>
+      <div>
+        <label class="block text-xs font-medium mb-1 opacity-80">Status Utama</label>
+        <select id="pc-status" class="w-full app-input rounded-xl px-3.5 py-2 text-base md:text-sm focus:outline-none">
+          <option value="available">available (Tersedia - Hijau)</option>
+          <option value="borrowed">borrowed (Dipinjam - Merah)</option>
+          <option value="maintenance">maintenance (Servis)</option>
+        </select>
       </div>
 
       <!-- KELENGKAPAN LAMPU INDIKATOR -->
@@ -812,7 +794,7 @@
     }
 
     function fillUnitSelects() {
-      const opts = state.computers.map((x) => `<option value="${x.id}">${x.id} — ${x.model}</option>`).join("");
+      const opts = state.computers.map((x) => `<option value="${x.id}">${x.id}</option>`).join("");
       ["chk-unit","loan-unit","svc-unit"].forEach((id) => { $(id).innerHTML = opts; });
     }
 
@@ -844,7 +826,7 @@
 
       $("tbl-computers").innerHTML = state.computers.map((x) => `
         <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition">
-          <td class="p-4 font-semibold custom-accent-text">${esc(x.id)}<br/><span class="text-[10px] opacity-70 font-normal">${esc(x.model)}</span></td>
+          <td class="p-4 font-semibold custom-accent-text">${esc(x.id)}</td>
           <td><span class="px-2.5 py-1 rounded-full text-xs font-medium ${x.status === 'available' ? 'bg-ios-green/20 text-ios-green' : 'bg-ios-pink/20 text-ios-pink'}">${esc(x.status)}</span></td>
           <td class="text-center">${renderIndicator(x.komputer_st || 'ok')}</td>
           <td class="text-center">${renderIndicator(x.monitor_st || 'ok')}</td>
@@ -888,9 +870,9 @@
       e.preventDefault();
       const row = {
         id: $("pc-id").value.trim(),
-        model: $("pc-model").value.trim(),
-        type: $("pc-type").value.trim(),
-        specs: $("pc-specs").value.trim(),
+        model: "-",
+        type: "-",
+        specs: "-",
         status: $("pc-status").value,
         condition: "Baik",
         komputer_st: $("pc-komputer-st").value,
@@ -1242,7 +1224,7 @@
       const typeCount = {};
       state.computers.forEach((c) => {
         statusCount[c.status] = (statusCount[c.status] || 0) + 1;
-        typeCount[c.type] = (typeCount[c.type] || 0) + 1;
+        typeCount[c.type || 'Standard'] = (typeCount[c.type || 'Standard'] || 0) + 1;
       });
       const palette = ["#007AFF", "#34C759", "#FF9500", "#FF2D55", "#5856D6"];
       draw("home-chart", "bar", {
