@@ -251,7 +251,7 @@
           <div class="glass-card rounded-3xl shadow-lg overflow-x-auto">
             <table class="w-full text-left text-sm">
               <thead class="text-xs uppercase tracking-wider">
-                <tr><th class="p-4">Unit</th><th>Peminjam</th><th>Keperluan</th><th>Status</th><th class="text-right p-4">Aksi</th></tr>
+                <tr><th class="p-4">Unit</th><th>Peminjam</th><th>Keperluan</th><th>Periode Pinjam</th><th>Status</th><th class="text-right p-4">Aksi</th></tr>
               </thead>
               <tbody id="tbl-loans"></tbody>
             </table>
@@ -505,10 +505,10 @@
     </form>
   </dialog>
 
-  <!-- MODAL LOAN -->
+  <!-- MODAL LOAN WITH DATES & PERIPHERALS -->
   <dialog id="modal-loan" class="glass-card rounded-3xl p-6 w-[min(92vw,480px)] shadow-2xl m-auto">
     <form id="form-loan" class="space-y-4">
-      <h4 class="text-lg font-bold">Peminjaman Baru & Cek Kelengkapan</h4>
+      <h4 class="text-lg font-bold">Peminjaman Baru & Batas Waktu</h4>
       <div>
         <label class="block text-xs font-medium mb-1 opacity-80">Pilih Unit Komputer</label>
         <select id="loan-unit" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none"></select>
@@ -520,6 +520,18 @@
       <div>
         <label class="block text-xs font-medium mb-1 opacity-80">Keperluan</label>
         <input id="loan-purpose" required placeholder="Keperluan peminjaman" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none" />
+      </div>
+
+      <!-- BATAS PEMINJAMAN (DARI - SAMPAI) -->
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-medium mb-1 opacity-80">Dari Tanggal</label>
+          <input type="date" id="loan-start" required class="w-full app-input rounded-xl px-3 py-2 text-base md:text-sm focus:outline-none" />
+        </div>
+        <div>
+          <label class="block text-xs font-medium mb-1 opacity-80">Sampai Tanggal</label>
+          <input type="date" id="loan-end" required class="w-full app-input rounded-xl px-3 py-2 text-base md:text-sm focus:outline-none" />
+        </div>
       </div>
 
       <!-- CHECKLIST Kelengkapan Peminjaman -->
@@ -561,6 +573,7 @@
         <p class="opacity-80">Unit PC: <span id="ret-unit-label" class="font-semibold custom-accent-text text-sm"></span></p>
         <p class="opacity-80">Peminjam: <span id="ret-borrower-label" class="font-semibold text-sm"></span></p>
         <p class="opacity-80">Keperluan: <span id="ret-purpose-label" class="font-semibold italic"></span></p>
+        <p class="opacity-80">Periode: <span id="ret-period-label" class="font-semibold"></span></p>
       </div>
 
       <!-- CHECKLIST KELENGKAPAN SAAT KEMBALI -->
@@ -907,9 +920,10 @@
           <td class="p-4 font-semibold custom-accent-text">${esc(x.unit_id)}</td>
           <td>${esc(x.borrower)}</td>
           <td>${esc(x.purpose)}</td>
+          <td><span class="text-xs font-medium opacity-90">${esc(x.start_date || '-')} s/d ${esc(x.end_date || '-')}</span></td>
           <td>${esc(x.status)}</td>
-          <td class="p-4 text-right">${x.status !== "returned" ? `<button class="text-xs px-3 py-1.5 rounded-xl custom-accent-bg text-white font-semibold transition shadow-md" onclick="openReturnModal('${x.id}','${esc(x.unit_id)}','${esc(x.borrower)}','${esc(x.purpose)}')">Kembalikan</button>` : "-"}</td>
-        </tr>`).join("") || `<tr><td class="p-6 text-center opacity-70" colspan="5">Belum ada peminjaman.</td></tr>`;
+          <td class="p-4 text-right">${x.status !== "returned" ? `<button class="text-xs px-3 py-1.5 rounded-xl custom-accent-bg text-white font-semibold transition shadow-md" onclick="openReturnModal('${x.id}','${esc(x.unit_id)}','${esc(x.borrower)}','${esc(x.purpose)}','${esc(x.start_date || '')} s/d ${esc(x.end_date || '')}')">Kembalikan</button>` : "-"}</td>
+        </tr>`).join("") || `<tr><td class="p-6 text-center opacity-70" colspan="6">Belum ada peminjaman.</td></tr>`;
 
       $("svc-list").innerHTML = state.services.map((x) => `
         <article class="glass-card rounded-3xl p-5 shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-3">
@@ -964,6 +978,8 @@
       const unit_id = $("loan-unit").value;
       const borrower = $("loan-borrower").value.trim();
       const purpose = $("loan-purpose").value.trim();
+      const start_date = $("loan-start").value;
+      const end_date = $("loan-end").value;
 
       const kChecked = $("loan-komputer").checked;
       const mChecked = $("loan-monitor").checked;
@@ -975,6 +991,8 @@
         unit_id,
         borrower,
         purpose,
+        start_date,
+        end_date,
         status: "active"
       };
       const { error } = await sb.from("loans").insert(row);
@@ -994,12 +1012,13 @@
       await refreshAll();
     };
 
-    window.openReturnModal = (id, unit, borrower, purpose) => {
+    window.openReturnModal = (id, unit, borrower, purpose, period) => {
       $("ret-loan-id").value = id;
       $("ret-unit-id").value = unit;
       $("ret-unit-label").textContent = unit;
       $("ret-borrower-label").textContent = borrower;
       $("ret-purpose-label").textContent = purpose;
+      $("ret-period-label").textContent = period;
       ["ret-komputer", "ret-monitor", "ret-mouse", "ret-keyboard", "ret-ups"].forEach(chkId => $(chkId).checked = true);
       $("modal-return").showModal();
     };
