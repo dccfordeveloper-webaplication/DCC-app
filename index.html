@@ -2,7 +2,7 @@
 <html lang="id" class="dark">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>DCC Monitor — iOS Edition & Color Grading</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -96,7 +96,7 @@
     .chat-scroll::-webkit-scrollbar-thumb { background: rgba(150,150,150,0.4); border-radius: 4px; }
   </style>
 </head>
-<body class="theme-dark min-h-screen flex flex-col font-sans transition-colors duration-300">
+<body class="theme-dark min-h-screen flex flex-col font-sans transition-colors duration-300 overflow-x-hidden">
 
   <!-- AUTH SCREEN -->
   <section id="screen-auth" class="min-h-screen grid lg:grid-cols-2">
@@ -121,26 +121,26 @@
         <form id="form-login" class="space-y-4">
           <div>
             <label class="block text-xs font-medium mb-1 opacity-80">Email</label>
-            <input required type="email" id="login-email" class="w-full app-input rounded-xl px-4 py-3 text-sm focus:outline-none transition" placeholder="staff@dcc.gontor" />
+            <input required type="email" id="login-email" class="w-full app-input rounded-xl px-4 py-3 text-base md:text-sm focus:outline-none transition" placeholder="staff@dcc.gontor" />
           </div>
           <div>
             <label class="block text-xs font-medium mb-1 opacity-80">Kata Sandi</label>
-            <input required type="password" id="login-pass" class="w-full app-input rounded-xl px-4 py-3 text-sm focus:outline-none transition" />
+            <input required type="password" id="login-pass" class="w-full app-input rounded-xl px-4 py-3 text-base md:text-sm focus:outline-none transition" />
           </div>
           <button class="w-full py-3 rounded-xl custom-accent-bg hover:opacity-90 text-white font-semibold text-sm transition shadow-lg">Masuk</button>
         </form>
         <form id="form-register" class="space-y-4 hide">
           <div>
             <label class="block text-xs font-medium mb-1 opacity-80">Nama Lengkap</label>
-            <input required id="reg-name" class="w-full app-input rounded-xl px-4 py-3 text-sm focus:outline-none transition" />
+            <input required id="reg-name" class="w-full app-input rounded-xl px-4 py-3 text-base md:text-sm focus:outline-none transition" />
           </div>
           <div>
             <label class="block text-xs font-medium mb-1 opacity-80">Email</label>
-            <input required type="email" id="reg-email" class="w-full app-input rounded-xl px-4 py-3 text-sm focus:outline-none transition" />
+            <input required type="email" id="reg-email" class="w-full app-input rounded-xl px-4 py-3 text-base md:text-sm focus:outline-none transition" />
           </div>
           <div>
             <label class="block text-xs font-medium mb-1 opacity-80">Kata Sandi</label>
-            <input required minlength="6" type="password" id="reg-pass" class="w-full app-input rounded-xl px-4 py-3 text-sm focus:outline-none transition" />
+            <input required minlength="6" type="password" id="reg-pass" class="w-full app-input rounded-xl px-4 py-3 text-base md:text-sm focus:outline-none transition" />
           </div>
           <button class="w-full py-3 rounded-xl custom-accent-bg hover:opacity-90 text-white font-semibold text-sm transition shadow-lg">Daftar Akun</button>
         </form>
@@ -152,7 +152,7 @@
   <!-- APP MAIN SCREEN -->
   <section id="screen-app" class="hide min-h-screen flex flex-col pb-16 md:pb-0">
     <!-- IOS HEADER NAVBAR -->
-    <header class="glass glass-card border-b sticky top-0 z-30 h-16 px-4 md:px-8 flex items-center justify-between">
+    <header class="glass glass-card border-b sticky top-0 z-30 h-16 px-4 md:px-8 flex items-center justify-between shrink-0">
       <div class="flex items-center gap-3">
         <button id="btn-toggle-sidebar" class="p-2 rounded-xl hover:bg-black/10 dark:hover:bg-white/10 transition">
           <i class="fa-solid fa-bars text-lg"></i>
@@ -203,11 +203,11 @@
         </div>
       </aside>
 
-      <!-- BACKDROP overlay -->
+      <!-- BACKDROP OVERLAY -->
       <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden transition-opacity"></div>
 
-      <!-- CONTENT VIEWS -->
-      <main class="flex-1 overflow-y-auto p-4 md:p-8">
+      <!-- CONTENT VIEWS AREA -->
+      <main id="main-content" class="flex-1 overflow-y-auto p-4 md:p-8">
         <!-- HOME -->
         <section id="view-home" class="space-y-6 max-w-6xl mx-auto">
           <h3 class="text-xl font-bold tracking-tight">Ringkasan Operasional</h3>
@@ -256,17 +256,17 @@
           <form id="form-checking" class="glass-card rounded-3xl p-6 shadow-lg grid sm:grid-cols-2 gap-4">
             <div class="sm:col-span-2">
               <label class="block text-xs font-medium mb-1 opacity-80">Unit</label>
-              <select id="chk-unit" class="w-full app-input rounded-xl px-3.5 py-2.5 text-sm focus:outline-none"></select>
+              <select id="chk-unit" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none"></select>
             </div>
             <div>
               <label class="block text-xs font-medium mb-1 opacity-80">Kondisi</label>
-              <select id="chk-condition" class="w-full app-input rounded-xl px-3.5 py-2.5 text-sm focus:outline-none">
+              <select id="chk-condition" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none">
                 <option>Sangat Baik</option><option>Baik</option><option>Cukup</option><option>Rusak Ringan</option><option>Rusak Berat</option>
               </select>
             </div>
             <div>
               <label class="block text-xs font-medium mb-1 opacity-80">Status</label>
-              <select id="chk-status" class="w-full app-input rounded-xl px-3.5 py-2.5 text-sm focus:outline-none">
+              <select id="chk-status" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none">
                 <option value="available">available</option>
                 <option value="checking">checking</option>
                 <option value="maintenance">maintenance</option>
@@ -275,7 +275,7 @@
             </div>
             <div class="sm:col-span-2">
               <label class="block text-xs font-medium mb-1 opacity-80">Catatan</label>
-              <input id="chk-notes" class="w-full app-input rounded-xl px-3.5 py-2.5 text-sm focus:outline-none" placeholder="Keyboard aus, pendingin berisik, ..." />
+              <input id="chk-notes" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none" placeholder="Keyboard aus, pendingin berisik, ..." />
             </div>
             <button class="sm:col-span-2 py-3 rounded-xl custom-accent-bg text-white font-semibold text-sm transition shadow-lg">Simpan Pengecekan</button>
           </form>
@@ -300,11 +300,12 @@
           </div>
         </section>
 
-        <!-- CHAT ROOM -->
-        <section id="view-chat" class="hide flex flex-col h-[calc(100vh-10rem)] md:h-[calc(100vh-6rem)] max-w-4xl mx-auto glass-card rounded-3xl overflow-hidden shadow-2xl relative">
-          <div class="bg-black/10 dark:bg-white/5 px-6 py-4 border-b border-black/10 dark:border-white/10 flex items-center justify-between shrink-0">
+        <!-- CHAT ROOM (OPTIMIZED FOR MOBILE UX) -->
+        <section id="view-chat" class="hide flex flex-col h-[calc(100dvh-8rem)] md:h-[calc(100vh-6rem)] max-w-4xl mx-auto glass-card md:rounded-3xl overflow-hidden shadow-2xl relative -m-4 md:m-auto">
+          <!-- CHAT HEADER -->
+          <div class="bg-black/10 dark:bg-white/5 px-4 md:px-6 py-3 border-b border-black/10 dark:border-white/10 flex items-center justify-between shrink-0">
             <div class="flex items-center gap-3">
-              <div class="h-10 w-10 rounded-full bg-black/10 dark:bg-white/10 custom-accent-text grid place-items-center"><i class="fa-solid fa-comments text-lg"></i></div>
+              <div class="h-9 w-9 md:h-10 md:w-10 rounded-full bg-black/10 dark:bg-white/10 custom-accent-text grid place-items-center"><i class="fa-solid fa-comments text-base md:text-lg"></i></div>
               <div>
                 <p id="chat-title" class="font-bold text-sm">DCC Chat Room</p>
                 <p id="chat-sub" class="text-[11px] opacity-70">Realtime Community Chat</p>
@@ -320,8 +321,10 @@
             </div>
           </div>
 
-          <div id="chat-stream" class="flex-1 overflow-y-auto chat-scroll p-6 space-y-3"></div>
+          <!-- CHAT STREAM -->
+          <div id="chat-stream" class="flex-1 overflow-y-auto chat-scroll p-3 md:p-6 space-y-3"></div>
 
+          <!-- REPLY PREVIEW -->
           <div id="reply-preview" class="hide px-4 py-2 bg-black/10 dark:bg-white/5 border-t border-black/10 dark:border-white/10 flex items-center justify-between text-xs">
             <div class="truncate">
               <span class="font-semibold custom-accent-text">Membalas <span id="reply-to-sender"></span>:</span>
@@ -330,6 +333,7 @@
             <button type="button" id="cancel-reply" class="opacity-70 hover:opacity-100 px-2"><i class="fa-solid fa-xmark"></i></button>
           </div>
 
+          <!-- ATTACHMENT PREVIEW -->
           <div id="attach-preview" class="hide px-4 py-2 bg-black/10 dark:bg-white/5 border-t border-black/10 dark:border-white/10 flex items-center justify-between text-xs">
             <div class="flex items-center gap-2 truncate">
               <img id="attach-thumb" class="h-8 w-8 object-cover rounded-lg hidden" alt="thumb" />
@@ -339,38 +343,40 @@
             <button type="button" id="cancel-attach" class="opacity-70 hover:opacity-100 px-2"><i class="fa-solid fa-xmark"></i></button>
           </div>
 
-          <div id="emoji-picker" class="hide absolute bottom-20 left-4 z-30 glass-card border rounded-2xl shadow-2xl p-3 grid grid-cols-8 gap-2 w-72 text-lg"></div>
+          <!-- EMOJI PICKER -->
+          <div id="emoji-picker" class="hide absolute bottom-16 left-2 md:left-4 z-30 glass-card border rounded-2xl shadow-2xl p-3 grid grid-cols-8 gap-2 w-72 text-lg"></div>
 
-          <form id="form-chat" class="p-3 bg-black/10 dark:bg-white/5 border-t border-black/10 dark:border-white/10 flex items-center gap-2 shrink-0">
-            <button type="button" id="btn-emoji" class="p-2.5 opacity-80 hover:opacity-100 rounded-full"><i class="fa-regular fa-face-smile text-lg"></i></button>
-            <button type="button" id="btn-attach" class="p-2.5 opacity-80 hover:opacity-100 rounded-full"><i class="fa-solid fa-paperclip text-lg"></i></button>
+          <!-- CHAT FORM INPUT BAR -->
+          <form id="form-chat" class="p-2 md:p-3 bg-black/10 dark:bg-white/5 border-t border-black/10 dark:border-white/10 flex items-center gap-1.5 md:gap-2 shrink-0">
+            <button type="button" id="btn-emoji" class="p-2 opacity-80 hover:opacity-100 rounded-full shrink-0"><i class="fa-regular fa-face-smile text-lg"></i></button>
+            <button type="button" id="btn-attach" class="p-2 opacity-80 hover:opacity-100 rounded-full shrink-0"><i class="fa-solid fa-paperclip text-lg"></i></button>
             <input type="file" id="chat-file" class="hide" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" />
-            <input id="chat-text" class="flex-1 app-input rounded-full px-4 py-2.5 text-sm focus:outline-none" placeholder="Kirim pesan..." autocomplete="off" />
-            <button class="h-10 w-10 rounded-full custom-accent-bg text-white grid place-items-center shrink-0 transition shadow-md"><i class="fa-solid fa-paper-plane text-xs"></i></button>
+            <input id="chat-text" class="flex-1 min-w-0 app-input rounded-full px-3.5 py-2 text-base md:text-sm focus:outline-none" placeholder="Kirim pesan..." autocomplete="off" />
+            <button class="h-9 w-9 md:h-10 md:w-10 rounded-full custom-accent-bg text-white grid place-items-center shrink-0 transition shadow-md"><i class="fa-solid fa-paper-plane text-xs"></i></button>
           </form>
         </section>
       </main>
     </div>
 
-    <!-- IOS BOTTOM NAVIGATION BAR FOR MOBILE (Hanya Tampil di Mobile) -->
-    <nav class="md:hidden fixed bottom-0 inset-x-0 glass-card border-t z-30 h-16 flex items-center justify-around px-2">
-      <button data-view="home" class="bottom-nav-btn active flex flex-col items-center gap-1 text-[10px] font-medium transition">
+    <!-- IOS BOTTOM NAVIGATION BAR FOR MOBILE -->
+    <nav class="md:hidden fixed bottom-0 inset-x-0 glass-card border-t z-30 h-14 flex items-center justify-around px-2">
+      <button data-view="home" class="bottom-nav-btn active flex flex-col items-center gap-0.5 text-[10px] font-medium transition">
         <i class="fa-solid fa-house text-base"></i>
         <span>Beranda</span>
       </button>
-      <button data-view="computers" class="bottom-nav-btn flex flex-col items-center gap-1 text-[10px] font-medium transition">
+      <button data-view="computers" class="bottom-nav-btn flex flex-col items-center gap-0.5 text-[10px] font-medium transition">
         <i class="fa-solid fa-computer text-base"></i>
         <span>Stok</span>
       </button>
-      <button data-view="loans" class="bottom-nav-btn flex flex-col items-center gap-1 text-[10px] font-medium transition">
+      <button data-view="loans" class="bottom-nav-btn flex flex-col items-center gap-0.5 text-[10px] font-medium transition">
         <i class="fa-solid fa-handshake text-base"></i>
         <span>Pinjam</span>
       </button>
-      <button data-view="services" class="bottom-nav-btn flex flex-col items-center gap-1 text-[10px] font-medium transition">
+      <button data-view="services" class="bottom-nav-btn flex flex-col items-center gap-0.5 text-[10px] font-medium transition">
         <i class="fa-solid fa-screwdriver-wrench text-base"></i>
         <span>Servis</span>
       </button>
-      <button data-view="chat" class="bottom-nav-btn flex flex-col items-center gap-1 text-[10px] font-medium transition">
+      <button data-view="chat" class="bottom-nav-btn flex flex-col items-center gap-0.5 text-[10px] font-medium transition">
         <i class="fa-solid fa-comments text-base"></i>
         <span>Chat</span>
       </button>
@@ -425,23 +431,23 @@
       <h4 class="text-lg font-bold">Unit Komputer</h4>
       <div>
         <label class="block text-xs font-medium mb-1 opacity-80">ID Unit</label>
-        <input id="pc-id" required placeholder="DCC-006" class="w-full app-input rounded-xl px-3.5 py-2.5 text-sm focus:outline-none" />
+        <input id="pc-id" required placeholder="DCC-006" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none" />
       </div>
       <div>
         <label class="block text-xs font-medium mb-1 opacity-80">Model / Tipe Komputer</label>
-        <input id="pc-model" required placeholder="Asus ROG / ThinkPad X1" class="w-full app-input rounded-xl px-3.5 py-2.5 text-sm focus:outline-none" />
+        <input id="pc-model" required placeholder="Asus ROG / ThinkPad X1" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none" />
       </div>
       <div>
         <label class="block text-xs font-medium mb-1 opacity-80">Tipe</label>
-        <input id="pc-type" required placeholder="Laptop / Desktop" class="w-full app-input rounded-xl px-3.5 py-2.5 text-sm focus:outline-none" />
+        <input id="pc-type" required placeholder="Laptop / Desktop" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none" />
       </div>
       <div>
         <label class="block text-xs font-medium mb-1 opacity-80">Spesifikasi</label>
-        <input id="pc-specs" placeholder="Core i7, RAM 16GB, SSD 512GB" class="w-full app-input rounded-xl px-3.5 py-2.5 text-sm focus:outline-none" />
+        <input id="pc-specs" placeholder="Core i7, RAM 16GB, SSD 512GB" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none" />
       </div>
       <div>
         <label class="block text-xs font-medium mb-1 opacity-80">Status</label>
-        <select id="pc-status" class="w-full app-input rounded-xl px-3.5 py-2.5 text-sm focus:outline-none">
+        <select id="pc-status" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none">
           <option value="available">available</option>
           <option value="borrowed">borrowed</option>
           <option value="maintenance">maintenance</option>
@@ -450,7 +456,7 @@
       </div>
       <div>
         <label class="block text-xs font-medium mb-1 opacity-80">Kondisi</label>
-        <input id="pc-condition" placeholder="Baik / Sangat Baik" class="w-full app-input rounded-xl px-3.5 py-2.5 text-sm focus:outline-none" />
+        <input id="pc-condition" placeholder="Baik / Sangat Baik" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none" />
       </div>
       <div class="flex gap-2 justify-end pt-2">
         <button type="button" data-close class="px-4 py-2 text-xs opacity-70 hover:opacity-100">Batal</button>
@@ -465,15 +471,15 @@
       <h4 class="text-lg font-bold">Peminjaman Baru</h4>
       <div>
         <label class="block text-xs font-medium mb-1 opacity-80">Pilih Unit Komputer</label>
-        <select id="loan-unit" class="w-full app-input rounded-xl px-3.5 py-2.5 text-sm focus:outline-none"></select>
+        <select id="loan-unit" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none"></select>
       </div>
       <div>
         <label class="block text-xs font-medium mb-1 opacity-80">Nama Peminjam</label>
-        <input id="loan-borrower" required placeholder="Nama peminjam" class="w-full app-input rounded-xl px-3.5 py-2.5 text-sm focus:outline-none" />
+        <input id="loan-borrower" required placeholder="Nama peminjam" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none" />
       </div>
       <div>
         <label class="block text-xs font-medium mb-1 opacity-80">Keperluan</label>
-        <input id="loan-purpose" required placeholder="Keperluan peminjaman" class="w-full app-input rounded-xl px-3.5 py-2.5 text-sm focus:outline-none" />
+        <input id="loan-purpose" required placeholder="Keperluan peminjaman" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none" />
       </div>
       <div class="flex gap-2 justify-end pt-2">
         <button type="button" data-close class="px-4 py-2 text-xs opacity-70 hover:opacity-100">Batal</button>
@@ -488,23 +494,23 @@
       <h4 class="text-lg font-bold">Tiket Servis</h4>
       <div>
         <label class="block text-xs font-medium mb-1 opacity-80">Pilih Unit</label>
-        <select id="svc-unit" class="w-full app-input rounded-xl px-3.5 py-2.5 text-sm focus:outline-none"></select>
+        <select id="svc-unit" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none"></select>
       </div>
       <div>
         <label class="block text-xs font-medium mb-1 opacity-80">Kerusakan / Keluhan</label>
-        <input id="svc-problem" required placeholder="Kerusakan / keluhan" class="w-full app-input rounded-xl px-3.5 py-2.5 text-sm focus:outline-none" />
+        <input id="svc-problem" required placeholder="Kerusakan / keluhan" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none" />
       </div>
       <div>
         <label class="block text-xs font-medium mb-1 opacity-80">Teknisi</label>
-        <input id="svc-tech" placeholder="Nama Teknisi Penanggung Jawab" class="w-full app-input rounded-xl px-3.5 py-2.5 text-sm focus:outline-none" />
+        <input id="svc-tech" placeholder="Nama Teknisi Penanggung Jawab" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none" />
       </div>
       <div>
         <label class="block text-xs font-medium mb-1 opacity-80">Catatan</label>
-        <input id="svc-notes" placeholder="Catatan perbaikan" class="w-full app-input rounded-xl px-3.5 py-2.5 text-sm focus:outline-none" />
+        <input id="svc-notes" placeholder="Catatan perbaikan" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none" />
       </div>
       <div>
         <label class="block text-xs font-medium mb-1 opacity-80">Status Tiket</label>
-        <select id="svc-status" class="w-full app-input rounded-xl px-3.5 py-2.5 text-sm focus:outline-none">
+        <select id="svc-status" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none">
           <option value="open">open</option>
           <option value="in_progress">in_progress</option>
           <option value="done">done</option>
@@ -537,7 +543,7 @@
       </div>
       <div>
         <label class="block text-xs font-medium mb-1 opacity-80">Nama Lengkap</label>
-        <input id="prof-name" required class="w-full app-input rounded-xl px-3.5 py-2.5 text-sm focus:outline-none" />
+        <input id="prof-name" required class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none" />
       </div>
       <div class="flex gap-2 justify-end pt-2">
         <button type="button" data-close class="px-4 py-2 text-xs opacity-70 hover:opacity-100">Batal</button>
@@ -574,7 +580,7 @@
 
     // THEME & COLOR GRADING LOGIC
     function setTheme(mode) {
-      document.body.className = `theme-${mode} min-h-screen flex flex-col font-sans transition-colors duration-300`;
+      document.body.className = `theme-${mode} min-h-screen flex flex-col font-sans transition-colors duration-300 overflow-x-hidden`;
       const html = document.documentElement;
       if (mode === 'dark' || mode === 'custom') {
         html.classList.add('dark');
@@ -651,11 +657,20 @@
     document.querySelectorAll("[data-open]").forEach((b) => b.onclick = () => $(b.dataset.open).showModal());
     document.querySelectorAll("[data-close]").forEach((b) => b.onclick = () => b.closest("dialog").close());
 
-    // NAVIGASI DUA ARAH (SIDEBAR & BOTTOM NAV)
+    // NAVIGASI VIEW
     function switchView(targetView) {
       document.querySelectorAll(".nav-item").forEach((x) => x.classList.toggle("active", x.dataset.view === targetView));
       document.querySelectorAll(".bottom-nav-btn").forEach((x) => x.classList.toggle("active", x.dataset.view === targetView));
       
+      const mainContent = $("main-content");
+      if (targetView === "chat") {
+        mainContent.classList.remove("p-4", "md:p-8");
+        mainContent.classList.add("p-0", "md:p-8");
+      } else {
+        mainContent.classList.remove("p-0");
+        mainContent.classList.add("p-4", "md:p-8");
+      }
+
       ["home","computers","loans","checking","services","recap","chat"].forEach((v) => show($("view-" + v), v === targetView));
       if (targetView === "recap" || targetView === "home") renderCharts();
       if (targetView === "chat") scrollChat();
