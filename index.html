@@ -300,8 +300,8 @@
           </div>
         </section>
 
-        <!-- CHAT ROOM (OPTIMIZED FOR MOBILE UX) -->
-        <section id="view-chat" class="hide flex flex-col h-[calc(100dvh-8rem)] md:h-[calc(100vh-6rem)] max-w-4xl mx-auto glass-card md:rounded-3xl overflow-hidden shadow-2xl relative -m-4 md:m-auto">
+        <!-- CHAT ROOM (FIXED FIT & AUTO RESPONSIVE) -->
+        <section id="view-chat" class="hide flex flex-col h-[calc(100dvh-8rem)] md:h-[calc(100vh-6rem)] w-full max-w-4xl mx-auto glass-card rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl relative">
           <!-- CHAT HEADER -->
           <div class="bg-black/10 dark:bg-white/5 px-4 md:px-6 py-3 border-b border-black/10 dark:border-white/10 flex items-center justify-between shrink-0">
             <div class="flex items-center gap-3">
@@ -661,15 +661,6 @@
     function switchView(targetView) {
       document.querySelectorAll(".nav-item").forEach((x) => x.classList.toggle("active", x.dataset.view === targetView));
       document.querySelectorAll(".bottom-nav-btn").forEach((x) => x.classList.toggle("active", x.dataset.view === targetView));
-      
-      const mainContent = $("main-content");
-      if (targetView === "chat") {
-        mainContent.classList.remove("p-4", "md:p-8");
-        mainContent.classList.add("p-0", "md:p-8");
-      } else {
-        mainContent.classList.remove("p-0");
-        mainContent.classList.add("p-4", "md:p-8");
-      }
 
       ["home","computers","loans","checking","services","recap","chat"].forEach((v) => show($("view-" + v), v === targetView));
       if (targetView === "recap" || targetView === "home") renderCharts();
