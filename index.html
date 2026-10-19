@@ -1,24 +1,31 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DCC Monitor — Darussalam Computer Center</title>
+  <title>DCC Monitor — iOS Edition</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Orbitron:wght@500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
           colors: {
-            brand: { 500: "#FF6A00", 600: "#E05D00" },
-            dark: { 800: "#1E2227", 850: "#181B1F", 900: "#121417" }
+            ios: {
+              blue: '#007AFF',
+              green: '#34C759',
+              indigo: '#5856D6',
+              orange: '#FF9500',
+              pink: '#FF2D55',
+              teal: '#5AC8FA',
+              gray: '#8E8E93'
+            }
           },
           fontFamily: {
-            sans: ['"IBM Plex Sans"', "Segoe UI", "sans-serif"],
-            display: ['Orbitron', "sans-serif"]
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', "Segoe UI", "Roboto", "sans-serif"],
           }
         }
       }
@@ -28,167 +35,192 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <style>
-    body { background-color: #0f1115; color: #e2e8f0; }
-    .nav-item.active { background-color: #ff6a00; color: #ffffff; font-weight: 600; }
+    /* TEMA STYLES */
+    body.theme-light { background-color: #F2F2F7; color: #1C1C1E; }
+    body.theme-dark { background-color: #000000; color: #F2F2F7; }
+    body.theme-custom { background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #0f172a 100%); color: #f8fafc; }
+
+    .glass {
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    body.theme-light .glass-card { background: rgba(255, 255, 255, 0.8); border: 1px solid rgba(0, 0, 0, 0.05); }
+    body.theme-dark .glass-card { background: rgba(28, 28, 30, 0.75); border: 1px solid rgba(255, 255, 255, 0.1); }
+    body.theme-custom .glass-card { background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.15); }
+
+    .nav-item.active { background-color: #007AFF; color: #ffffff !important; }
+    body.theme-light .nav-item:not(.active) { color: #3A3A3C; }
+    body.theme-dark .nav-item:not(.active) { color: #AEAEB2; }
+    body.theme-custom .nav-item:not(.active) { color: #cbd5e1; }
+
     .hide { display: none !important; }
-    .chat-scroll::-webkit-scrollbar { width: 6px; }
-    .chat-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 6px; }
+    .chat-scroll::-webkit-scrollbar { width: 4px; }
+    .chat-scroll::-webkit-scrollbar-thumb { background: rgba(150,150,150,0.4); border-radius: 4px; }
   </style>
 </head>
-<body class="min-h-screen flex flex-col font-sans">
+<body class="theme-dark min-h-screen flex flex-col font-sans transition-colors duration-300">
 
   <!-- AUTH SCREEN -->
   <section id="screen-auth" class="min-h-screen grid lg:grid-cols-2">
-    <div class="p-8 md:p-12 bg-dark-900 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-slate-800">
+    <div class="p-8 md:p-12 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-slate-700/30">
       <div class="max-w-md mx-auto w-full">
-        <p class="text-brand-500 font-display text-xs tracking-[0.35em] mb-2">DCC GONTOR</p>
-        <h1 class="text-3xl md:text-4xl font-display font-bold leading-tight text-white mb-4">Darussalam<br />Computer Center</h1>
-        <p class="text-slate-400 text-sm mb-8">Sistem Monitoring Stok Komputer, Peminjaman, Pengecekan, Servis, dan Ruang Chat Interaktif.</p>
-        <div class="space-y-3 text-sm text-slate-300">
-          <p><i class="fa-solid fa-laptop text-brand-500 mr-3 w-5"></i>Manajemen unit komputer</p>
-          <p><i class="fa-solid fa-handshake text-brand-500 mr-3 w-5"></i>Peminjaman & pengembalian</p>
-          <p><i class="fa-solid fa-comments text-brand-500 mr-3 w-5"></i>Realtime chat, emoji, reply & file upload</p>
+        <span class="inline-block px-3 py-1 rounded-full bg-ios-blue/10 text-ios-blue text-xs font-semibold tracking-wider mb-4">DCC GONTOR</span>
+        <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">Darussalam<br />Computer Center</h1>
+        <p class="text-ios-gray text-sm mb-8 leading-relaxed">Sistem Monitoring Stok Komputer, Peminjaman, Pengecekan, Servis, dan Ruang Chat Realtime dengan antarmuka bergaya iOS.</p>
+        <div class="space-y-3 text-sm text-ios-gray">
+          <p><i class="fa-solid fa-laptop text-ios-blue mr-3 w-5"></i>Manajemen unit komputer & komponen</p>
+          <p><i class="fa-solid fa-handshake text-ios-green mr-3 w-5"></i>Peminjaman & pengembalian praktis</p>
+          <p><i class="fa-solid fa-comments text-ios-indigo mr-3 w-5"></i>Chat room dengan emoji, balasan & file</p>
         </div>
       </div>
     </div>
-    <div class="p-8 md:p-12 bg-dark-850 flex flex-col justify-center">
-      <div class="max-w-md mx-auto w-full">
-        <div class="flex gap-2 mb-6 bg-dark-900 p-1 rounded-xl border border-slate-800">
-          <button id="tab-login" class="flex-1 py-2 rounded-lg font-semibold text-sm bg-brand-500 text-white transition">Masuk</button>
-          <button id="tab-register" class="flex-1 py-2 rounded-lg text-sm text-slate-400 hover:text-white transition">Daftar</button>
+    <div class="p-8 md:p-12 flex flex-col justify-center">
+      <div class="max-w-md mx-auto w-full glass-card p-6 md:p-8 rounded-3xl shadow-2xl">
+        <div class="flex gap-1 mb-6 p-1 bg-black/10 dark:bg-white/10 rounded-xl">
+          <button id="tab-login" class="flex-1 py-2 rounded-lg font-semibold text-xs transition bg-ios-blue text-white shadow-sm">Masuk</button>
+          <button id="tab-register" class="flex-1 py-2 rounded-lg text-xs transition text-ios-gray hover:text-white">Daftar</button>
         </div>
         <form id="form-login" class="space-y-4">
           <div>
-            <label class="block text-xs text-slate-400 mb-1">Email</label>
-            <input required type="email" id="login-email" class="w-full bg-dark-900 border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-500" placeholder="staff@dcc.gontor" />
+            <label class="block text-xs font-medium text-ios-gray mb-1">Email</label>
+            <input required type="email" id="login-email" class="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-ios-blue transition" placeholder="staff@dcc.gontor" />
           </div>
           <div>
-            <label class="block text-xs text-slate-400 mb-1">Kata Sandi</label>
-            <input required type="password" id="login-pass" class="w-full bg-dark-900 border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-500" />
+            <label class="block text-xs font-medium text-ios-gray mb-1">Kata Sandi</label>
+            <input required type="password" id="login-pass" class="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-ios-blue transition" />
           </div>
-          <button class="w-full py-3 rounded-lg bg-brand-500 hover:bg-brand-600 text-white font-semibold text-sm transition shadow-lg shadow-brand-500/20">Masuk ke System</button>
+          <button class="w-full py-3 rounded-xl bg-ios-blue hover:bg-blue-600 text-white font-semibold text-sm transition shadow-lg shadow-ios-blue/30">Masuk</button>
         </form>
         <form id="form-register" class="space-y-4 hide">
           <div>
-            <label class="block text-xs text-slate-400 mb-1">Nama Lengkap</label>
-            <input required id="reg-name" class="w-full bg-dark-900 border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-500" />
+            <label class="block text-xs font-medium text-ios-gray mb-1">Nama Lengkap</label>
+            <input required id="reg-name" class="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-ios-blue transition" />
           </div>
           <div>
-            <label class="block text-xs text-slate-400 mb-1">Email</label>
-            <input required type="email" id="reg-email" class="w-full bg-dark-900 border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-500" />
+            <label class="block text-xs font-medium text-ios-gray mb-1">Email</label>
+            <input required type="email" id="reg-email" class="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-ios-blue transition" />
           </div>
           <div>
-            <label class="block text-xs text-slate-400 mb-1">Kata Sandi</label>
-            <input required minlength="6" type="password" id="reg-pass" class="w-full bg-dark-900 border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-500" />
+            <label class="block text-xs font-medium text-ios-gray mb-1">Kata Sandi</label>
+            <input required minlength="6" type="password" id="reg-pass" class="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-ios-blue transition" />
           </div>
-          <button class="w-full py-3 rounded-lg bg-brand-500 hover:bg-brand-600 text-white font-semibold text-sm transition shadow-lg shadow-brand-500/20">Daftarkan Akun</button>
+          <button class="w-full py-3 rounded-xl bg-ios-blue hover:bg-blue-600 text-white font-semibold text-sm transition shadow-lg shadow-ios-blue/30">Daftar Akun</button>
         </form>
-        <p id="auth-msg" class="mt-4 text-xs text-rose-400 min-h-[1.25rem] text-center"></p>
+        <p id="auth-msg" class="mt-4 text-xs text-ios-pink min-h-[1.25rem] text-center"></p>
       </div>
     </div>
   </section>
 
   <!-- APP MAIN SCREEN -->
   <section id="screen-app" class="hide min-h-screen flex flex-col">
-    <!-- HEADER NAVBAR -->
-    <header class="bg-dark-850 border-b border-slate-800 h-16 px-4 md:px-6 flex items-center justify-between sticky top-0 z-30">
+    <!-- IOS HEADER NAVBAR -->
+    <header class="glass glass-card border-b sticky top-0 z-30 h-16 px-4 md:px-8 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <button id="btn-toggle-sidebar" class="md:hidden text-slate-300 hover:text-white p-2">
-          <i class="fa-solid fa-bars text-xl"></i>
+        <button id="btn-toggle-sidebar" class="md:hidden p-2 rounded-xl hover:bg-black/10 dark:hover:bg-white/10 transition">
+          <i class="fa-solid fa-bars text-lg"></i>
         </button>
-        <div class="h-9 w-9 rounded-lg bg-brand-500 text-white grid place-items-center font-display font-bold">DCC</div>
+        <div class="h-9 w-9 rounded-xl bg-ios-blue text-white grid place-items-center font-bold text-sm shadow-md shadow-ios-blue/30">D</div>
         <div>
-          <h2 class="font-display text-sm tracking-wider text-white">DCC MONITOR</h2>
-          <p id="whoami" class="text-[11px] text-slate-400 truncate">Staff</p>
+          <h2 class="font-bold text-sm tracking-tight">DCC MONITOR</h2>
+          <p id="whoami" class="text-[11px] text-ios-gray truncate">Staff</p>
         </div>
       </div>
-      <button id="btn-logout" class="text-xs px-3 py-2 rounded-lg bg-dark-900 hover:bg-rose-900/30 text-rose-400 border border-slate-700 transition">
-        <i class="fa-solid fa-right-from-bracket mr-1"></i>Keluar
-      </button>
+
+      <!-- THEME SWITCHER & LOGOUT -->
+      <div class="flex items-center gap-2">
+        <div class="flex bg-black/10 dark:bg-white/10 p-1 rounded-xl text-xs">
+          <button onclick="setTheme('light')" class="px-2.5 py-1.5 rounded-lg transition font-medium" title="Light Mode">☀️</button>
+          <button onclick="setTheme('dark')" class="px-2.5 py-1.5 rounded-lg transition font-medium" title="Dark Mode">🌙</button>
+          <button onclick="setTheme('custom')" class="px-2.5 py-1.5 rounded-lg transition font-medium" title="Custom Theme">🎨</button>
+        </div>
+        <button id="btn-logout" class="text-xs px-3 py-2 rounded-xl bg-ios-pink/10 hover:bg-ios-pink/20 text-ios-pink font-medium transition">
+          <i class="fa-solid fa-right-from-bracket mr-1"></i>Keluar
+        </button>
+      </div>
     </header>
 
-    <!-- MAIN BODY (SIDEBAR + CONTENT) -->
+    <!-- MAIN BODY -->
     <div class="flex-1 flex overflow-hidden relative">
-      <!-- SIDEBAR NAV -->
-      <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-20 w-64 bg-dark-900 border-r border-slate-800 p-4 space-y-1 transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out shrink-0 flex flex-col justify-between">
-        <nav class="space-y-1">
-          <button data-view="home" class="nav-item active w-full text-left px-3 py-2.5 rounded-lg text-sm flex items-center transition"><i class="fa-solid fa-house w-6 text-center mr-2"></i>Beranda</button>
-          <button data-view="computers" class="nav-item w-full text-left px-3 py-2.5 rounded-lg text-sm flex items-center transition"><i class="fa-solid fa-computer w-6 text-center mr-2"></i>Stok Komputer</button>
-          <button data-view="loans" class="nav-item w-full text-left px-3 py-2.5 rounded-lg text-sm flex items-center transition"><i class="fa-solid fa-handshake w-6 text-center mr-2"></i>Peminjaman</button>
-          <button data-view="checking" class="nav-item w-full text-left px-3 py-2.5 rounded-lg text-sm flex items-center transition"><i class="fa-solid fa-clipboard-check w-6 text-center mr-2"></i>Pengecekan</button>
-          <button data-view="services" class="nav-item w-full text-left px-3 py-2.5 rounded-lg text-sm flex items-center transition"><i class="fa-solid fa-screwdriver-wrench w-6 text-center mr-2"></i>Servis</button>
-          <button data-view="recap" class="nav-item w-full text-left px-3 py-2.5 rounded-lg text-sm flex items-center transition"><i class="fa-solid fa-chart-column w-6 text-center mr-2"></i>Rekap Statistik</button>
-          <button data-view="chat" class="nav-item w-full text-left px-3 py-2.5 rounded-lg text-sm flex items-center transition"><i class="fa-solid fa-comments w-6 text-center mr-2"></i>Chat Room</button>
+      <!-- SIDEBAR -->
+      <aside id="sidebar" class="glass glass-card fixed md:static inset-y-0 left-0 z-25 w-64 border-r p-4 space-y-1.5 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out shrink-0 flex flex-col justify-between">
+        <nav class="space-y-1.5">
+          <button data-view="home" class="nav-item active w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center transition"><i class="fa-solid fa-house w-6 text-center mr-2.5"></i>Beranda</button>
+          <button data-view="computers" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center transition"><i class="fa-solid fa-computer w-6 text-center mr-2.5"></i>Stok Komputer</button>
+          <button data-view="loans" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center transition"><i class="fa-solid fa-handshake w-6 text-center mr-2.5"></i>Peminjaman</button>
+          <button data-view="checking" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center transition"><i class="fa-solid fa-clipboard-check w-6 text-center mr-2.5"></i>Pengecekan</button>
+          <button data-view="services" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center transition"><i class="fa-solid fa-screwdriver-wrench w-6 text-center mr-2.5"></i>Servis</button>
+          <button data-view="recap" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center transition"><i class="fa-solid fa-chart-column w-6 text-center mr-2.5"></i>Rekap Statistik</button>
+          <button data-view="chat" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center transition"><i class="fa-solid fa-comments w-6 text-center mr-2.5"></i>Chat Room</button>
         </nav>
-        <div class="text-[11px] text-slate-500 text-center pt-4 border-t border-slate-800">
+        <div class="text-[11px] text-ios-gray text-center pt-4 border-t border-black/10 dark:border-white/10">
           Darussalam Computer Center
         </div>
       </aside>
 
-      <!-- OVERLAY BACKDROP MOBILE SIDEBAR -->
-      <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-10 hidden md:hidden"></div>
+      <!-- BACKDROP -->
+      <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-20 hidden md:hidden"></div>
 
-      <!-- VIEW CONTENT AREA -->
-      <main class="flex-1 bg-dark-850 overflow-y-auto w-full">
-        <!-- VIEW: HOME -->
-        <section id="view-home" class="p-4 md:p-6 space-y-6">
-          <h3 class="font-display text-lg text-white">Ringkasan Operasional</h3>
-          <div id="home-cards" class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4"></div>
-          <div class="bg-dark-900 rounded-xl p-4 border border-slate-800">
-            <canvas id="home-chart" class="max-h-[250px]"></canvas>
+      <!-- CONTENT VIEWS -->
+      <main class="flex-1 overflow-y-auto p-4 md:p-8">
+        <!-- HOME -->
+        <section id="view-home" class="space-y-6 max-w-6xl mx-auto">
+          <h3 class="text-xl font-bold tracking-tight">Ringkasan Operasional</h3>
+          <div id="home-cards" class="grid grid-cols-2 lg:grid-cols-4 gap-4"></div>
+          <div class="glass-card p-6 rounded-3xl shadow-lg">
+            <canvas id="home-chart" class="max-h-[280px]"></canvas>
           </div>
         </section>
 
-        <!-- VIEW: COMPUTERS -->
-        <section id="view-computers" class="p-4 md:p-6 space-y-4 hide">
+        <!-- COMPUTERS -->
+        <section id="view-computers" class="space-y-4 max-w-6xl mx-auto hide">
           <div class="flex items-center justify-between">
-            <h3 class="font-display text-lg text-white">Stok Komputer</h3>
-            <button data-open="modal-computer" class="px-3 py-2 rounded-lg bg-brand-500 hover:bg-brand-600 text-white text-xs md:text-sm font-medium transition flex items-center gap-2"><i class="fa-solid fa-plus"></i>Unit Baru</button>
+            <h3 class="text-xl font-bold tracking-tight">Stok Komputer</h3>
+            <button data-open="modal-computer" class="px-4 py-2 rounded-xl bg-ios-blue hover:bg-blue-600 text-white text-xs md:text-sm font-semibold shadow-lg shadow-ios-blue/30 transition flex items-center gap-2"><i class="fa-solid fa-plus"></i>Unit Baru</button>
           </div>
-          <div class="bg-dark-900 rounded-xl border border-slate-800 overflow-x-auto">
+          <div class="glass-card rounded-3xl shadow-lg overflow-x-auto">
             <table class="w-full text-left text-sm">
-              <thead class="bg-dark-800 text-slate-400 text-xs">
-                <tr><th class="p-3">ID</th><th>Model</th><th>Tipe</th><th>Status</th><th>Kondisi</th><th class="text-right p-3">Aksi</th></tr>
+              <thead class="border-b border-black/10 dark:border-white/10 text-ios-gray text-xs">
+                <tr><th class="p-4">ID</th><th>Model</th><th>Tipe</th><th>Status</th><th>Kondisi</th><th class="text-right p-4">Aksi</th></tr>
               </thead>
-              <tbody id="tbl-computers" class="divide-y divide-slate-800"></tbody>
+              <tbody id="tbl-computers" class="divide-y divide-black/5 dark:divide-white/5"></tbody>
             </table>
           </div>
         </section>
 
-        <!-- VIEW: LOANS -->
-        <section id="view-loans" class="p-4 md:p-6 space-y-4 hide">
+        <!-- LOANS -->
+        <section id="view-loans" class="space-y-4 max-w-6xl mx-auto hide">
           <div class="flex items-center justify-between">
-            <h3 class="font-display text-lg text-white">Peminjaman</h3>
-            <button data-open="modal-loan" class="px-3 py-2 rounded-lg bg-brand-500 hover:bg-brand-600 text-white text-xs md:text-sm font-medium transition flex items-center gap-2"><i class="fa-solid fa-plus"></i>Catat Pinjam</button>
+            <h3 class="text-xl font-bold tracking-tight">Peminjaman</h3>
+            <button data-open="modal-loan" class="px-4 py-2 rounded-xl bg-ios-blue hover:bg-blue-600 text-white text-xs md:text-sm font-semibold shadow-lg shadow-ios-blue/30 transition flex items-center gap-2"><i class="fa-solid fa-plus"></i>Catat Pinjam</button>
           </div>
-          <div class="bg-dark-900 rounded-xl border border-slate-800 overflow-x-auto">
+          <div class="glass-card rounded-3xl shadow-lg overflow-x-auto">
             <table class="w-full text-left text-sm">
-              <thead class="bg-dark-800 text-slate-400 text-xs">
-                <tr><th class="p-3">Unit</th><th>Peminjam</th><th>Keperluan</th><th>Status</th><th class="text-right p-3">Aksi</th></tr>
+              <thead class="border-b border-black/10 dark:border-white/10 text-ios-gray text-xs">
+                <tr><th class="p-4">Unit</th><th>Peminjam</th><th>Keperluan</th><th>Status</th><th class="text-right p-4">Aksi</th></tr>
               </thead>
-              <tbody id="tbl-loans" class="divide-y divide-slate-800"></tbody>
+              <tbody id="tbl-loans" class="divide-y divide-black/5 dark:divide-white/5"></tbody>
             </table>
           </div>
         </section>
 
-        <!-- VIEW: CHECKING -->
-        <section id="view-checking" class="p-4 md:p-6 space-y-4 hide">
-          <h3 class="font-display text-lg text-white">Pengecekan Unit</h3>
-          <p class="text-xs text-slate-400">Hasil pengecekan memperbarui kondisi/status komputer dan tercatat di layanan servis sebagai log inspeksi.</p>
-          <form id="form-checking" class="bg-dark-900 border border-slate-800 rounded-xl p-4 md:p-6 grid sm:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs text-slate-400 mb-1">Unit</label>
-              <select id="chk-unit" class="w-full bg-dark-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500"></select>
+        <!-- CHECKING -->
+        <section id="view-checking" class="space-y-4 max-w-2xl mx-auto hide">
+          <h3 class="text-xl font-bold tracking-tight">Pengecekan Unit</h3>
+          <p class="text-xs text-ios-gray">Hasil pengecekan memperbarui kondisi/status komputer dan tercatat di layanan servis.</p>
+          <form id="form-checking" class="glass-card rounded-3xl p-6 shadow-lg grid sm:grid-cols-2 gap-4">
+            <div class="sm:col-span-2">
+              <label class="block text-xs font-medium text-ios-gray mb-1">Unit</label>
+              <select id="chk-unit" class="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ios-blue"></select>
             </div>
             <div>
-              <label class="block text-xs text-slate-400 mb-1">Kondisi</label>
-              <select id="chk-condition" class="w-full bg-dark-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500">
+              <label class="block text-xs font-medium text-ios-gray mb-1">Kondisi</label>
+              <select id="chk-condition" class="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ios-blue">
                 <option>Sangat Baik</option><option>Baik</option><option>Cukup</option><option>Rusak Ringan</option><option>Rusak Berat</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs text-slate-400 mb-1">Status Setelah Cek</label>
-              <select id="chk-status" class="w-full bg-dark-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500">
+              <label class="block text-xs font-medium text-ios-gray mb-1">Status</label>
+              <select id="chk-status" class="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ios-blue">
                 <option value="available">available</option>
                 <option value="checking">checking</option>
                 <option value="maintenance">maintenance</option>
@@ -196,85 +228,79 @@
               </select>
             </div>
             <div class="sm:col-span-2">
-              <label class="block text-xs text-slate-400 mb-1">Catatan</label>
-              <input id="chk-notes" class="w-full bg-dark-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500" placeholder="Keyboard aus, pendingin berisik, ..." />
+              <label class="block text-xs font-medium text-ios-gray mb-1">Catatan</label>
+              <input id="chk-notes" class="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-ios-blue" placeholder="Keyboard aus, pendingin berisik, ..." />
             </div>
-            <button class="sm:col-span-2 py-2.5 rounded-lg bg-brand-500 hover:bg-brand-600 text-white font-medium text-sm transition">Simpan Pengecekan</button>
+            <button class="sm:col-span-2 py-3 rounded-xl bg-ios-blue hover:bg-blue-600 text-white font-semibold text-sm transition shadow-lg shadow-ios-blue/30">Simpan Pengecekan</button>
           </form>
         </section>
 
-        <!-- VIEW: SERVICES -->
-        <section id="view-services" class="p-4 md:p-6 space-y-4 hide">
+        <!-- SERVICES -->
+        <section id="view-services" class="space-y-4 max-w-6xl mx-auto hide">
           <div class="flex items-center justify-between">
-            <h3 class="font-display text-lg text-white">Servis</h3>
-            <button data-open="modal-service" class="px-3 py-2 rounded-lg bg-brand-500 hover:bg-brand-600 text-white text-xs md:text-sm font-medium transition flex items-center gap-2"><i class="fa-solid fa-plus"></i>Tiket Servis</button>
+            <h3 class="text-xl font-bold tracking-tight">Servis</h3>
+            <button data-open="modal-service" class="px-4 py-2 rounded-xl bg-ios-blue hover:bg-blue-600 text-white text-xs md:text-sm font-semibold shadow-lg shadow-ios-blue/30 transition flex items-center gap-2"><i class="fa-solid fa-plus"></i>Tiket Servis</button>
           </div>
           <div id="svc-list" class="grid gap-3"></div>
         </section>
 
-        <!-- VIEW: RECAP -->
-        <section id="view-recap" class="p-4 md:p-6 space-y-4 hide">
-          <h3 class="font-display text-lg text-white">Rekam Statistik</h3>
+        <!-- RECAP -->
+        <section id="view-recap" class="space-y-4 max-w-6xl mx-auto hide">
+          <h3 class="text-xl font-bold tracking-tight">Rekam Statistik</h3>
           <div class="grid md:grid-cols-2 gap-4">
-            <div class="bg-dark-900 border border-slate-800 rounded-xl p-4"><canvas id="chart-status"></canvas></div>
-            <div class="bg-dark-900 border border-slate-800 rounded-xl p-4"><canvas id="chart-type"></canvas></div>
-            <div class="bg-dark-900 border border-slate-800 rounded-xl p-4 md:col-span-2"><canvas id="chart-ops"></canvas></div>
+            <div class="glass-card rounded-3xl p-6 shadow-lg"><canvas id="chart-status"></canvas></div>
+            <div class="glass-card rounded-3xl p-6 shadow-lg"><canvas id="chart-type"></canvas></div>
+            <div class="glass-card rounded-3xl p-6 shadow-lg md:col-span-2"><canvas id="chart-ops"></canvas></div>
           </div>
         </section>
 
-        <!-- VIEW: CHAT ROOM -->
-        <section id="view-chat" class="hide flex flex-col h-[calc(100vh-4rem)] bg-dark-900 relative">
-          <!-- CHAT HEADER -->
-          <div class="bg-dark-850 px-4 py-3 border-b border-slate-800 flex items-center justify-between shrink-0">
+        <!-- CHAT ROOM -->
+        <section id="view-chat" class="hide flex flex-col h-[calc(100vh-6rem)] max-w-4xl mx-auto glass-card rounded-3xl overflow-hidden shadow-2xl relative">
+          <div class="bg-black/10 dark:bg-white/5 px-6 py-4 border-b border-black/10 dark:border-white/10 flex items-center justify-between shrink-0">
             <div class="flex items-center gap-3">
-              <div class="h-9 w-9 rounded-full bg-brand-500/20 text-brand-500 grid place-items-center"><i class="fa-solid fa-comments"></i></div>
+              <div class="h-10 w-10 rounded-full bg-ios-blue/20 text-ios-blue grid place-items-center"><i class="fa-solid fa-comments text-lg"></i></div>
               <div>
-                <p id="chat-title" class="font-semibold text-sm text-white">DCC Chat Room</p>
-                <p id="chat-sub" class="text-[11px] text-slate-400">Realtime Community Chat</p>
+                <p id="chat-title" class="font-bold text-sm">DCC Chat Room</p>
+                <p id="chat-sub" class="text-[11px] text-ios-gray">Realtime Community Chat</p>
               </div>
             </div>
             <div class="relative">
-              <button id="btn-menu" class="p-2 text-slate-400 hover:text-white rounded-lg"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-              <div id="chat-menu" class="hide absolute right-0 top-10 z-20 w-48 bg-dark-800 border border-slate-700 rounded-xl shadow-xl overflow-hidden py-1">
-                <button id="menu-ping" class="w-full text-left px-4 py-2 hover:bg-slate-700/50 text-xs text-white flex items-center gap-2"><i class="fa-solid fa-bolt text-brand-500"></i>PING!</button>
-                <button id="menu-select" class="w-full text-left px-4 py-2 hover:bg-slate-700/50 text-xs text-white flex items-center gap-2"><i class="fa-solid fa-user-group"></i>Select Chat</button>
-                <button id="menu-profile" class="w-full text-left px-4 py-2 hover:bg-slate-700/50 text-xs text-white flex items-center gap-2"><i class="fa-solid fa-id-badge"></i>Edit Profile</button>
+              <button id="btn-menu" class="p-2 text-ios-gray hover:text-white rounded-xl"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+              <div id="chat-menu" class="hide absolute right-0 top-11 z-20 w-48 glass-card border rounded-2xl shadow-xl overflow-hidden py-1">
+                <button id="menu-ping" class="w-full text-left px-4 py-2.5 hover:bg-black/10 dark:hover:bg-white/10 text-xs font-medium flex items-center gap-2"><i class="fa-solid fa-bolt text-ios-orange"></i>PING!</button>
+                <button id="menu-select" class="w-full text-left px-4 py-2.5 hover:bg-black/10 dark:hover:bg-white/10 text-xs font-medium flex items-center gap-2"><i class="fa-solid fa-user-group"></i>Select Chat</button>
+                <button id="menu-profile" class="w-full text-left px-4 py-2.5 hover:bg-black/10 dark:hover:bg-white/10 text-xs font-medium flex items-center gap-2"><i class="fa-solid fa-id-badge"></i>Edit Profile</button>
               </div>
             </div>
           </div>
 
-          <!-- CHAT MESSAGES STREAM -->
-          <div id="chat-stream" class="flex-1 overflow-y-auto chat-scroll p-4 space-y-3"></div>
+          <div id="chat-stream" class="flex-1 overflow-y-auto chat-scroll p-6 space-y-3"></div>
 
-          <!-- REPLY PREVIEW -->
-          <div id="reply-preview" class="hide px-4 py-2 bg-dark-800 border-t border-slate-800 flex items-center justify-between text-xs">
+          <div id="reply-preview" class="hide px-4 py-2 bg-black/10 dark:bg-white/5 border-t border-black/10 dark:border-white/10 flex items-center justify-between text-xs">
             <div class="truncate">
-              <span class="font-semibold text-brand-500">Membalas <span id="reply-to-sender"></span>:</span>
-              <p id="reply-to-text" class="text-slate-300 truncate"></p>
+              <span class="font-semibold text-ios-blue">Membalas <span id="reply-to-sender"></span>:</span>
+              <p id="reply-to-text" class="text-ios-gray truncate"></p>
             </div>
-            <button type="button" id="cancel-reply" class="text-slate-400 hover:text-white px-2"><i class="fa-solid fa-xmark"></i></button>
+            <button type="button" id="cancel-reply" class="text-ios-gray hover:text-white px-2"><i class="fa-solid fa-xmark"></i></button>
           </div>
 
-          <!-- ATTACHMENT PREVIEW -->
-          <div id="attach-preview" class="hide px-4 py-2 bg-dark-800 border-t border-slate-800 flex items-center justify-between text-xs">
+          <div id="attach-preview" class="hide px-4 py-2 bg-black/10 dark:bg-white/5 border-t border-black/10 dark:border-white/10 flex items-center justify-between text-xs">
             <div class="flex items-center gap-2 truncate">
-              <img id="attach-thumb" class="h-8 w-8 object-cover rounded hidden" alt="thumb" />
-              <i id="attach-icon" class="fa-solid fa-file text-base text-brand-500"></i>
-              <span id="attach-filename" class="truncate font-medium text-white"></span>
+              <img id="attach-thumb" class="h-8 w-8 object-cover rounded-lg hidden" alt="thumb" />
+              <i id="attach-icon" class="fa-solid fa-file text-base text-ios-blue"></i>
+              <span id="attach-filename" class="truncate font-medium"></span>
             </div>
-            <button type="button" id="cancel-attach" class="text-slate-400 hover:text-white px-2"><i class="fa-solid fa-xmark"></i></button>
+            <button type="button" id="cancel-attach" class="text-ios-gray hover:text-white px-2"><i class="fa-solid fa-xmark"></i></button>
           </div>
 
-          <!-- EMOJI PICKER -->
-          <div id="emoji-picker" class="hide absolute bottom-16 left-4 z-30 bg-dark-800 border border-slate-700 rounded-xl shadow-xl p-3 grid grid-cols-8 gap-2 w-72 text-lg"></div>
+          <div id="emoji-picker" class="hide absolute bottom-20 left-4 z-30 glass-card border rounded-2xl shadow-2xl p-3 grid grid-cols-8 gap-2 w-72 text-lg"></div>
 
-          <!-- CHAT INPUT FORM -->
-          <form id="form-chat" class="p-3 bg-dark-850 border-t border-slate-800 flex items-center gap-2 shrink-0">
-            <button type="button" id="btn-emoji" class="p-2 text-slate-400 hover:text-white"><i class="fa-regular fa-face-smile text-lg"></i></button>
-            <button type="button" id="btn-attach" class="p-2 text-slate-400 hover:text-white"><i class="fa-solid fa-paperclip text-lg"></i></button>
+          <form id="form-chat" class="p-3 bg-black/10 dark:bg-white/5 border-t border-black/10 dark:border-white/10 flex items-center gap-2 shrink-0">
+            <button type="button" id="btn-emoji" class="p-2.5 text-ios-gray hover:text-white rounded-full"><i class="fa-regular fa-face-smile text-lg"></i></button>
+            <button type="button" id="btn-attach" class="p-2.5 text-ios-gray hover:text-white rounded-full"><i class="fa-solid fa-paperclip text-lg"></i></button>
             <input type="file" id="chat-file" class="hide" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" />
-            <input id="chat-text" class="flex-1 bg-dark-900 border border-slate-700 rounded-full px-4 py-2 text-sm text-white focus:outline-none focus:border-brand-500" placeholder="Tulis pesan..." autocomplete="off" />
-            <button class="h-9 w-9 rounded-full bg-brand-500 hover:bg-brand-600 text-white grid place-items-center shrink-0 transition"><i class="fa-solid fa-paper-plane text-xs"></i></button>
+            <input id="chat-text" class="flex-1 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-full px-4 py-2.5 text-sm focus:outline-none focus:border-ios-blue" placeholder="Kirim pesan..." autocomplete="off" />
+            <button class="h-10 w-10 rounded-full bg-ios-blue hover:bg-blue-600 text-white grid place-items-center shrink-0 transition shadow-md shadow-ios-blue/30"><i class="fa-solid fa-paper-plane text-xs"></i></button>
           </form>
         </section>
       </main>
@@ -282,74 +308,74 @@
   </section>
 
   <!-- MODALS -->
-  <dialog id="modal-computer" class="rounded-xl p-0 w-[min(92vw,480px)] bg-dark-900 text-white border border-slate-800 backdrop:bg-black/70">
-    <form id="form-computer" class="p-5 space-y-3">
-      <h4 class="font-display text-base font-bold">Unit Komputer</h4>
-      <input id="pc-id" required placeholder="DCC-006" class="w-full bg-dark-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500" />
-      <input id="pc-model" required placeholder="Model" class="w-full bg-dark-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500" />
-      <input id="pc-type" required placeholder="Laptop / Desktop" class="w-full bg-dark-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500" />
-      <input id="pc-specs" placeholder="Spesifikasi" class="w-full bg-dark-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500" />
-      <select id="pc-status" class="w-full bg-dark-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500">
+  <dialog id="modal-computer" class="glass-card rounded-3xl p-0 w-[min(92vw,480px)] backdrop:bg-black/60">
+    <form id="form-computer" class="p-6 space-y-4">
+      <h4 class="text-lg font-bold">Unit Komputer</h4>
+      <input id="pc-id" required placeholder="ID (contoh: DCC-006)" class="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-ios-blue" />
+      <input id="pc-model" required placeholder="Model" class="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-ios-blue" />
+      <input id="pc-type" required placeholder="Tipe (Laptop / Desktop)" class="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-ios-blue" />
+      <input id="pc-specs" placeholder="Spesifikasi" class="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-ios-blue" />
+      <select id="pc-status" class="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-ios-blue">
         <option>available</option><option>borrowed</option><option>maintenance</option><option>checking</option>
       </select>
-      <input id="pc-condition" placeholder="Kondisi" class="w-full bg-dark-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500" />
+      <input id="pc-condition" placeholder="Kondisi" class="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-ios-blue" />
       <div class="flex gap-2 justify-end pt-2">
-        <button type="button" data-close class="px-4 py-2 text-xs text-slate-400 hover:text-white">Batal</button>
-        <button class="px-4 py-2 bg-brand-500 text-white text-xs rounded-lg font-medium">Simpan</button>
+        <button type="button" data-close class="px-4 py-2 text-xs text-ios-gray hover:text-white">Batal</button>
+        <button class="px-4 py-2 bg-ios-blue text-white text-xs rounded-xl font-semibold shadow-md shadow-ios-blue/30">Simpan</button>
       </div>
     </form>
   </dialog>
 
-  <dialog id="modal-loan" class="rounded-xl p-0 w-[min(92vw,480px)] bg-dark-900 text-white border border-slate-800 backdrop:bg-black/70">
-    <form id="form-loan" class="p-5 space-y-3">
-      <h4 class="font-display text-base font-bold">Peminjaman Baru</h4>
-      <select id="loan-unit" class="w-full bg-dark-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500"></select>
-      <input id="loan-borrower" required placeholder="Nama peminjam" class="w-full bg-dark-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500" />
-      <input id="loan-purpose" required placeholder="Keperluan" class="w-full bg-dark-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500" />
+  <dialog id="modal-loan" class="glass-card rounded-3xl p-0 w-[min(92vw,480px)] backdrop:bg-black/60">
+    <form id="form-loan" class="p-6 space-y-4">
+      <h4 class="text-lg font-bold">Peminjaman Baru</h4>
+      <select id="loan-unit" class="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-ios-blue"></select>
+      <input id="loan-borrower" required placeholder="Nama peminjam" class="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-ios-blue" />
+      <input id="loan-purpose" required placeholder="Keperluan" class="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-ios-blue" />
       <div class="flex gap-2 justify-end pt-2">
-        <button type="button" data-close class="px-4 py-2 text-xs text-slate-400 hover:text-white">Batal</button>
-        <button class="px-4 py-2 bg-brand-500 text-white text-xs rounded-lg font-medium">Simpan</button>
+        <button type="button" data-close class="px-4 py-2 text-xs text-ios-gray hover:text-white">Batal</button>
+        <button class="px-4 py-2 bg-ios-blue text-white text-xs rounded-xl font-semibold shadow-md shadow-ios-blue/30">Simpan</button>
       </div>
     </form>
   </dialog>
 
-  <dialog id="modal-service" class="rounded-xl p-0 w-[min(92vw,480px)] bg-dark-900 text-white border border-slate-800 backdrop:bg-black/70">
-    <form id="form-service" class="p-5 space-y-3">
-      <h4 class="font-display text-base font-bold">Tiket Servis</h4>
-      <select id="svc-unit" class="w-full bg-dark-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500"></select>
-      <input id="svc-problem" required placeholder="Kerusakan / keluhan" class="w-full bg-dark-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500" />
-      <input id="svc-tech" placeholder="Teknisi" class="w-full bg-dark-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500" />
-      <input id="svc-notes" placeholder="Catatan" class="w-full bg-dark-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500" />
-      <select id="svc-status" class="w-full bg-dark-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500">
+  <dialog id="modal-service" class="glass-card rounded-3xl p-0 w-[min(92vw,480px)] backdrop:bg-black/60">
+    <form id="form-service" class="p-6 space-y-4">
+      <h4 class="text-lg font-bold">Tiket Servis</h4>
+      <select id="svc-unit" class="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-ios-blue"></select>
+      <input id="svc-problem" required placeholder="Kerusakan / keluhan" class="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-ios-blue" />
+      <input id="svc-tech" placeholder="Teknisi" class="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-ios-blue" />
+      <input id="svc-notes" placeholder="Catatan" class="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-ios-blue" />
+      <select id="svc-status" class="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-ios-blue">
         <option>open</option><option>in_progress</option><option>done</option>
       </select>
       <div class="flex gap-2 justify-end pt-2">
-        <button type="button" data-close class="px-4 py-2 text-xs text-slate-400 hover:text-white">Batal</button>
-        <button class="px-4 py-2 bg-brand-500 text-white text-xs rounded-lg font-medium">Simpan</button>
+        <button type="button" data-close class="px-4 py-2 text-xs text-ios-gray hover:text-white">Batal</button>
+        <button class="px-4 py-2 bg-ios-blue text-white text-xs rounded-xl font-semibold shadow-md shadow-ios-blue/30">Simpan</button>
       </div>
     </form>
   </dialog>
 
-  <dialog id="modal-select" class="rounded-xl p-0 w-[min(92vw,420px)] bg-dark-900 text-white border border-slate-800 backdrop:bg-black/70">
-    <div class="p-5">
-      <h4 class="font-display text-base font-bold mb-3">Select Chat</h4>
-      <button id="select-room" class="w-full mb-2 px-3 py-2 rounded-lg bg-dark-800 text-left text-sm text-white">DCC Chat Room (semua)</button>
+  <dialog id="modal-select" class="glass-card rounded-3xl p-0 w-[min(92vw,420px)] backdrop:bg-black/60">
+    <div class="p-6">
+      <h4 class="text-lg font-bold mb-3">Select Chat</h4>
+      <button id="select-room" class="w-full mb-2 px-3.5 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 text-left text-sm font-medium">DCC Chat Room (semua)</button>
       <div id="select-list" class="space-y-1 max-h-60 overflow-auto"></div>
-      <button data-close class="mt-4 text-xs text-slate-400 hover:text-white">Tutup</button>
+      <button data-close class="mt-4 text-xs text-ios-gray hover:text-white">Tutup</button>
     </div>
   </dialog>
 
-  <dialog id="modal-profile" class="rounded-xl p-0 w-[min(92vw,420px)] bg-dark-900 text-white border border-slate-800 backdrop:bg-black/70">
-    <form id="form-profile" class="p-5 space-y-3">
-      <h4 class="font-display text-base font-bold">Edit Profile</h4>
+  <dialog id="modal-profile" class="glass-card rounded-3xl p-0 w-[min(92vw,420px)] backdrop:bg-black/60">
+    <form id="form-profile" class="p-6 space-y-4">
+      <h4 class="text-lg font-bold">Edit Profile</h4>
       <div class="flex items-center gap-3">
-        <img id="prof-preview" class="h-14 w-14 rounded-lg object-cover bg-dark-800 border border-slate-700" alt="avatar" />
-        <input id="prof-file" type="file" accept="image/*" class="text-xs text-slate-400" />
+        <img id="prof-preview" class="h-14 w-14 rounded-2xl object-cover border border-black/10 dark:border-white/10" alt="avatar" />
+        <input id="prof-file" type="file" accept="image/*" class="text-xs text-ios-gray" />
       </div>
-      <input id="prof-name" required class="w-full bg-dark-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-500" />
+      <input id="prof-name" required class="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-ios-blue" />
       <div class="flex gap-2 justify-end pt-2">
-        <button type="button" data-close class="px-4 py-2 text-xs text-slate-400 hover:text-white">Batal</button>
-        <button class="px-4 py-2 bg-brand-500 text-white text-xs rounded-lg font-medium">Simpan</button>
+        <button type="button" data-close class="px-4 py-2 text-xs text-ios-gray hover:text-white">Batal</button>
+        <button class="px-4 py-2 bg-ios-blue text-white text-xs rounded-xl font-semibold shadow-md shadow-ios-blue/30">Simpan</button>
       </div>
     </form>
   </dialog>
@@ -380,7 +406,21 @@
       if (el) el.textContent = msg || "";
     }
 
-    // TOGGLE SIDEBAR MOBILE
+    // THEME SWITCHER
+    function setTheme(mode) {
+      document.body.className = `theme-${mode} min-h-screen flex flex-col font-sans transition-colors duration-300`;
+      const html = document.documentElement;
+      if (mode === 'dark' || mode === 'custom') {
+        html.classList.add('dark');
+      } else {
+        html.classList.remove('dark');
+      }
+      localStorage.setItem('dcc_theme', mode);
+    }
+    const savedTheme = localStorage.getItem('dcc_theme') || 'dark';
+    setTheme(savedTheme);
+
+    // SIDEBAR MOBILE TOGGLE
     const sidebar = $("sidebar");
     const overlay = $("sidebar-overlay");
     function toggleSidebar() {
@@ -392,13 +432,13 @@
 
     $("tab-login").onclick = () => { 
       show($("form-login"), true); show($("form-register"), false); 
-      $("tab-login").className = "flex-1 py-2 rounded-lg font-semibold text-sm bg-brand-500 text-white transition";
-      $("tab-register").className = "flex-1 py-2 rounded-lg text-sm text-slate-400 hover:text-white transition";
+      $("tab-login").className = "flex-1 py-2 rounded-lg font-semibold text-xs transition bg-ios-blue text-white shadow-sm";
+      $("tab-register").className = "flex-1 py-2 rounded-lg text-xs transition text-ios-gray hover:text-white";
     };
     $("tab-register").onclick = () => { 
       show($("form-login"), false); show($("form-register"), true); 
-      $("tab-register").className = "flex-1 py-2 rounded-lg font-semibold text-sm bg-brand-500 text-white transition";
-      $("tab-login").className = "flex-1 py-2 rounded-lg text-sm text-slate-400 hover:text-white transition";
+      $("tab-register").className = "flex-1 py-2 rounded-lg font-semibold text-xs transition bg-ios-blue text-white shadow-sm";
+      $("tab-login").className = "flex-1 py-2 rounded-lg text-xs transition text-ios-gray hover:text-white";
     };
 
     document.querySelectorAll("[data-open]").forEach((b) => b.onclick = () => $(b.dataset.open).showModal());
@@ -501,47 +541,47 @@
     function renderAll() {
       fillUnitSelects();
       $("home-cards").innerHTML = [
-        ["Total Unit", state.computers.length, "fa-computer"],
-        ["Tersedia", state.computers.filter((x) => x.status === "available").length, "fa-circle-check"],
-        ["Pinjaman Aktif", state.loans.filter((x) => x.status !== "returned").length, "fa-handshake"],
-        ["Tiket Servis", state.services.length, "fa-screwdriver-wrench"]
-      ].map(([t, n, i]) => `
-        <div class="bg-dark-900 border border-slate-800 rounded-xl p-4">
-          <p class="text-xs text-slate-400 mb-1 flex items-center gap-2"><i class="fa-solid ${i} text-brand-500"></i>${t}</p>
-          <p class="font-display text-2xl font-bold text-white">${n}</p>
+        ["Total Unit", state.computers.length, "fa-computer", "ios-blue"],
+        ["Tersedia", state.computers.filter((x) => x.status === "available").length, "fa-circle-check", "ios-green"],
+        ["Pinjaman Aktif", state.loans.filter((x) => x.status !== "returned").length, "fa-handshake", "ios-orange"],
+        ["Tiket Servis", state.services.length, "fa-screwdriver-wrench", "ios-pink"]
+      ].map(([t, n, i, color]) => `
+        <div class="glass-card rounded-3xl p-5 shadow-lg">
+          <p class="text-xs text-ios-gray mb-1 flex items-center gap-2"><i class="fa-solid ${i} text-${color}"></i>${t}</p>
+          <p class="text-3xl font-bold tracking-tight">${n}</p>
         </div>`).join("");
 
       $("tbl-computers").innerHTML = state.computers.map((x) => `
-        <tr class="hover:bg-slate-800/30 transition">
-          <td class="p-3 font-semibold text-brand-500">${esc(x.id)}</td>
+        <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition">
+          <td class="p-4 font-semibold text-ios-blue">${esc(x.id)}</td>
           <td>${esc(x.model)}</td>
           <td>${esc(x.type)}</td>
-          <td><span class="px-2 py-0.5 rounded text-xs ${x.status === 'available' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}">${esc(x.status)}</span></td>
+          <td><span class="px-2.5 py-1 rounded-full text-xs font-medium ${x.status === 'available' ? 'bg-ios-green/10 text-ios-green' : 'bg-ios-orange/10 text-ios-orange'}">${esc(x.status)}</span></td>
           <td>${esc(x.condition || "-")}</td>
-          <td class="p-3 text-right">
-            <button class="text-slate-500 hover:text-rose-400 p-1" onclick="removeComputer('${esc(x.id)}')"><i class="fa-solid fa-trash"></i></button>
+          <td class="p-4 text-right">
+            <button class="text-ios-gray hover:text-ios-pink p-1 transition" onclick="removeComputer('${esc(x.id)}')"><i class="fa-solid fa-trash"></i></button>
           </td>
-        </tr>`).join("") || `<tr><td class="p-4 text-center text-slate-500" colspan="6">Belum ada data.</td></tr>`;
+        </tr>`).join("") || `<tr><td class="p-6 text-center text-ios-gray" colspan="6">Belum ada data unit.</td></tr>`;
 
       $("tbl-loans").innerHTML = state.loans.map((x) => `
-        <tr class="hover:bg-slate-800/30 transition">
-          <td class="p-3 text-brand-500 font-medium">${esc(x.unit_id)}</td>
+        <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition">
+          <td class="p-4 font-semibold text-ios-blue">${esc(x.unit_id)}</td>
           <td>${esc(x.borrower)}</td>
           <td>${esc(x.purpose)}</td>
           <td>${esc(x.status)}</td>
-          <td class="p-3 text-right">${x.status !== "returned" ? `<button class="text-xs px-2.5 py-1 rounded bg-brand-500 text-white font-medium hover:bg-brand-600 transition" onclick="returnLoan('${x.id}','${esc(x.unit_id)}')">Kembalikan</button>` : "-"}</td>
-        </tr>`).join("") || `<tr><td class="p-4 text-center text-slate-500" colspan="5">Belum ada peminjaman.</td></tr>`;
+          <td class="p-4 text-right">${x.status !== "returned" ? `<button class="text-xs px-3 py-1.5 rounded-xl bg-ios-blue text-white font-semibold hover:bg-blue-600 transition shadow-md shadow-ios-blue/30" onclick="returnLoan('${x.id}','${esc(x.unit_id)}')">Kembalikan</button>` : "-"}</td>
+        </tr>`).join("") || `<tr><td class="p-6 text-center text-ios-gray" colspan="5">Belum ada peminjaman.</td></tr>`;
 
       $("svc-list").innerHTML = state.services.map((x) => `
-        <article class="bg-dark-900 border border-slate-800 rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <article class="glass-card rounded-3xl p-5 shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div>
-            <h5 class="font-semibold text-white text-sm"><span class="text-brand-500">${esc(x.unit_id || "Unit")}</span> · ${esc(x.problem)}</h5>
-            <p class="text-xs text-slate-400 mt-0.5">${esc(x.technician || "-")} · ${esc(x.notes || "")}</p>
+            <h5 class="font-semibold text-sm"><span class="text-ios-blue">${esc(x.unit_id || "Unit")}</span> · ${esc(x.problem)}</h5>
+            <p class="text-xs text-ios-gray mt-1">${esc(x.technician || "-")} · ${esc(x.notes || "")}</p>
           </div>
-          <select onchange="setServiceStatus('${x.id}', this.value)" class="bg-dark-800 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-white">
+          <select onchange="setServiceStatus('${x.id}', this.value)" class="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-3 py-1.5 text-xs font-medium focus:outline-none focus:border-ios-blue">
             ${["open","in_progress","done"].map((s) => `<option ${s===x.status?"selected":""}>${s}</option>`).join("")}
           </select>
-        </article>`).join("") || `<p class="text-slate-500 text-sm">Belum ada tiket servis.</p>`;
+        </article>`).join("") || `<p class="text-ios-gray text-sm">Belum ada tiket servis.</p>`;
 
       renderChat();
       renderCharts();
@@ -645,7 +685,7 @@
 
     function isPing(text) { return /PING!?/i.test(text || ""); }
 
-    // EMOJI & CHAT
+    // CHAT & EMOJI
     const emojis = ["😀","😃","😄","😁","😅","😂","🤣","😊","😇","🙂","😉","😍","🥰","😘","😋","🤪","😎","🥳","👍","👎","👏","🤝","🙏","❤️","🔥","⭐","💡","💻"];
     
     $("btn-emoji").onclick = (e) => {
@@ -734,12 +774,12 @@
       $("chat-stream").innerHTML = rows.map((m) => {
         const mine = m.sender === me;
         const senderMember = state.members.find(mem => mem.full_name === m.sender);
-        const avatarUrl = senderMember?.avatar_url || `https://ui-avatars.com/api/?background=252A30&color=fff&name=` + encodeURIComponent(m.sender || "DCC");
+        const avatarUrl = senderMember?.avatar_url || `https://ui-avatars.com/api/?background=007AFF&color=fff&name=` + encodeURIComponent(m.sender || "DCC");
 
         let replyHtml = "";
         if (m.reply_to) {
-          replyHtml = `<div class="bg-black/20 border-l-2 border-brand-500 p-1.5 mb-1 rounded text-xs">
-            <span class="font-semibold text-brand-500">${esc(m.reply_to.sender)}</span>
+          replyHtml = `<div class="bg-black/10 dark:bg-white/10 border-l-2 border-ios-blue p-1.5 mb-1 rounded-lg text-xs">
+            <span class="font-semibold text-ios-blue">${esc(m.reply_to.sender)}</span>
             <p class="truncate opacity-80">${esc(m.reply_to.text)}</p>
           </div>`;
         }
@@ -747,40 +787,40 @@
         let attachHtml = "";
         if (m.attachment_url) {
           if (m.attachment_type === "image") {
-            attachHtml = `<div class="mb-2"><img src="${m.attachment_url}" class="rounded-lg max-h-48 w-full object-cover cursor-pointer" onclick="window.open('${m.attachment_url}')" alt="photo" /></div>`;
+            attachHtml = `<div class="mb-2"><img src="${m.attachment_url}" class="rounded-2xl max-h-48 w-full object-cover cursor-pointer" onclick="window.open('${m.attachment_url}')" alt="photo" /></div>`;
           } else {
-            attachHtml = `<div class="mb-2 bg-black/20 p-2 rounded flex items-center gap-2 text-xs">
-              <i class="fa-solid fa-file-arrow-down text-brand-500 text-base"></i>
-              <a href="${m.attachment_url}" download="${esc(m.attachment_name)}" class="underline truncate font-medium text-white">${esc(m.attachment_name)}</a>
+            attachHtml = `<div class="mb-2 bg-black/10 dark:bg-white/10 p-2.5 rounded-xl flex items-center gap-2 text-xs">
+              <i class="fa-solid fa-file-arrow-down text-ios-blue text-base"></i>
+              <a href="${m.attachment_url}" download="${esc(m.attachment_name)}" class="underline truncate font-medium">${esc(m.attachment_name)}</a>
             </div>`;
           }
         }
 
-        const actionsHtml = `<div class="opacity-0 group-hover:opacity-100 transition flex items-center gap-2 mt-1 text-[10px] text-slate-400 justify-end">
-          <button type="button" onclick="setReply('${m.id}','${esc(m.sender)}','${esc(m.text).replace(/'/g, "\\'")}')" class="hover:text-white"><i class="fa-solid fa-reply"></i> Balas</button>
-          ${mine ? `<button type="button" onclick="editMessage('${m.id}','${esc(m.text).replace(/'/g, "\\'")}')" class="hover:text-white"><i class="fa-solid fa-pen"></i> Edit</button>` : ""}
-          ${mine ? `<button type="button" onclick="deleteMessage('${m.id}')" class="hover:text-rose-400"><i class="fa-solid fa-trash"></i> Hapus</button>` : ""}
+        const actionsHtml = `<div class="opacity-0 group-hover:opacity-100 transition flex items-center gap-2 mt-1 text-[10px] text-ios-gray justify-end">
+          <button type="button" onclick="setReply('${m.id}','${esc(m.sender)}','${esc(m.text).replace(/'/g, "\\'")}')" class="hover:underline"><i class="fa-solid fa-reply"></i> Balas</button>
+          ${mine ? `<button type="button" onclick="editMessage('${m.id}','${esc(m.text).replace(/'/g, "\\'")}')" class="hover:underline"><i class="fa-solid fa-pen"></i> Edit</button>` : ""}
+          ${mine ? `<button type="button" onclick="deleteMessage('${m.id}')" class="hover:text-ios-pink"><i class="fa-solid fa-trash"></i> Hapus</button>` : ""}
         </div>`;
 
-        const avatarImg = !mine ? `<img src="${avatarUrl}" class="h-7 w-7 rounded-full object-cover mr-2 mb-1 shrink-0" alt="avatar" />` : "";
+        const avatarImg = !mine ? `<img src="${avatarUrl}" class="h-7 w-7 rounded-full object-cover mr-2 mb-1 shrink-0 shadow-sm" alt="avatar" />` : "";
 
         if (isPing(m.text)) {
           return `<div class="flex ${mine?"justify-end":"justify-start"} group items-end">
             ${avatarImg}
-            <div class="bg-gradient-to-r from-brand-500 to-amber-600 text-white rounded-2xl px-4 py-2.5 max-w-[85%] text-center font-display tracking-widest relative shadow-lg">
+            <div class="bg-gradient-to-r from-ios-orange to-ios-pink text-white rounded-3xl px-5 py-3 max-w-[85%] text-center font-bold tracking-widest relative shadow-lg">
               ${replyHtml}${attachHtml}
               PING!
-              <div class="text-[9px] tracking-normal mt-0.5 opacity-80">${esc(m.sender)} ${m.is_edited?'(edited)':''}</div>
+              <div class="text-[9px] tracking-normal mt-1 opacity-90">${esc(m.sender)} ${m.is_edited?'(edited)':''}</div>
               ${actionsHtml}
             </div></div>`;
         }
 
         return `<div class="flex ${mine?"justify-end":"justify-start"} group items-end">
           ${avatarImg}
-          <div class="${mine?"bg-slate-800 text-white border border-slate-700":"bg-dark-800 text-slate-200 border border-slate-700/60"} rounded-2xl px-3.5 py-2 max-w-[85%] shadow relative">
+          <div class="${mine?"bg-ios-blue text-white":"bg-black/10 dark:bg-white/10"} rounded-3xl px-4 py-2.5 max-w-[85%] shadow-sm relative">
             ${replyHtml}${attachHtml}
-            <p class="text-[10px] font-semibold ${mine?'text-brand-500':'text-amber-500'} mb-0.5">${esc(m.sender)} · ${esc(m.role || "staff")}</p>
-            <p class="text-sm break-words">${esc(m.text)} ${m.is_edited?'<span class="text-[9px] opacity-60 italic">(edited)</span>':''}</p>
+            <p class="text-[10px] font-semibold ${mine?'text-blue-100':'text-ios-blue'} mb-0.5">${esc(m.sender)} · ${esc(m.role || "staff")}</p>
+            <p class="text-sm break-words">${esc(m.text)} ${m.is_edited?'<span class="text-[9px] opacity-75 italic">(edited)</span>':''}</p>
             ${actionsHtml}
           </div></div>`;
       }).join("");
@@ -835,8 +875,8 @@
     $("menu-select").onclick = () => {
       $("chat-menu").classList.add("hide");
       $("select-list").innerHTML = state.members.map((m) => `
-        <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-dark-800 text-xs text-white" onclick="pickChat('${esc(m.full_name)}')">
-          ${esc(m.full_name)} <span class="text-[10px] text-slate-500">${esc(m.email)}</span>
+        <button class="w-full text-left px-3.5 py-2 rounded-xl hover:bg-black/10 dark:hover:bg-white/10 text-xs font-medium" onclick="pickChat('${esc(m.full_name)}')">
+          ${esc(m.full_name)} <span class="text-[10px] text-ios-gray">${esc(m.email)}</span>
         </button>`).join("");
       $("modal-select").showModal();
     };
@@ -846,7 +886,7 @@
     $("menu-profile").onclick = () => {
       $("chat-menu").classList.add("hide");
       $("prof-name").value = state.member?.full_name || "";
-      $("prof-preview").src = state.member?.avatar_url || "https://ui-avatars.com/api/?background=252A30&color=fff&name=" + encodeURIComponent(state.member?.full_name || "DCC");
+      $("prof-preview").src = state.member?.avatar_url || "https://ui-avatars.com/api/?background=007AFF&color=fff&name=" + encodeURIComponent(state.member?.full_name || "DCC");
       $("modal-profile").showModal();
     };
 
@@ -906,7 +946,7 @@
         statusCount[c.status] = (statusCount[c.status] || 0) + 1;
         typeCount[c.type] = (typeCount[c.type] || 0) + 1;
       });
-      const palette = ["#FF6A00", "#38BDF8", "#34D399", "#F43F5E", "#A855F7"];
+      const palette = ["#007AFF", "#34C759", "#FF9500", "#FF2D55", "#5856D6"];
       draw("home-chart", "bar", {
         labels: Object.keys(statusCount),
         datasets: [{ label: "Unit per Status", data: Object.values(statusCount), backgroundColor: palette }]
@@ -924,7 +964,7 @@
         datasets: [{
           label: "Rekap DCC",
           data: [state.computers.length, state.loans.length, state.services.length, state.members.length],
-          backgroundColor: ["#FF6A00", "#38BDF8", "#F43F5E", "#34D399"]
+          backgroundColor: ["#007AFF", "#34C759", "#FF2D55", "#5856D6"]
         }]
       });
     }
@@ -936,7 +976,7 @@
       state.charts[id] = new Chart(canvas, {
         type,
         data,
-        options: { responsive: true, plugins: { legend: { labels: { color: "#94a3b8" } } } }
+        options: { responsive: true, plugins: { legend: { labels: { color: "#8E8E93" } } } }
       });
     }
 
