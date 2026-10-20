@@ -985,6 +985,16 @@
     $("form-loan").onsubmit = async (e) => {
       e.preventDefault();
       const unit_id = $("loan-unit").value;
+
+      // VALIDASI KETAT: Mencegah duplikasi pinjaman aktif untuk unit yang sama
+      const alreadyActive = state.loans.some(l => l.unit_id === unit_id && l.status === 'active');
+      const targetComp = state.computers.find(c => c.id === unit_id);
+
+      if (alreadyActive || (targetComp && targetComp.status === 'borrowed')) {
+        alert("Gagal: Unit komputer " + unit_id + " saat ini sedang dipinjam (active/borrowed)!");
+        return;
+      }
+
       const borrower = $("loan-borrower").value.trim();
       const purpose = $("loan-purpose").value.trim();
       const start_date = $("loan-start").value;
