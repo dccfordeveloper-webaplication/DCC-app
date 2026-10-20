@@ -912,8 +912,9 @@
 
   <!-- SUPABASE & APP LOGIC -->
   <script>
+    // PERBAIKAN: URL BASE TANPA '/rest/v1/' DAN KUNCI ANON TERBARU
     const SUPABASE_URL = "https://rdwgtohoizmgzcmarybj.supabase.co";
-    const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInRefiI6InJkd2d0b2hvaXptZ3pjbWFyeWJqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIzMzYzNTYsImV4cCI6MjEwNzkxMjM1Nn0._uxw-rNIysobQATHIOTha5Zhfk0HtYNwq4wQiejhlW8";
+    const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkd2d0b2hvaXptZ3pjbWFyeWJqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIzMzYzNTYsImV4cCI6MjEwNzkxMjM1Nn0._uxw-rNIysobQATHIOTha5Zhfk0HtYNwq4wQiejhlW8";
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
     const state = {
