@@ -510,7 +510,7 @@
     <form id="form-loan" class="space-y-4">
       <h4 class="text-lg font-bold">Peminjaman Baru & Batas Waktu</h4>
       <div>
-        <label class="block text-xs font-medium mb-1 opacity-80">Pilih Unit Komputer</label>
+        <label class="block text-xs font-medium mb-1 opacity-80">Pilih Unit Komputer (Hanya Tersedia)</label>
         <select id="loan-unit" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none"></select>
       </div>
       <div>
@@ -871,8 +871,17 @@
     }
 
     function fillUnitSelects() {
-      const opts = state.computers.map((x) => `<option value="${x.id}">${x.id}</option>`).join("");
-      ["chk-unit","loan-unit","svc-unit"].forEach((id) => { $(id).innerHTML = opts; });
+      const allOpts = state.computers.map((x) => `<option value="${x.id}">${x.id}</option>`).join("");
+      
+      // HANYA tampilkan PC dengan status "available" pada pilihan pinjaman
+      const availableComputers = state.computers.filter((x) => x.status === "available");
+      const loanOpts = availableComputers.length > 0 
+        ? availableComputers.map((x) => `<option value="${x.id}">${x.id}</option>`).join("") 
+        : `<option value="" disabled>Tidak ada unit tersedia</option>`;
+
+      $("chk-unit").innerHTML = allOpts;
+      $("loan-unit").innerHTML = loanOpts;
+      $("svc-unit").innerHTML = allOpts;
     }
 
     function renderIndicator(st) {
