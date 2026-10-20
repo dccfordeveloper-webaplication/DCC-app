@@ -258,13 +258,14 @@
           </div>
         </section>
 
-        <!-- CHECKING WITH CHECKLIST & SERVICE BUTTON -->
+        <!-- CHECKING WITH INDEPENDENT SERVICE CHECKLIST -->
         <section id="view-checking" class="space-y-4 max-w-2xl mx-auto hide">
-          <h3 class="text-xl font-bold tracking-tight">Pengecekan Unit</h3>
-          <p class="text-xs opacity-75">Hasil pengecekan memperbarui kondisi, status komputer, serta indikator kelengkapan komponen secara real-time.</p>
+          <h3 class="text-xl font-bold tracking-tight">Pengecekan Unit & Pengajuan Servis</h3>
+          <p class="text-xs opacity-75">Perbarui kondisi unit untuk stok komputer, atau pilih komponen khusus yang rusak untuk diajukan ke layanan servis.</p>
+          
           <form id="form-checking" class="glass-card rounded-3xl p-6 shadow-lg grid sm:grid-cols-2 gap-4">
             <div class="sm:col-span-2">
-              <label class="block text-xs font-medium mb-1 opacity-80">Unit</label>
+              <label class="block text-xs font-medium mb-1 opacity-80">Kode PC Unit</label>
               <select id="chk-unit" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none"></select>
             </div>
             <div>
@@ -274,7 +275,7 @@
               </select>
             </div>
             <div>
-              <label class="block text-xs font-medium mb-1 opacity-80">Status</label>
+              <label class="block text-xs font-medium mb-1 opacity-80">Status Utama Stok</label>
               <select id="chk-status" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none">
                 <option value="available">available</option>
                 <option value="checking">checking</option>
@@ -283,9 +284,10 @@
               </select>
             </div>
 
-            <!-- CHECKLIST KELENGKAPAN PENGECEKAN -->
-            <div class="sm:col-span-2 pt-2 border-t border-black/10 dark:border-white/10">
-              <label class="block text-xs font-semibold mb-2 opacity-90">Ceklis Komponen (Ter-ceklis = Hijau / Normal, Tidak = Merah)</label>
+            <!-- SECTION 1: CHECKLIST PENGECEKAN KELENGKAPAN STOK -->
+            <div class="sm:col-span-2 pt-3 border-t border-black/10 dark:border-white/10">
+              <label class="block text-xs font-semibold mb-1 custom-accent-text">1. Ceklis Kelengkapan Stok Komputer</label>
+              <span class="block text-[11px] opacity-70 mb-2">(Dicentang = 🟢 Normal, Tidak Dicentang = 🔴 Rusak/Missing)</span>
               <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs">
                 <label class="flex items-center gap-2 cursor-pointer">
                   <input type="checkbox" id="chk-komputer" checked class="rounded app-input h-4 w-4" /> Komputer
@@ -306,15 +308,44 @@
             </div>
 
             <div class="sm:col-span-2">
-              <label class="block text-xs font-medium mb-1 opacity-80">Catatan / Kendala Komponen</label>
-              <input id="chk-notes" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none" placeholder="Keyboard aus, pendingin berisik, ..." />
+              <label class="block text-xs font-medium mb-1 opacity-80">Catatan Pengecekan Rutin</label>
+              <input id="chk-notes" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none" placeholder="Catatan pengecekan..." />
             </div>
 
-            <!-- TOMBOL AKSI: SIMPAN & KIRIM KE SERVIS -->
-            <div class="sm:col-span-2 flex flex-col sm:flex-row gap-3 pt-2">
-              <button type="submit" class="flex-1 py-3 rounded-xl custom-accent-bg text-white font-semibold text-sm transition shadow-lg">Simpan Pengecekan</button>
-              <button type="button" onclick="submitCheckingService()" class="flex-1 py-3 rounded-xl bg-ios-orange hover:opacity-90 text-white font-semibold text-sm transition shadow-lg flex items-center justify-center gap-2">
-                <i class="fa-solid fa-screwdriver-wrench"></i> Kirim ke Servis
+            <div class="sm:col-span-2">
+              <button type="submit" class="w-full py-3 rounded-xl custom-accent-bg text-white font-semibold text-sm transition shadow-lg">Simpan Pengecekan Stok</button>
+            </div>
+
+            <!-- SECTION 2: CHECKLIST KHUSUS SERVIS KOMPONEN BERMASALAH -->
+            <div class="sm:col-span-2 pt-4 border-t-2 border-dashed border-ios-orange/30 mt-2">
+              <label class="block text-xs font-bold text-ios-orange mb-1"><i class="fa-solid fa-screwdriver-wrench mr-1"></i>2. Pengajuan Servis Komponen Bermasalah</label>
+              <span class="block text-[11px] opacity-70 mb-2">Pilih komponen yang hendak diservis. Komponen ini otomatis berubah warna menjadi 🟡 Kuning di stok komputer.</span>
+              
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs mb-3">
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" id="svc-chk-komputer" class="rounded app-input h-4 w-4" /> Komputer
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" id="svc-chk-monitor" class="rounded app-input h-4 w-4" /> Monitor
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" id="svc-chk-mouse" class="rounded app-input h-4 w-4" /> Mouse
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" id="svc-chk-keyboard" class="rounded app-input h-4 w-4" /> Keyboard
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" id="svc-chk-ups" class="rounded app-input h-4 w-4" /> UPS
+                </label>
+              </div>
+
+              <div class="mb-3">
+                <label class="block text-xs font-medium mb-1 opacity-80">Catatan Kendala Servis</label>
+                <input id="svc-chk-notes" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none" placeholder="Deskripsi kerusakan (contoh: Monitor garis biru, mouse klik kiri mati)..." />
+              </div>
+
+              <button type="button" onclick="submitCheckingService()" class="w-full py-3 rounded-xl bg-ios-orange hover:opacity-90 text-white font-semibold text-sm transition shadow-lg flex items-center justify-center gap-2">
+                <i class="fa-solid fa-paper-plane"></i> Kirim Tiket Servis Komponen
               </button>
             </div>
           </form>
@@ -921,7 +952,7 @@
         title = 'Rusak / Tidak Ada';
       } else if (st === 'service') {
         color = 'bg-ios-orange shadow-[0_0_8px_rgba(255,149,0,0.6)]';
-        title = 'Dalam Servis';
+        title = 'Dalam Servis (Kuning)';
       }
       return `<div class="flex justify-center"><span class="h-3 w-3 rounded-full ${color} inline-block" title="${title}"></span></div>`;
     }
@@ -1097,6 +1128,7 @@
       await refreshAll();
     };
 
+    // FORM 1: SIMPAN PENGECEKAN KELENGKAPAN STOK KOMPUTER
     $("form-checking").onsubmit = async (e) => {
       e.preventDefault();
       const unit_id = $("chk-unit").value;
@@ -1124,7 +1156,7 @@
 
       const { error } = await sb.from("services").insert({
         unit_id,
-        problem: "[CHECKING] " + condition,
+        problem: "[CHECKING RUTIN] " + condition,
         technician: state.member?.full_name || "staff",
         notes: notes || "Pengecekan rutin DCC",
         status: status === "maintenance" ? "open" : "done"
@@ -1132,56 +1164,54 @@
       if (error) return alert(error.message);
       $("chk-notes").value = "";
       await refreshAll();
-      alert("Pengecekan dan status kelengkapan unit berhasil disimpan.");
+      alert("Status kelengkapan stok komputer berhasil diperbarui.");
     };
 
-    // FITUR KIRIM KE SERVIS DARI LAMAN PENGECEKAN
+    // FORM 2: FITUR KHUSUS KIRIM SERVIS KOMPONEN (CEKLIS KHUSUS & INDIKATOR KUNING)
     window.submitCheckingService = async () => {
       const unit_id = $("chk-unit").value;
       if (!unit_id) return alert("Pilih unit komputer terlebih dahulu!");
-      const notes = $("chk-notes").value.trim();
-      if (!notes) return alert("Masukkan catatan / kendala kerusakan komponen!");
 
-      // Tentukan komponen yang dicentang untuk diservis
-      const compForService = [];
-      if ($("chk-komputer").checked) compForService.push("Komputer");
-      if ($("chk-monitor").checked) compForService.push("Monitor");
-      if ($("chk-mouse").checked) compForService.push("Mouse");
-      if ($("chk-keyboard").checked) compForService.push("Keyboard");
-      if ($("chk-ups").checked) compForService.push("UPS");
+      const svcNotes = $("svc-chk-notes").value.trim();
+      if (!svcNotes) return alert("Masukkan catatan kendala kerusakan komponen yang akan diservis!");
 
-      if (compForService.length === 0) return alert("Pilih minimal satu komponen pada checkbox yang perlu diservis!");
+      // Ambil daftar komponen khusus dari Ceklis Servis
+      const serviceComps = [];
+      const updateServiceIndicators = {};
 
-      // FITUR VERIFIKASI (Konfirmasi data unit, komponen, dan kendala)
-      const confirmed = confirm(`[VERIFIKASI TIKET SERVIS]\n\nKode Unit PC: ${unit_id}\nKomponen Bermasalah: ${compForService.join(", ")}\nKendala: ${notes}\n\nKirim data ini ke laman servis?`);
-      if (!confirmed) return;
+      if ($("svc-chk-komputer").checked) { serviceComps.push("Komputer"); updateServiceIndicators.komputer_st = "service"; }
+      if ($("svc-chk-monitor").checked) { serviceComps.push("Monitor"); updateServiceIndicators.monitor_st = "service"; }
+      if ($("svc-chk-mouse").checked) { serviceComps.push("Mouse"); updateServiceIndicators.mouse_st = "service"; }
+      if ($("svc-chk-keyboard").checked) { serviceComps.push("Keyboard"); updateServiceIndicators.keyboard_st = "service"; }
+      if ($("svc-chk-ups").checked) { serviceComps.push("UPS"); updateServiceIndicators.ups_st = "service"; }
 
-      const problemDesc = `Servis Komponen: ${compForService.join(", ")} — Kendala: ${notes}`;
+      if (serviceComps.length === 0) return alert("Pilih minimal satu komponen yang akan diservis pada bagian 'Pengajuan Servis Komponen'!");
 
-      // Masukkan ke tabel services
+      // FITUR VERIFIKASI DATA TIKET SERVIS
+      const confirmText = `[VERIFIKASI PENGAJUAN SERVIS]\n\nKode Unit PC: ${unit_id}\nKomponen Diservis: ${serviceComps.join(", ")}\nCatatan Kendala: ${svcNotes}\n\nKonfirmasi untuk mengirim data ini ke Laman Servis dan mengubah indikator stok menjadi Kuning?`;
+      if (!confirm(confirmText)) return;
+
+      // 1. Tambah Tiket Servis ke Laman Servis
       const { error: sErr } = await sb.from("services").insert({
         unit_id,
-        problem: problemDesc,
+        problem: `[SERVIS KOMPONEN] ${serviceComps.join(", ")}`,
         technician: state.member?.full_name || "staff",
-        notes: notes,
+        notes: svcNotes,
         status: "open"
       });
-      if (sErr) return alert(sErr.message);
+      if (sErr) return alert("Gagal menambah servis: " + sErr.message);
 
-      // Update status komputer ke maintenance dan komponen terkait ke status "service"
-      const updateData = { status: "maintenance" };
-      if ($("chk-komputer").checked) updateData.komputer_st = "service";
-      if ($("chk-monitor").checked) updateData.monitor_st = "service";
-      if ($("chk-mouse").checked) updateData.mouse_st = "service";
-      if ($("chk-keyboard").checked) updateData.keyboard_st = "service";
-      if ($("chk-ups").checked) updateData.ups_st = "service";
+      // 2. Ubah Status Komputer menjadi maintenance & Komponen Terkait menjadi "service" (🟡 Kuning)
+      updateServiceIndicators.status = "maintenance";
+      const { error: cErr } = await sb.from("computers").update(updateServiceIndicators).eq("id", unit_id);
+      if (cErr) return alert("Gagal memperbarui stok komputer: " + cErr.message);
 
-      const { error: cErr } = await sb.from("computers").update(updateData).eq("id", unit_id);
-      if (cErr) return alert(cErr.message);
+      // Reset form pengajuan servis
+      $("svc-chk-notes").value = "";
+      ["svc-chk-komputer", "svc-chk-monitor", "svc-chk-mouse", "svc-chk-keyboard", "svc-chk-ups"].forEach(id => $(id).checked = false);
 
-      $("chk-notes").value = "";
       await refreshAll();
-      alert("Berhasil! Tiket servis telah ditambahkan dan komponen terkait masuk ke daftar servis.");
+      alert("Berhasil! Komponen " + serviceComps.join(", ") + " pada unit " + unit_id + " telah didaftarkan ke Laman Servis & Indikator Stok berubah menjadi Kuning.");
     };
 
     $("form-service").onsubmit = async (e) => {
