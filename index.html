@@ -34,6 +34,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <!-- SheetJS untuk Export Excel -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
     :root {
       --cust-bg1: #1e1b4b;
@@ -242,7 +244,7 @@
           </div>
         </section>
 
-        <!-- LOANS WITH SELECT & BULK DELETE -->
+        <!-- LOANS -->
         <section id="view-loans" class="space-y-4 max-w-6xl mx-auto hide">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <h3 class="text-xl font-bold tracking-tight">Log Peminjaman</h3>
@@ -284,7 +286,7 @@
           </div>
         </section>
 
-        <!-- CHECKING WITH INDEPENDENT SERVICE CHECKLIST -->
+        <!-- CHECKING -->
         <section id="view-checking" class="space-y-4 max-w-2xl mx-auto hide">
           <h3 class="text-xl font-bold tracking-tight">Pengecekan Unit & Pengajuan Servis</h3>
           <p class="text-xs opacity-75">Perbarui kondisi unit untuk stok komputer, atau pilih komponen khusus yang rusak untuk diajukan ke layanan servis.</p>
@@ -377,7 +379,7 @@
           </form>
         </section>
 
-        <!-- SERVICES WITH SELECT & BULK DELETE FEATURE -->
+        <!-- SERVICES -->
         <section id="view-services" class="space-y-4 max-w-6xl mx-auto hide">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <h3 class="text-xl font-bold tracking-tight">Daftar Tiket & Log Servis</h3>
@@ -404,10 +406,112 @@
           <div id="svc-list" class="grid gap-3"></div>
         </section>
 
-        <!-- RECAP -->
-        <section id="view-recap" class="space-y-4 max-w-6xl mx-auto hide">
-          <h3 class="text-xl font-bold tracking-tight">Rekam Statistik</h3>
-          <div class="grid md:grid-cols-2 gap-4">
+        <!-- RECAP & STATISTIK REVISED -->
+        <section id="view-recap" class="space-y-6 max-w-6xl mx-auto hide">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h3 class="text-xl font-bold tracking-tight">Rekap Statistik & Laporan</h3>
+              <p class="text-xs opacity-75">Filter data peminjaman, pengecekan, dan servis berdasarkan rentang tanggal serta cetak laporan.</p>
+            </div>
+
+            <button onclick="openReportModal()" class="px-5 py-2.5 rounded-xl bg-ios-green hover:opacity-90 text-white font-semibold text-xs md:text-sm shadow-lg transition flex items-center gap-2 self-start md:self-auto">
+              <i class="fa-solid fa-file-export"></i> Fitur Laporkan
+            </button>
+          </div>
+
+          <!-- FILTER BAR (TANGGAL & KATEGORI) -->
+          <div class="glass-card rounded-3xl p-5 shadow-lg space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold mb-1 opacity-80">Dari Tanggal</label>
+                <input type="date" id="recap-date-from" onchange="renderRecapTables()" class="w-full app-input rounded-xl px-3.5 py-2 text-xs md:text-sm focus:outline-none" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold mb-1 opacity-80">Sampai Tanggal</label>
+                <input type="date" id="recap-date-to" onchange="renderRecapTables()" class="w-full app-input rounded-xl px-3.5 py-2 text-xs md:text-sm focus:outline-none" />
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-black/10 dark:border-white/10">
+              <label class="block text-xs font-semibold mb-2 custom-accent-text">Filter Kategori Tampilan Data</label>
+              <div class="flex flex-wrap gap-4 text-xs font-medium">
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" id="filter-cat-loan" checked onchange="renderRecapTables()" class="rounded app-input h-4 w-4 accent-ios-blue" />
+                  <span>Peminjaman</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" id="filter-cat-checking" checked onchange="renderRecapTables()" class="rounded app-input h-4 w-4 accent-ios-blue" />
+                  <span>Pengecekan</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" id="filter-cat-service" checked onchange="renderRecapTables()" class="rounded app-input h-4 w-4 accent-ios-blue" />
+                  <span>Servis</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- TABEL REKAP 1: PEMINJAMAN -->
+          <div id="recap-sec-loan" class="space-y-2">
+            <h4 class="text-base font-bold flex items-center gap-2"><i class="fa-solid fa-handshake text-ios-orange"></i> Rekap Peminjaman</h4>
+            <div class="glass-card rounded-3xl shadow-lg overflow-x-auto">
+              <table class="w-full text-left text-xs md:text-sm">
+                <thead class="uppercase tracking-wider">
+                  <tr>
+                    <th class="p-3.5 w-12 text-center">No</th>
+                    <th>Tanggal Pinjam</th>
+                    <th>Kode PC</th>
+                    <th>Periode Pinjam</th>
+                    <th>Keterangan (Peminjam & Keperluan)</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="tbl-recap-loan"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- TABEL REKAP 2: PENGECEKAN -->
+          <div id="recap-sec-checking" class="space-y-2">
+            <h4 class="text-base font-bold flex items-center gap-2"><i class="fa-solid fa-clipboard-check text-ios-green"></i> Rekap Pengecekan</h4>
+            <div class="glass-card rounded-3xl shadow-lg overflow-x-auto">
+              <table class="w-full text-left text-xs md:text-sm">
+                <thead class="uppercase tracking-wider">
+                  <tr>
+                    <th class="p-3.5 w-12 text-center">No</th>
+                    <th>Tanggal Pengecekan</th>
+                    <th>Kode PC</th>
+                    <th>Keterangan (Kondisi & Catatan)</th>
+                    <th>Status Stok</th>
+                  </tr>
+                </thead>
+                <tbody id="tbl-recap-checking"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- TABEL REKAP 3: SERVIS -->
+          <div id="recap-sec-service" class="space-y-2">
+            <h4 class="text-base font-bold flex items-center gap-2"><i class="fa-solid fa-screwdriver-wrench text-ios-pink"></i> Rekap Servis</h4>
+            <div class="glass-card rounded-3xl shadow-lg overflow-x-auto">
+              <table class="w-full text-left text-xs md:text-sm">
+                <thead class="uppercase tracking-wider">
+                  <tr>
+                    <th class="p-3.5 w-12 text-center">No</th>
+                    <th>Tanggal Servis</th>
+                    <th>Kode PC</th>
+                    <th>Kendala & Catatan</th>
+                    <th>Teknisi</th>
+                    <th>Status Tiket</th>
+                  </tr>
+                </thead>
+                <tbody id="tbl-recap-service"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- GRAFIK REKAP -->
+          <div class="grid md:grid-cols-2 gap-4 pt-4 border-t border-black/10 dark:border-white/10">
             <div class="glass-card rounded-3xl p-6 shadow-lg"><canvas id="chart-status"></canvas></div>
             <div class="glass-card rounded-3xl p-6 shadow-lg"><canvas id="chart-type"></canvas></div>
             <div class="glass-card rounded-3xl p-6 shadow-lg md:col-span-2"><canvas id="chart-ops"></canvas></div>
@@ -496,6 +600,38 @@
       </button>
     </nav>
   </section>
+
+  <!-- MODAL LAPORKAN / VERIFIKASI DOKUMEN REKAP -->
+  <dialog id="modal-report" class="glass-card rounded-3xl p-6 w-[min(92vw,480px)] shadow-2xl m-auto space-y-4">
+    <div class="flex items-center justify-between border-b border-black/10 dark:border-white/10 pb-3">
+      <h4 class="text-lg font-bold flex items-center gap-2 text-ios-green"><i class="fa-solid fa-file-circle-check"></i> Verifikasi Data Laporan</h4>
+      <button onclick="$('modal-report').close()" class="opacity-70 hover:opacity-100"><i class="fa-solid fa-xmark text-lg"></i></button>
+    </div>
+
+    <p class="text-xs opacity-80 leading-relaxed">Berikut adalah ringkasan data yang akan dilaporkan sesuai dengan filter rentang tanggal dan kategori terpilih saat ini:</p>
+
+    <!-- RINGKASAN DATA VERIFIKASI -->
+    <div class="space-y-2 bg-black/5 dark:bg-white/5 p-4 rounded-2xl text-xs">
+      <div class="flex justify-between"><span class="opacity-75">Rentang Tanggal:</span><span id="rep-period-label" class="font-semibold custom-accent-text"></span></div>
+      <div class="flex justify-between"><span class="opacity-75">Kategori Aktif:</span><span id="rep-cat-label" class="font-semibold"></span></div>
+      <div class="pt-2 border-t border-black/10 dark:border-white/10 space-y-1">
+        <div class="flex justify-between"><span class="opacity-80">· Data Peminjaman:</span><span id="rep-count-loan" class="font-bold">0</span></div>
+        <div class="flex justify-between"><span class="opacity-80">· Data Pengecekan:</span><span id="rep-count-checking" class="font-bold">0</span></div>
+        <div class="flex justify-between"><span class="opacity-80">· Data Servis:</span><span id="rep-count-service" class="font-bold">0</span></div>
+      </div>
+    </div>
+
+    <!-- PILIHAN AKSI LAPORAN -->
+    <div class="space-y-2 pt-2">
+      <button onclick="exportToExcel()" class="w-full py-3 rounded-xl bg-ios-green hover:opacity-90 text-white font-semibold text-xs md:text-sm transition shadow-md flex items-center justify-center gap-2">
+        <i class="fa-solid fa-file-excel text-base"></i> Download Format Excel (.xlsx)
+      </button>
+      
+      <button onclick="sendReportToChat()" class="w-full py-3 rounded-xl custom-accent-bg hover:opacity-90 text-white font-semibold text-xs md:text-sm transition shadow-md flex items-center justify-center gap-2">
+        <i class="fa-solid fa-paper-plane text-base"></i> Kirim Laporan Singkat ke Room Chat
+      </button>
+    </div>
+  </dialog>
 
   <!-- MODAL COLOR GRADING -->
   <dialog id="modal-grading" class="glass-card rounded-3xl p-6 w-[min(92vw,420px)] shadow-2xl m-auto">
@@ -889,7 +1025,10 @@
       document.querySelectorAll(".bottom-nav-btn").forEach((x) => x.classList.toggle("active", x.dataset.view === targetView));
 
       ["home","computers","loans","checking","services","recap","chat"].forEach((v) => show($("view-" + v), v === targetView));
-      if (targetView === "recap" || targetView === "home") renderCharts();
+      if (targetView === "recap" || targetView === "home") {
+        renderRecapTables();
+        renderCharts();
+      }
       if (targetView === "chat") scrollChat();
       
       if (!sidebar.classList.contains("-translate-x-full") && window.innerWidth < 768) {
@@ -966,8 +1105,8 @@
     async function refreshAll() {
       const [c, l, s, m, ch] = await Promise.all([
         sb.from("computers").select("*").order("id"),
-        sb.from("loans").select("*"),
-        sb.from("services").select("*"),
+        sb.from("loans").select("*").order("created_at", { ascending: false }),
+        sb.from("services").select("*").order("created_at", { ascending: false }),
         sb.from("members").select("*").order("full_name"),
         sb.from("chat_messages").select("*").order("created_at", { ascending: true }).limit(200)
       ]);
@@ -1003,6 +1142,174 @@
         title = 'Dalam Servis (Kuning)';
       }
       return `<div class="flex justify-center"><span class="h-3 w-3 rounded-full ${color} inline-block" title="${title}"></span></div>`;
+    }
+
+    // LOGIC REKAP STATISTIK & LAPORAN
+    function formatDate(dStr) {
+      if (!dStr) return "-";
+      const d = new Date(dStr);
+      return isNaN(d.getTime()) ? dStr : d.toLocaleDateString("id-ID", { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+
+    function getFilteredData() {
+      const fromVal = $("recap-date-from").value;
+      const toVal = $("recap-date-to").value;
+
+      const fromDate = fromVal ? new Date(fromVal + "T00:00:00") : null;
+      const toDate = toVal ? new Date(toVal + "T23:59:59") : null;
+
+      const filterByDate = (itemDateStr) => {
+        if (!itemDateStr) return true;
+        const itemDate = new Date(itemDateStr);
+        if (fromDate && itemDate < fromDate) return false;
+        if (toDate && itemDate > toDate) return false;
+        return true;
+      };
+
+      const showLoan = $("filter-cat-loan").checked;
+      const showChecking = $("filter-cat-checking").checked;
+      const showService = $("filter-cat-service").checked;
+
+      const filteredLoans = showLoan ? state.loans.filter(x => filterByDate(x.start_date || x.created_at)) : [];
+      const filteredChecking = showChecking ? state.services.filter(x => x.problem && x.problem.includes("[CHECKING") && filterByDate(x.created_at)) : [];
+      const filteredServices = showService ? state.services.filter(x => (!x.problem || !x.problem.includes("[CHECKING")) && filterByDate(x.created_at)) : [];
+
+      return { filteredLoans, filteredChecking, filteredServices, showLoan, showChecking, showService };
+    }
+
+    function renderRecapTables() {
+      const { filteredLoans, filteredChecking, filteredServices, showLoan, showChecking, showService } = getFilteredData();
+
+      // Toggle Kategori
+      show($("recap-sec-loan"), showLoan);
+      show($("recap-sec-checking"), showChecking);
+      show($("recap-sec-service"), showService);
+
+      // Render Table Peminjaman
+      $("tbl-recap-loan").innerHTML = filteredLoans.map((x, idx) => `
+        <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition">
+          <td class="p-3.5 text-center font-semibold opacity-70">${idx + 1}</td>
+          <td>${formatDate(x.start_date || x.created_at)}</td>
+          <td class="font-semibold custom-accent-text">${esc(x.unit_id)}</td>
+          <td>${formatDate(x.start_date)} s/d ${formatDate(x.end_date)}</td>
+          <td><span class="font-medium">${esc(x.borrower)}</span> (${esc(x.purpose)})</td>
+          <td><span class="px-2.5 py-0.5 rounded-full text-xs font-medium ${x.status === 'returned' ? 'bg-ios-green/20 text-ios-green' : 'bg-ios-orange/20 text-ios-orange'}">${esc(x.status)}</span></td>
+        </tr>`).join("") || `<tr><td class="p-6 text-center opacity-70" colspan="6">Tidak ada data peminjaman dalam rentang tanggal ini.</td></tr>`;
+
+      // Render Table Pengecekan
+      $("tbl-recap-checking").innerHTML = filteredChecking.map((x, idx) => `
+        <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition">
+          <td class="p-3.5 text-center font-semibold opacity-70">${idx + 1}</td>
+          <td>${formatDate(x.created_at)}</td>
+          <td class="font-semibold custom-accent-text">${esc(x.unit_id)}</td>
+          <td>${esc(x.problem)} — ${esc(x.notes || '-')}</td>
+          <td><span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-ios-blue/20 text-ios-blue">${esc(x.status === 'open' ? 'checking' : 'baik/normal')}</span></td>
+        </tr>`).join("") || `<tr><td class="p-6 text-center opacity-70" colspan="5">Tidak ada data pengecekan dalam rentang tanggal ini.</td></tr>`;
+
+      // Render Table Servis
+      $("tbl-recap-service").innerHTML = filteredServices.map((x, idx) => `
+        <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition">
+          <td class="p-3.5 text-center font-semibold opacity-70">${idx + 1}</td>
+          <td>${formatDate(x.created_at)}</td>
+          <td class="font-semibold custom-accent-text">${esc(x.unit_id)}</td>
+          <td>${esc(x.problem)} (${esc(x.notes || '-')})</td>
+          <td>${esc(x.technician || '-')}</td>
+          <td><span class="px-2.5 py-0.5 rounded-full text-xs font-medium ${x.status === 'done' ? 'bg-ios-green/20 text-ios-green' : 'bg-ios-pink/20 text-ios-pink'}">${esc(x.status)}</span></td>
+        </tr>`).join("") || `<tr><td class="p-6 text-center opacity-70" colspan="6">Tidak ada data servis dalam rentang tanggal ini.</td></tr>`;
+    }
+
+    // VERIFIKASI & MODAL LAPORKAN
+    function openReportModal() {
+      const { filteredLoans, filteredChecking, filteredServices, showLoan, showChecking, showService } = getFilteredData();
+
+      const fromVal = $("recap-date-from").value;
+      const toVal = $("recap-date-to").value;
+      const periodStr = (fromVal || toVal) ? `${fromVal || 'Awal'} s/d ${toVal || 'Sekarang'}` : "Semua Tanggal";
+
+      const catList = [];
+      if (showLoan) catList.push("Peminjaman");
+      if (showChecking) catList.push("Pengecekan");
+      if (showService) catList.push("Servis");
+
+      $("rep-period-label").textContent = periodStr;
+      $("rep-cat-label").textContent = catList.join(", ") || "Tidak ada";
+      $("rep-count-loan").textContent = filteredLoans.length + " Record";
+      $("rep-count-checking").textContent = filteredChecking.length + " Record";
+      $("rep-count-service").textContent = filteredServices.length + " Record";
+
+      $("modal-report").showModal();
+    }
+
+    // EXPORT TO EXCEL
+    function exportToExcel() {
+      const { filteredLoans, filteredChecking, filteredServices, showLoan, showChecking, showService } = getFilteredData();
+      const wb = XLSX.utils.book_new();
+
+      if (showLoan) {
+        const loanData = filteredLoans.map((x, i) => ({
+          "No": i + 1,
+          "Tanggal Pinjam": formatDate(x.start_date || x.created_at),
+          "Kode PC": x.unit_id,
+          "Tanggal Dari": x.start_date || "-",
+          "Tanggal Sampai": x.end_date || "-",
+          "Peminjam": x.borrower,
+          "Keperluan": x.purpose,
+          "Status": x.status
+        }));
+        const wsLoan = XLSX.utils.json_to_sheet(loanData);
+        XLSX.utils.book_append_sheet(wb, wsLoan, "Peminjaman");
+      }
+
+      if (showChecking) {
+        const checkingData = filteredChecking.map((x, i) => ({
+          "No": i + 1,
+          "Tanggal Pengecekan": formatDate(x.created_at),
+          "Kode PC": x.unit_id,
+          "Kondisi & Problem": x.problem,
+          "Catatan": x.notes || "-",
+          "Status": x.status
+        }));
+        const wsChecking = XLSX.utils.json_to_sheet(checkingData);
+        XLSX.utils.book_append_sheet(wb, wsChecking, "Pengecekan");
+      }
+
+      if (showService) {
+        const serviceData = filteredServices.map((x, i) => ({
+          "No": i + 1,
+          "Tanggal Servis": formatDate(x.created_at),
+          "Kode PC": x.unit_id,
+          "Kendala Servis": x.problem,
+          "Catatan": x.notes || "-",
+          "Teknisi": x.technician || "-",
+          "Status Tiket": x.status
+        }));
+        const wsService = XLSX.utils.json_to_sheet(serviceData);
+        XLSX.utils.book_append_sheet(wb, wsService, "Servis");
+      }
+
+      XLSX.writeFile(wb, `Laporan_Rekap_DCC_${new Date().toISOString().slice(0,10)}.xlsx`);
+      $("modal-report").close();
+    }
+
+    // KIRIM LAPORAN RINGKAT KE ROOMCHAT
+    async function sendReportToChat() {
+      const { filteredLoans, filteredChecking, filteredServices, showLoan, showChecking, showService } = getFilteredData();
+      const fromVal = $("recap-date-from").value;
+      const toVal = $("recap-date-to").value;
+      const periodStr = (fromVal || toVal) ? `${fromVal || 'Awal'} s/d ${toVal || 'Hari ini'}` : "Keseluruhan Tanggal";
+
+      let summaryMsg = `📊 *LAPORAN RINGKAS REKAP OPERASIONAL DCC*\n📅 *Periode:* ${periodStr}\n\n`;
+
+      if (showLoan) summaryMsg += `• *Peminjaman:* ${filteredLoans.length} record\n`;
+      if (showChecking) summaryMsg += `• *Pengecekan:* ${filteredChecking.length} record\n`;
+      if (showService) summaryMsg += `• *Servis:* ${filteredServices.length} record\n`;
+
+      summaryMsg += `\nLaporan detail lengkap dapat diunduh melalui file Excel pada laman Rekap Statistik.`;
+
+      await sendChat(summaryMsg);
+      $("modal-report").close();
+      switchView("chat");
+      alert("Laporan singkat berhasil dikirimkan ke DCC Chat Room.");
     }
 
     // LOGIC MODE LOAN SELECT & BULK DELETE
@@ -1222,6 +1529,7 @@
 
       renderLoansList();
       renderServicesList();
+      renderRecapTables();
       renderChat();
       renderCharts();
     }
