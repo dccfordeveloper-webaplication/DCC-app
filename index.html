@@ -242,16 +242,42 @@
           </div>
         </section>
 
-        <!-- LOANS -->
+        <!-- LOANS WITH SELECT & BULK DELETE -->
         <section id="view-loans" class="space-y-4 max-w-6xl mx-auto hide">
-          <div class="flex items-center justify-between">
-            <h3 class="text-xl font-bold tracking-tight">Peminjaman</h3>
-            <button data-open="modal-loan" class="px-4 py-2 rounded-xl custom-accent-bg text-white text-xs md:text-sm font-semibold shadow-lg transition flex items-center gap-2"><i class="fa-solid fa-plus"></i>Catat Pinjam</button>
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <h3 class="text-xl font-bold tracking-tight">Log Peminjaman</h3>
+            
+            <div class="flex flex-wrap items-center gap-2">
+              <button id="btn-loan-toggle-select" onclick="toggleLoanSelectMode()" class="px-3.5 py-2 rounded-xl bg-black/10 dark:bg-white/10 hover:bg-black/20 text-xs font-semibold transition flex items-center gap-1.5">
+                <i class="fa-solid fa-list-check"></i> <span id="lbl-loan-select">Mode Pilih</span>
+              </button>
+
+              <button id="btn-loan-select-all" onclick="toggleLoanSelectAll()" class="hide px-3.5 py-2 rounded-xl bg-black/10 dark:bg-white/10 hover:bg-black/20 text-xs font-semibold transition flex items-center gap-1.5">
+                <i class="fa-regular fa-square-check"></i> <span>Pilih Semua</span>
+              </button>
+
+              <button id="btn-loan-delete-selected" onclick="deleteSelectedLoans()" class="hide px-3.5 py-2 rounded-xl bg-ios-pink/20 text-ios-pink hover:bg-ios-pink/30 text-xs font-semibold transition flex items-center gap-1.5">
+                <i class="fa-solid fa-trash-can"></i> <span>Hapus (<span id="loan-selected-count">0</span>)</span>
+              </button>
+
+              <button data-open="modal-loan" class="px-4 py-2 rounded-xl custom-accent-bg text-white text-xs md:text-sm font-semibold shadow-lg transition flex items-center gap-2">
+                <i class="fa-solid fa-plus"></i>Catat Pinjam
+              </button>
+            </div>
           </div>
+
           <div class="glass-card rounded-3xl shadow-lg overflow-x-auto">
             <table class="w-full text-left text-sm">
               <thead class="text-xs uppercase tracking-wider">
-                <tr><th class="p-4">Unit</th><th>Peminjam</th><th>Keperluan</th><th>Periode Pinjam</th><th>Status</th><th class="text-right p-4">Aksi</th></tr>
+                <tr>
+                  <th id="th-loan-select" class="p-4 w-12 text-center hide">Pilih</th>
+                  <th class="p-4">Unit</th>
+                  <th>Peminjam</th>
+                  <th>Keperluan</th>
+                  <th>Periode Pinjam</th>
+                  <th>Status</th>
+                  <th class="text-right p-4">Aksi</th>
+                </tr>
               </thead>
               <tbody id="tbl-loans"></tbody>
             </table>
@@ -356,7 +382,6 @@
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <h3 class="text-xl font-bold tracking-tight">Daftar Tiket & Log Servis</h3>
             
-            <!-- AKSI & TIKET SERVIS -->
             <div class="flex flex-wrap items-center gap-2">
               <button id="btn-svc-toggle-select" onclick="toggleServiceSelectMode()" class="px-3.5 py-2 rounded-xl bg-black/10 dark:bg-white/10 hover:bg-black/20 text-xs font-semibold transition flex items-center gap-1.5">
                 <i class="fa-solid fa-list-check"></i> <span id="lbl-svc-select">Mode Pilih</span>
@@ -767,7 +792,9 @@
       attachmentData: null,
       charts: {},
       serviceSelectMode: false,
-      selectedServiceIds: new Set()
+      selectedServiceIds: new Set(),
+      loanSelectMode: false,
+      selectedLoanIds: new Set()
     };
 
     const $ = (id) => document.getElementById(id);
@@ -978,6 +1005,101 @@
       return `<div class="flex justify-center"><span class="h-3 w-3 rounded-full ${color} inline-block" title="${title}"></span></div>`;
     }
 
+    // LOGIC MODE LOAN SELECT & BULK DELETE
+    function toggleLoanSelectMode() {
+      state.loanSelectMode = !state.loanSelectMode;
+      state.selectedLoanIds.clear();
+
+      $("lbl-loan-select").textContent = state.loanSelectMode ? "Batal Pilih" : "Mode Pilih";
+      show($("btn-loan-select-all"), state.loanSelectMode);
+      show($("btn-loan-delete-selected"), state.loanSelectMode);
+      show($("th-loan-select"), state.loanSelectMode);
+
+      updateLoanSelectedCount();
+      renderLoansList();
+    }
+
+    function toggleLoanSelectAll() {
+      if (state.selectedLoanIds.size === state.loans.length) {
+        state.selectedLoanIds.clear();
+      } else {
+        state.loans.forEach(l => state.selectedLoanIds.add(String(l.id)));
+      }
+      updateLoanSelectedCount();
+      renderLoansList();
+    }
+
+    function handleLoanCheckChange(id, checked) {
+      if (checked) {
+        state.selectedLoanIds.add(String(id));
+      } else {
+        state.selectedLoanIds.delete(String(id));
+      }
+      updateLoanSelectedCount();
+    }
+
+    function updateLoanSelectedCount() {
+      const count = state.selectedLoanIds.size;
+      $("loan-selected-count").textContent = count;
+      $("btn-loan-delete-selected").disabled = count === 0;
+      $("btn-loan-delete-selected").classList.toggle("opacity-50", count === 0);
+    }
+
+    async function deleteSelectedLoans() {
+      const idsToDelete = Array.from(state.selectedLoanIds);
+      if (idsToDelete.length === 0) return alert("Pilih minimal satu log peminjaman yang akan dihapus!");
+
+      if (!confirm(`Konfirmasi Hapus:\nApakah Anda yakin ingin menghapus ${idsToDelete.length} data peminjaman terpilih?`)) return;
+
+      const { error } = await sb.from("loans").delete().in("id", idsToDelete);
+      if (error) return alert("Gagal menghapus log peminjaman: " + error.message);
+
+      state.selectedLoanIds.clear();
+      state.loanSelectMode = false;
+      $("lbl-loan-select").textContent = "Mode Pilih";
+      show($("btn-loan-select-all"), false);
+      show($("btn-loan-delete-selected"), false);
+      show($("th-loan-select"), false);
+
+      await refreshAll();
+      alert("Berhasil menghapus log peminjaman terpilih.");
+    }
+
+    async function deleteSingleLoan(id) {
+      if (!confirm("Apakah Anda yakin ingin menghapus riwayat peminjaman ini?")) return;
+      const { error } = await sb.from("loans").delete().eq("id", id);
+      if (error) return alert("Gagal menghapus: " + error.message);
+      await refreshAll();
+    }
+
+    function renderLoansList() {
+      show($("th-loan-select"), state.loanSelectMode);
+      $("tbl-loans").innerHTML = state.loans.map((x) => {
+        const isChecked = state.selectedLoanIds.has(String(x.id));
+        return `
+        <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition">
+          ${state.loanSelectMode ? `
+            <td class="p-4 text-center">
+              <input type="checkbox" ${isChecked ? "checked" : ""} onchange="handleLoanCheckChange('${x.id}', this.checked)" class="h-4 w-4 rounded app-input cursor-pointer accent-ios-blue" />
+            </td>
+          ` : ""}
+          <td class="p-4 font-semibold custom-accent-text">${esc(x.unit_id)}</td>
+          <td>${esc(x.borrower)}</td>
+          <td>${esc(x.purpose)}</td>
+          <td><span class="text-xs font-medium opacity-90">${esc(x.start_date || '-')} s/d ${esc(x.end_date || '-')}</span></td>
+          <td><span class="px-2 py-0.5 rounded-full text-xs font-medium ${x.status === 'returned' ? 'bg-ios-green/20 text-ios-green' : 'bg-ios-orange/20 text-ios-orange'}">${esc(x.status)}</span></td>
+          <td class="p-4 text-right flex items-center justify-end gap-2">
+            ${x.status !== "returned" ? `<button class="text-xs px-3 py-1.5 rounded-xl custom-accent-bg text-white font-semibold transition shadow-md" onclick="openReturnModal('${x.id}','${esc(x.unit_id)}','${esc(x.borrower)}','${esc(x.purpose)}','${esc(x.start_date || '')} s/d ${esc(x.end_date || '')}')">Kembalikan</button>` : ""}
+            ${!state.loanSelectMode ? `
+              <button onclick="deleteSingleLoan('${x.id}')" class="p-1.5 opacity-60 hover:opacity-100 hover:text-ios-pink text-xs transition" title="Hapus Riwayat">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            ` : ""}
+          </td>
+        </tr>`;
+      }).join("") || `<tr><td class="p-6 text-center opacity-70" colspan="${state.loanSelectMode ? 7 : 6}">Belum ada peminjaman.</td></tr>`;
+    }
+
     // LOGIC MODE SERVIS SELECT & BULK DELETE
     function toggleServiceSelectMode() {
       state.serviceSelectMode = !state.serviceSelectMode;
@@ -1098,16 +1220,7 @@
           </td>
         </tr>`).join("") || `<tr><td class="p-6 text-center opacity-70" colspan="8">Belum ada data unit.</td></tr>`;
 
-      $("tbl-loans").innerHTML = state.loans.map((x) => `
-        <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition">
-          <td class="p-4 font-semibold custom-accent-text">${esc(x.unit_id)}</td>
-          <td>${esc(x.borrower)}</td>
-          <td>${esc(x.purpose)}</td>
-          <td><span class="text-xs font-medium opacity-90">${esc(x.start_date || '-')} s/d ${esc(x.end_date || '-')}</span></td>
-          <td>${esc(x.status)}</td>
-          <td class="p-4 text-right">${x.status !== "returned" ? `<button class="text-xs px-3 py-1.5 rounded-xl custom-accent-bg text-white font-semibold transition shadow-md" onclick="openReturnModal('${x.id}','${esc(x.unit_id)}','${esc(x.borrower)}','${esc(x.purpose)}','${esc(x.start_date || '')} s/d ${esc(x.end_date || '')}')">Kembalikan</button>` : "-"}</td>
-        </tr>`).join("") || `<tr><td class="p-6 text-center opacity-70" colspan="6">Belum ada peminjaman.</td></tr>`;
-
+      renderLoansList();
       renderServicesList();
       renderChat();
       renderCharts();
