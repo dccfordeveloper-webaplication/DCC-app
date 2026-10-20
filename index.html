@@ -258,10 +258,10 @@
           </div>
         </section>
 
-        <!-- CHECKING -->
+        <!-- CHECKING WITH CHECKLIST -->
         <section id="view-checking" class="space-y-4 max-w-2xl mx-auto hide">
           <h3 class="text-xl font-bold tracking-tight">Pengecekan Unit</h3>
-          <p class="text-xs opacity-75">Hasil pengecekan memperbarui kondisi/status komputer dan tercatat di layanan servis.</p>
+          <p class="text-xs opacity-75">Hasil pengecekan memperbarui kondisi, status komputer, serta indikator kelengkapan komponen secara real-time.</p>
           <form id="form-checking" class="glass-card rounded-3xl p-6 shadow-lg grid sm:grid-cols-2 gap-4">
             <div class="sm:col-span-2">
               <label class="block text-xs font-medium mb-1 opacity-80">Unit</label>
@@ -282,6 +282,29 @@
                 <option value="borrowed">borrowed</option>
               </select>
             </div>
+
+            <!-- CHECKLIST KELENGKAPAN PENGECEKAN -->
+            <div class="sm:col-span-2 pt-2 border-t border-black/10 dark:border-white/10">
+              <label class="block text-xs font-semibold mb-2 opacity-90">Ceklis Komponen (Ter-ceklis = Hijau / Normal, Tidak = Merah)</label>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs">
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" id="chk-komputer" checked class="rounded app-input h-4 w-4" /> Komputer
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" id="chk-monitor" checked class="rounded app-input h-4 w-4" /> Monitor
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" id="chk-mouse" checked class="rounded app-input h-4 w-4" /> Mouse
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" id="chk-keyboard" checked class="rounded app-input h-4 w-4" /> Keyboard
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" id="chk-ups" checked class="rounded app-input h-4 w-4" /> UPS
+                </label>
+              </div>
+            </div>
+
             <div class="sm:col-span-2">
               <label class="block text-xs font-medium mb-1 opacity-80">Catatan</label>
               <input id="chk-notes" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none" placeholder="Keyboard aus, pendingin berisik, ..." />
@@ -1075,8 +1098,26 @@
       const condition = $("chk-condition").value;
       const status = $("chk-status").value;
       const notes = $("chk-notes").value.trim();
-      const { error: uErr } = await sb.from("computers").update({ condition, status }).eq("id", unit_id);
+
+      // Cek status checklist komponen (Ter-checklist = ok/hijau, Tidak = missing/merah)
+      const kOk = $("chk-komputer").checked;
+      const mOk = $("chk-monitor").checked;
+      const moOk = $("chk-mouse").checked;
+      const kbOk = $("chk-keyboard").checked;
+      const upsOk = $("chk-ups").checked;
+
+      const { error: uErr } = await sb.from("computers").update({ 
+        condition, 
+        status,
+        komputer_st: kOk ? 'ok' : 'missing',
+        monitor_st: mOk ? 'ok' : 'missing',
+        mouse_st: moOk ? 'ok' : 'missing',
+        keyboard_st: kbOk ? 'ok' : 'missing',
+        ups_st: upsOk ? 'ok' : 'missing'
+      }).eq("id", unit_id);
+
       if (uErr) return alert(uErr.message);
+
       const { error } = await sb.from("services").insert({
         unit_id,
         problem: "[CHECKING] " + condition,
@@ -1087,7 +1128,7 @@
       if (error) return alert(error.message);
       $("chk-notes").value = "";
       await refreshAll();
-      alert("Pengecekan tersimpan.");
+      alert("Pengecekan dan status kelengkapan unit berhasil disimpan.");
     };
 
     $("form-service").onsubmit = async (e) => {
