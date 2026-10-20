@@ -351,12 +351,31 @@
           </form>
         </section>
 
-        <!-- SERVICES -->
+        <!-- SERVICES WITH SELECT & BULK DELETE FEATURE -->
         <section id="view-services" class="space-y-4 max-w-6xl mx-auto hide">
-          <div class="flex items-center justify-between">
-            <h3 class="text-xl font-bold tracking-tight">Servis</h3>
-            <button data-open="modal-service" class="px-4 py-2 rounded-xl custom-accent-bg text-white text-xs md:text-sm font-semibold shadow-lg transition flex items-center gap-2"><i class="fa-solid fa-plus"></i>Tiket Servis</button>
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <h3 class="text-xl font-bold tracking-tight">Daftar Tiket & Log Servis</h3>
+            
+            <!-- AKSI & TIKET SERVIS -->
+            <div class="flex flex-wrap items-center gap-2">
+              <button id="btn-svc-toggle-select" onclick="toggleServiceSelectMode()" class="px-3.5 py-2 rounded-xl bg-black/10 dark:bg-white/10 hover:bg-black/20 text-xs font-semibold transition flex items-center gap-1.5">
+                <i class="fa-solid fa-list-check"></i> <span id="lbl-svc-select">Mode Pilih</span>
+              </button>
+
+              <button id="btn-svc-select-all" onclick="toggleServiceSelectAll()" class="hide px-3.5 py-2 rounded-xl bg-black/10 dark:bg-white/10 hover:bg-black/20 text-xs font-semibold transition flex items-center gap-1.5">
+                <i class="fa-regular fa-square-check"></i> <span>Pilih Semua</span>
+              </button>
+
+              <button id="btn-svc-delete-selected" onclick="deleteSelectedServices()" class="hide px-3.5 py-2 rounded-xl bg-ios-pink/20 text-ios-pink hover:bg-ios-pink/30 text-xs font-semibold transition flex items-center gap-1.5">
+                <i class="fa-solid fa-trash-can"></i> <span>Hapus (<span id="svc-selected-count">0</span>)</span>
+              </button>
+
+              <button data-open="modal-service" class="px-4 py-2 rounded-xl custom-accent-bg text-white text-xs md:text-sm font-semibold shadow-lg transition flex items-center gap-2">
+                <i class="fa-solid fa-plus"></i>Tiket Servis
+              </button>
+            </div>
           </div>
+
           <div id="svc-list" class="grid gap-3"></div>
         </section>
 
@@ -746,7 +765,9 @@
       filterSender: null,
       replyingTo: null,
       attachmentData: null,
-      charts: {}
+      charts: {},
+      serviceSelectMode: false,
+      selectedServiceIds: new Set()
     };
 
     const $ = (id) => document.getElementById(id);
@@ -957,6 +978,99 @@
       return `<div class="flex justify-center"><span class="h-3 w-3 rounded-full ${color} inline-block" title="${title}"></span></div>`;
     }
 
+    // LOGIC MODE SERVIS SELECT & BULK DELETE
+    function toggleServiceSelectMode() {
+      state.serviceSelectMode = !state.serviceSelectMode;
+      state.selectedServiceIds.clear();
+
+      $("lbl-svc-select").textContent = state.serviceSelectMode ? "Batal Pilih" : "Mode Pilih";
+      show($("btn-svc-select-all"), state.serviceSelectMode);
+      show($("btn-svc-delete-selected"), state.serviceSelectMode);
+      
+      updateServiceSelectedCount();
+      renderServicesList();
+    }
+
+    function toggleServiceSelectAll() {
+      if (state.selectedServiceIds.size === state.services.length) {
+        state.selectedServiceIds.clear();
+      } else {
+        state.services.forEach(s => state.selectedServiceIds.add(String(s.id)));
+      }
+      updateServiceSelectedCount();
+      renderServicesList();
+    }
+
+    function handleServiceCheckChange(id, checked) {
+      if (checked) {
+        state.selectedServiceIds.add(String(id));
+      } else {
+        state.selectedServiceIds.delete(String(id));
+      }
+      updateServiceSelectedCount();
+    }
+
+    function updateServiceSelectedCount() {
+      const count = state.selectedServiceIds.size;
+      $("svc-selected-count").textContent = count;
+      $("btn-svc-delete-selected").disabled = count === 0;
+      $("btn-svc-delete-selected").classList.toggle("opacity-50", count === 0);
+    }
+
+    async function deleteSelectedServices() {
+      const idsToDelete = Array.from(state.selectedServiceIds);
+      if (idsToDelete.length === 0) return alert("Pilih minimal satu tiket servis yang akan dihapus!");
+
+      if (!confirm(`Konfirmasi Hapus:\nApakah Anda yakin ingin menghapus ${idsToDelete.length} log tiket servis terpilih?`)) return;
+
+      const { error } = await sb.from("services").delete().in("id", idsToDelete);
+      if (error) return alert("Gagal menghapus log servis: " + error.message);
+
+      state.selectedServiceIds.clear();
+      state.serviceSelectMode = false;
+      $("lbl-svc-select").textContent = "Mode Pilih";
+      show($("btn-svc-select-all"), false);
+      show($("btn-svc-delete-selected"), false);
+
+      await refreshAll();
+      alert("Berhasil menghapus tiket servis terpilih.");
+    }
+
+    function renderServicesList() {
+      $("svc-list").innerHTML = state.services.map((x) => {
+        const isChecked = state.selectedServiceIds.has(String(x.id));
+        return `
+        <article class="glass-card rounded-3xl p-5 shadow-lg flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3.5 flex-1 min-w-0">
+            ${state.serviceSelectMode ? `
+              <input type="checkbox" ${isChecked ? "checked" : ""} onchange="handleServiceCheckChange('${x.id}', this.checked)" class="h-5 w-5 rounded app-input shrink-0 cursor-pointer accent-ios-blue" />
+            ` : ""}
+            <div class="truncate">
+              <h5 class="font-semibold text-sm truncate"><span class="custom-accent-text">${esc(x.unit_id || "Unit")}</span> · ${esc(x.problem)}</h5>
+              <p class="text-xs opacity-75 mt-1 truncate">${esc(x.technician || "-")} · ${esc(x.notes || "")}</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <select onchange="setServiceStatus('${x.id}', this.value)" class="app-input rounded-xl px-3 py-1.5 text-xs font-medium focus:outline-none">
+              ${["open","in_progress","done"].map((s) => `<option ${s===x.status?"selected":""}>${s}</option>`).join("")}
+            </select>
+            ${!state.serviceSelectMode ? `
+              <button onclick="deleteSingleService('${x.id}')" class="p-2 opacity-60 hover:opacity-100 hover:text-ios-pink text-xs transition" title="Hapus Tiket">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            ` : ""}
+          </div>
+        </article>`;
+      }).join("") || `<p class="opacity-70 text-sm p-4 text-center">Belum ada tiket servis.</p>`;
+    }
+
+    async function deleteSingleService(id) {
+      if (!confirm("Apakah Anda yakin ingin menghapus tiket servis ini?")) return;
+      const { error } = await sb.from("services").delete().eq("id", id);
+      if (error) return alert("Gagal menghapus: " + error.message);
+      await refreshAll();
+    }
+
     function renderAll() {
       fillUnitSelects();
       $("home-cards").innerHTML = [
@@ -994,17 +1108,7 @@
           <td class="p-4 text-right">${x.status !== "returned" ? `<button class="text-xs px-3 py-1.5 rounded-xl custom-accent-bg text-white font-semibold transition shadow-md" onclick="openReturnModal('${x.id}','${esc(x.unit_id)}','${esc(x.borrower)}','${esc(x.purpose)}','${esc(x.start_date || '')} s/d ${esc(x.end_date || '')}')">Kembalikan</button>` : "-"}</td>
         </tr>`).join("") || `<tr><td class="p-6 text-center opacity-70" colspan="6">Belum ada peminjaman.</td></tr>`;
 
-      $("svc-list").innerHTML = state.services.map((x) => `
-        <article class="glass-card rounded-3xl p-5 shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-3">
-          <div>
-            <h5 class="font-semibold text-sm"><span class="custom-accent-text">${esc(x.unit_id || "Unit")}</span> · ${esc(x.problem)}</h5>
-            <p class="text-xs opacity-75 mt-1">${esc(x.technician || "-")} · ${esc(x.notes || "")}</p>
-          </div>
-          <select onchange="setServiceStatus('${x.id}', this.value)" class="app-input rounded-xl px-3 py-1.5 text-xs font-medium focus:outline-none">
-            ${["open","in_progress","done"].map((s) => `<option ${s===x.status?"selected":""}>${s}</option>`).join("")}
-          </select>
-        </article>`).join("") || `<p class="opacity-70 text-sm">Belum ada tiket servis.</p>`;
-
+      renderServicesList();
       renderChat();
       renderCharts();
     }
