@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>DCC Monitor — iOS Edition & Color Grading</title>
+  <title>DCC APP v1.0</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -426,7 +426,7 @@
               </div>
 
               <button type="button" onclick="submitCheckingService()" class="w-full py-3.5 rounded-xl bg-ios-orange hover:opacity-90 active:scale-[0.98] text-white font-semibold text-sm transition shadow-lg flex items-center justify-center gap-2">
-                <i class="fa-solid fa-paper-plane"></i> Kirim Tiket Servis Komponen
+                <i class="fa-solid fa-paper-plane"></i> Kirim Servis Komputer
               </button>
             </div>
           </form>
@@ -1566,7 +1566,7 @@
         ["Total Unit", state.computers.length, "fa-computer", "text-ios-blue"],
         ["Tersedia", state.computers.filter((x) => x.status === "available").length, "fa-circle-check", "text-ios-green"],
         ["Pinjaman Aktif", activeLoans.length, "fa-handshake", "text-ios-orange"],
-        ["Tiket Servis Komponen", componentServices.length, "fa-screwdriver-wrench", "text-ios-pink"]
+        ["Servis Komputer", componentServices.length, "fa-screwdriver-wrench", "text-ios-pink"]
       ].map(([t, n, i, color]) => `
         <div class="glass-card glass-card-hover rounded-3xl p-5 shadow-lg">
           <p class="text-xs font-semibold opacity-75 mb-1.5 flex items-center gap-2"><i class="fa-solid ${i} ${color} text-sm"></i>${t}</p>
