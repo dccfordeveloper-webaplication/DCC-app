@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" class="dark">
+<html lang="id" class="">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -38,115 +38,131 @@
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
     :root {
-      --cust-bg1: #1e1b4b;
-      --cust-bg2: #0f172a;
-      --cust-accent: #6366f1;
+      --cust-bg1: #f8fafc;
+      --cust-bg2: #e2e8f0;
+      --cust-accent: #007AFF;
     }
 
-    /* THEME BODY STYLES */
+    /* THEME BODY STYLES & ANIMATIONS */
     body.theme-light { background-color: #F2F2F7; color: #1C1C1E; }
     body.theme-dark { background-color: #090a0f; color: #F2F2F7; }
-    body.theme-custom { background: linear-gradient(135deg, var(--cust-bg1) 0%, var(--cust-bg2) 100%); color: #f8fafc; }
+    body.theme-custom { background: linear-gradient(135deg, var(--cust-bg1) 0%, var(--cust-bg2) 100%); color: #1e293b; }
 
     .glass {
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
     }
 
-    /* THEME CARD & MODAL STYLES */
-    body.theme-light .glass-card, body.theme-light dialog { background: #ffffff !important; border: 1px solid rgba(0, 0, 0, 0.1); color: #1C1C1E !important; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+    /* THEME CARD & MODAL STYLES WITH ANIMATION HOVER */
+    body.theme-light .glass-card, body.theme-light dialog { background: #ffffff !important; border: 1px solid rgba(0, 0, 0, 0.08); color: #1C1C1E !important; box-shadow: 0 10px 30px rgba(0,0,0,0.06); }
     body.theme-dark .glass-card, body.theme-dark dialog { background: #181b22 !important; border: 1px solid rgba(255, 255, 255, 0.12); color: #F2F2F7 !important; box-shadow: 0 15px 35px rgba(0,0,0,0.6); }
-    body.theme-custom .glass-card, body.theme-custom dialog { background: rgba(15, 23, 42, 0.95) !important; border: 1px solid rgba(255, 255, 255, 0.15); color: #f8fafc !important; box-shadow: 0 15px 35px rgba(0,0,0,0.6); }
+    body.theme-custom .glass-card, body.theme-custom dialog { background: rgba(255, 255, 255, 0.85) !important; border: 1px solid rgba(0, 0, 0, 0.1); color: #0f172a !important; box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
+
+    /* HOVER LIFT ANIMATION FOR CARDS */
+    .glass-card-hover {
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .glass-card-hover:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+    }
 
     /* THEME INPUT STYLES */
     body.theme-light .app-input { background: #f9f9fb !important; color: #1c1c1e !important; border: 1px solid #d1d1d6 !important; }
     body.theme-dark .app-input { background: #12141a !important; color: #ffffff !important; border: 1px solid #2d3748 !important; }
-    body.theme-custom .app-input { background: #1e293b !important; color: #ffffff !important; border: 1px solid #334155 !important; }
+    body.theme-custom .app-input { background: #ffffff !important; color: #0f172a !important; border: 1px solid #cbd5e1 !important; }
 
     /* THEME TABLE & TEXT */
-    body.theme-light th { color: #48484a !important; background: #e5e5ea !important; }
+    body.theme-light th { color: #48484a !important; background: #f2f2f7 !important; }
     body.theme-light td { color: #1c1c1e !important; border-bottom: 1px solid #e5e5ea !important; }
     body.theme-dark th { color: #94a3b8 !important; background: #12141a !important; }
     body.theme-dark td { color: #e2e8f0 !important; border-bottom: 1px solid #2d3748 !important; }
-    body.theme-custom th { color: #94a3b8 !important; background: #0f172a !important; }
-    body.theme-custom td { color: #e2e8f0 !important; border-bottom: 1px solid #334155 !important; }
+    body.theme-custom th { color: #475569 !important; background: #f1f5f9 !important; }
+    body.theme-custom td { color: #1e293b !important; border-bottom: 1px solid #e2e8f0 !important; }
 
-    .nav-item.active { background-color: var(--active-accent, #007AFF); color: #ffffff !important; }
+    .nav-item { transition: all 0.2s ease; }
+    .nav-item.active { background-color: var(--active-accent, #007AFF); color: #ffffff !important; box-shadow: 0 4px 14px rgba(0,122,255,0.3); }
     body.theme-light .nav-item:not(.active) { color: #3A3A3C; }
     body.theme-dark .nav-item:not(.active) { color: #D1D5DB; }
-    body.theme-custom .nav-item:not(.active) { color: #cbd5e1; }
+    body.theme-custom .nav-item:not(.active) { color: #334155; }
+    .nav-item:not(.active):hover { background-color: rgba(150,150,150,0.1); }
 
     .bottom-nav-btn.active { color: var(--active-accent, #007AFF) !important; }
     body.theme-light .bottom-nav-btn:not(.active) { color: #8E8E93; }
     body.theme-dark .bottom-nav-btn:not(.active) { color: #98989D; }
-    body.theme-custom .bottom-nav-btn:not(.active) { color: #94a3b8; }
+    body.theme-custom .bottom-nav-btn:not(.active) { color: #64748b; }
 
     .custom-accent-bg { background-color: var(--cust-accent); }
     .custom-accent-text { color: var(--cust-accent); }
 
     dialog::backdrop {
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(6px);
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+      animation: fadeIn 0.3s ease;
     }
     dialog[open] {
       display: flex;
       flex-direction: column;
+      animation: scaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes scaleIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
     .hide { display: none !important; }
     .chat-scroll::-webkit-scrollbar { width: 4px; }
     .chat-scroll::-webkit-scrollbar-thumb { background: rgba(150,150,150,0.4); border-radius: 4px; }
   </style>
 </head>
-<body class="theme-dark min-h-screen flex flex-col font-sans transition-colors duration-300 overflow-x-hidden">
+<body class="theme-light min-h-screen flex flex-col font-sans transition-colors duration-300 overflow-x-hidden">
 
   <!-- AUTH SCREEN -->
   <section id="screen-auth" class="min-h-screen grid lg:grid-cols-2">
-    <div class="p-8 md:p-12 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-slate-700/30">
+    <div class="p-8 md:p-12 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-slate-300/40 dark:border-slate-700/30">
       <div class="max-w-md mx-auto w-full">
-        <span class="inline-block px-3 py-1 rounded-full bg-ios-blue/10 text-ios-blue text-xs font-semibold tracking-wider mb-4">DCC GONTOR</span>
+        <span class="inline-block px-3.5 py-1 rounded-full bg-ios-blue/10 text-ios-blue text-xs font-bold tracking-wider mb-4 shadow-sm">DCC GONTOR</span>
         <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">Darussalam<br />Computer Center</h1>
-        <p class="text-sm opacity-80 mb-8 leading-relaxed">Sistem Monitoring Stok Komputer, Peminjaman, Pengecekan, Servis, dan Ruang Chat Realtime dengan antarmuka bergaya iOS.</p>
-        <div class="space-y-3 text-sm opacity-80">
-          <p><i class="fa-solid fa-laptop text-ios-blue mr-3 w-5"></i>Manajemen unit komputer & komponen</p>
-          <p><i class="fa-solid fa-handshake text-ios-green mr-3 w-5"></i>Peminjaman & pengembalian praktis</p>
-          <p><i class="fa-solid fa-comments text-ios-indigo mr-3 w-5"></i>Chat room dengan emoji, balasan & file</p>
+        <p class="text-sm opacity-85 mb-8 leading-relaxed">Sistem Monitoring Stok Komputer, Peminjaman, Pengecekan, Servis, dan Ruang Chat Realtime dengan antarmuka bergaya iOS.</p>
+        <div class="space-y-3.5 text-sm opacity-90">
+          <p class="flex items-center"><i class="fa-solid fa-laptop text-ios-blue mr-3 w-5 text-base"></i>Manajemen unit komputer & komponen</p>
+          <p class="flex items-center"><i class="fa-solid fa-handshake text-ios-green mr-3 w-5 text-base"></i>Peminjaman & pengembalian praktis</p>
+          <p class="flex items-center"><i class="fa-solid fa-comments text-ios-indigo mr-3 w-5 text-base"></i>Chat room dengan emoji, balasan & file</p>
         </div>
       </div>
     </div>
     <div class="p-8 md:p-12 flex flex-col justify-center">
-      <div class="max-w-md mx-auto w-full glass-card p-6 md:p-8 rounded-3xl shadow-2xl">
-        <div class="flex gap-1 mb-6 p-1 bg-black/10 dark:bg-white/10 rounded-xl">
+      <div class="max-w-md mx-auto w-full glass-card glass-card-hover p-6 md:p-8 rounded-3xl">
+        <div class="flex gap-1 mb-6 p-1 bg-black/5 dark:bg-white/10 rounded-xl">
           <button id="tab-login" class="flex-1 py-2 rounded-lg font-semibold text-xs transition custom-accent-bg text-white shadow-sm">Masuk</button>
           <button id="tab-register" class="flex-1 py-2 rounded-lg text-xs transition opacity-70 hover:opacity-100">Daftar</button>
         </div>
         <form id="form-login" class="space-y-4">
           <div>
-            <label class="block text-xs font-medium mb-1 opacity-80">Email</label>
-            <input required type="email" id="login-email" class="w-full app-input rounded-xl px-4 py-3 text-base md:text-sm focus:outline-none transition" placeholder="staff@dcc.gontor" />
+            <label class="block text-xs font-semibold mb-1.5 opacity-80">Email</label>
+            <input required type="email" id="login-email" class="w-full app-input rounded-xl px-4 py-3 text-base md:text-sm focus:outline-none transition shadow-sm" placeholder="staff@dcc.gontor" />
           </div>
           <div>
-            <label class="block text-xs font-medium mb-1 opacity-80">Kata Sandi</label>
-            <input required type="password" id="login-pass" class="w-full app-input rounded-xl px-4 py-3 text-base md:text-sm focus:outline-none transition" />
+            <label class="block text-xs font-semibold mb-1.5 opacity-80">Kata Sandi</label>
+            <input required type="password" id="login-pass" class="w-full app-input rounded-xl px-4 py-3 text-base md:text-sm focus:outline-none transition shadow-sm" />
           </div>
-          <button class="w-full py-3 rounded-xl custom-accent-bg hover:opacity-90 text-white font-semibold text-sm transition shadow-lg">Masuk</button>
+          <button class="w-full py-3.5 rounded-xl custom-accent-bg hover:opacity-90 active:scale-[0.98] text-white font-semibold text-sm transition shadow-lg">Masuk</button>
         </form>
         <form id="form-register" class="space-y-4 hide">
           <div>
-            <label class="block text-xs font-medium mb-1 opacity-80">Nama Lengkap</label>
-            <input required id="reg-name" class="w-full app-input rounded-xl px-4 py-3 text-base md:text-sm focus:outline-none transition" />
+            <label class="block text-xs font-semibold mb-1.5 opacity-80">Nama Lengkap</label>
+            <input required id="reg-name" class="w-full app-input rounded-xl px-4 py-3 text-base md:text-sm focus:outline-none transition shadow-sm" />
           </div>
           <div>
-            <label class="block text-xs font-medium mb-1 opacity-80">Email</label>
-            <input required type="email" id="reg-email" class="w-full app-input rounded-xl px-4 py-3 text-base md:text-sm focus:outline-none transition" />
+            <label class="block text-xs font-semibold mb-1.5 opacity-80">Email</label>
+            <input required type="email" id="reg-email" class="w-full app-input rounded-xl px-4 py-3 text-base md:text-sm focus:outline-none transition shadow-sm" />
           </div>
           <div>
-            <label class="block text-xs font-medium mb-1 opacity-80">Kata Sandi</label>
-            <input required minlength="6" type="password" id="reg-pass" class="w-full app-input rounded-xl px-4 py-3 text-base md:text-sm focus:outline-none transition" />
+            <label class="block text-xs font-semibold mb-1.5 opacity-80">Kata Sandi</label>
+            <input required minlength="6" type="password" id="reg-pass" class="w-full app-input rounded-xl px-4 py-3 text-base md:text-sm focus:outline-none transition shadow-sm" />
           </div>
-          <button class="w-full py-3 rounded-xl custom-accent-bg hover:opacity-90 text-white font-semibold text-sm transition shadow-lg">Daftar Akun</button>
+          <button class="w-full py-3.5 rounded-xl custom-accent-bg hover:opacity-90 active:scale-[0.98] text-white font-semibold text-sm transition shadow-lg">Daftar Akun</button>
         </form>
-        <p id="auth-msg" class="mt-4 text-xs text-rose-500 min-h-[1.25rem] text-center"></p>
+        <p id="auth-msg" class="mt-4 text-xs text-rose-500 min-h-[1.25rem] text-center font-medium"></p>
       </div>
     </div>
   </section>
@@ -156,28 +172,28 @@
     <!-- IOS HEADER NAVBAR -->
     <header class="glass glass-card border-b sticky top-0 z-30 h-16 px-4 md:px-8 flex items-center justify-between shrink-0">
       <div class="flex items-center gap-3">
-        <button id="btn-toggle-sidebar" class="p-2 rounded-xl hover:bg-black/10 dark:hover:bg-white/10 transition">
+        <button id="btn-toggle-sidebar" class="p-2 rounded-xl hover:bg-black/10 dark:hover:bg-white/10 transition active:scale-95">
           <i class="fa-solid fa-bars text-lg"></i>
         </button>
         <div class="h-9 w-9 rounded-xl custom-accent-bg text-white grid place-items-center font-bold text-sm shadow-md">D</div>
         <div>
           <h2 class="font-bold text-sm tracking-tight">DCC MONITOR</h2>
-          <p id="whoami" class="text-[11px] opacity-70 truncate">Staff</p>
+          <p id="whoami" class="text-[11px] opacity-75 truncate">Staff</p>
         </div>
       </div>
 
       <div class="flex items-center gap-2">
-        <div class="flex bg-black/10 dark:bg-white/10 p-1 rounded-xl text-xs">
-          <button onclick="setTheme('light')" class="px-2 py-1 rounded-lg transition font-medium" title="Light Mode">☀️</button>
-          <button onclick="setTheme('dark')" class="px-2 py-1 rounded-lg transition font-medium" title="Dark Mode">🌙</button>
-          <button onclick="setTheme('custom')" class="px-2 py-1 rounded-lg transition font-medium" title="Custom Theme">🎨</button>
+        <div class="flex bg-black/5 dark:bg-white/10 p-1 rounded-xl text-xs">
+          <button onclick="setTheme('light')" class="px-2.5 py-1 rounded-lg transition font-medium" title="Light Mode">☀️</button>
+          <button onclick="setTheme('dark')" class="px-2.5 py-1 rounded-lg transition font-medium" title="Dark Mode">🌙</button>
+          <button onclick="setTheme('custom')" class="px-2.5 py-1 rounded-lg transition font-medium" title="Custom Theme">🎨</button>
         </div>
         
-        <button id="btn-grading" onclick="$('modal-grading').showModal()" class="hide px-2.5 py-1.5 rounded-xl bg-black/10 dark:bg-white/10 hover:bg-black/20 text-xs font-semibold transition flex items-center gap-1.5" title="Atur Warna / Color Grading">
+        <button id="btn-grading" onclick="$('modal-grading').showModal()" class="hide px-3 py-1.5 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/10 text-xs font-semibold transition flex items-center gap-1.5" title="Atur Warna / Color Grading">
           <i class="fa-solid fa-palette"></i>
         </button>
 
-        <button id="btn-logout" class="text-xs px-2.5 py-1.5 rounded-xl bg-ios-pink/10 hover:bg-ios-pink/20 text-ios-pink font-medium transition">
+        <button id="btn-logout" class="text-xs px-3 py-1.5 rounded-xl bg-ios-pink/10 hover:bg-ios-pink/20 text-ios-pink font-semibold transition active:scale-95">
           <i class="fa-solid fa-right-from-bracket"></i>
         </button>
       </div>
@@ -189,24 +205,24 @@
       <aside id="sidebar" class="glass-card fixed md:static inset-y-0 left-0 z-50 w-64 border-r p-4 space-y-1.5 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out shrink-0 flex flex-col justify-between h-full">
         <div class="flex items-center justify-between pb-3 md:hidden border-b border-black/10 dark:border-white/10 mb-2">
           <span class="font-bold text-sm">Menu DCC</span>
-          <button id="btn-close-sidebar" class="p-1 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+          <button id="btn-close-sidebar" class="p-1 opacity-70 hover:opacity-100"><i class="fa-solid fa-xmark text-lg"></i></button>
         </div>
         <nav class="space-y-1.5 flex-1">
-          <button data-view="home" class="nav-item active w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center transition"><i class="fa-solid fa-house w-6 text-center mr-2.5"></i>Beranda</button>
-          <button data-view="computers" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center transition"><i class="fa-solid fa-computer w-6 text-center mr-2.5"></i>Stok Komputer</button>
-          <button data-view="loans" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center transition"><i class="fa-solid fa-handshake w-6 text-center mr-2.5"></i>Peminjaman</button>
-          <button data-view="checking" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center transition"><i class="fa-solid fa-clipboard-check w-6 text-center mr-2.5"></i>Pengecekan</button>
-          <button data-view="services" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center transition"><i class="fa-solid fa-screwdriver-wrench w-6 text-center mr-2.5"></i>Servis</button>
-          <button data-view="recap" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center transition"><i class="fa-solid fa-chart-column w-6 text-center mr-2.5"></i>Rekap Statistik</button>
-          <button data-view="chat" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center transition"><i class="fa-solid fa-comments w-6 text-center mr-2.5"></i>Chat Room</button>
+          <button data-view="home" class="nav-item active w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center"><i class="fa-solid fa-house w-6 text-center mr-2.5"></i>Beranda</button>
+          <button data-view="computers" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center"><i class="fa-solid fa-computer w-6 text-center mr-2.5"></i>Stok Komputer</button>
+          <button data-view="loans" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center"><i class="fa-solid fa-handshake w-6 text-center mr-2.5"></i>Peminjaman</button>
+          <button data-view="checking" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center"><i class="fa-solid fa-clipboard-check w-6 text-center mr-2.5"></i>Pengecekan</button>
+          <button data-view="services" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center"><i class="fa-solid fa-screwdriver-wrench w-6 text-center mr-2.5"></i>Servis</button>
+          <button data-view="recap" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center"><i class="fa-solid fa-chart-column w-6 text-center mr-2.5"></i>Rekap Statistik</button>
+          <button data-view="chat" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center"><i class="fa-solid fa-comments w-6 text-center mr-2.5"></i>Chat Room</button>
         </nav>
-        <div class="text-[11px] opacity-70 text-center pt-4 border-t border-black/10 dark:border-white/10">
+        <div class="text-[11px] opacity-70 text-center pt-4 border-t border-black/10 dark:border-white/10 font-medium">
           Darussalam Computer Center
         </div>
       </aside>
 
       <!-- BACKDROP OVERLAY -->
-      <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden transition-opacity"></div>
+      <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden transition-opacity"></div>
 
       <!-- CONTENT VIEWS AREA -->
       <main id="main-content" class="flex-1 overflow-y-auto p-4 md:p-8">
@@ -259,7 +275,7 @@
         <section id="view-computers" class="space-y-4 max-w-6xl mx-auto hide">
           <div class="flex items-center justify-between">
             <h3 class="text-xl font-bold tracking-tight">Stok Komputer & Kelengkapan</h3>
-            <button data-open="modal-computer" class="px-4 py-2 rounded-xl custom-accent-bg text-white text-xs md:text-sm font-semibold shadow-lg transition flex items-center gap-2"><i class="fa-solid fa-plus"></i>Unit Baru</button>
+            <button data-open="modal-computer" class="px-4 py-2.5 rounded-xl custom-accent-bg text-white text-xs md:text-sm font-semibold shadow-lg transition active:scale-95 flex items-center gap-2"><i class="fa-solid fa-plus"></i>Unit Baru</button>
           </div>
           <div class="glass-card rounded-3xl shadow-lg overflow-x-auto">
             <table class="w-full text-left text-sm">
@@ -286,11 +302,11 @@
             <h3 class="text-xl font-bold tracking-tight">Log Peminjaman</h3>
             
             <div class="flex flex-wrap items-center gap-2">
-              <button id="btn-loan-toggle-select" onclick="toggleLoanSelectMode()" class="px-3.5 py-2 rounded-xl bg-black/10 dark:bg-white/10 hover:bg-black/20 text-xs font-semibold transition flex items-center gap-1.5">
+              <button id="btn-loan-toggle-select" onclick="toggleLoanSelectMode()" class="px-3.5 py-2 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/10 text-xs font-semibold transition flex items-center gap-1.5">
                 <i class="fa-solid fa-list-check"></i> <span id="lbl-loan-select">Mode Pilih</span>
               </button>
 
-              <button id="btn-loan-select-all" onclick="toggleLoanSelectAll()" class="hide px-3.5 py-2 rounded-xl bg-black/10 dark:bg-white/10 hover:bg-black/20 text-xs font-semibold transition flex items-center gap-1.5">
+              <button id="btn-loan-select-all" onclick="toggleLoanSelectAll()" class="hide px-3.5 py-2 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/10 text-xs font-semibold transition flex items-center gap-1.5">
                 <i class="fa-regular fa-square-check"></i> <span>Pilih Semua</span>
               </button>
 
@@ -298,7 +314,7 @@
                 <i class="fa-solid fa-trash-can"></i> <span>Hapus (<span id="loan-selected-count">0</span>)</span>
               </button>
 
-              <button data-open="modal-loan" class="px-4 py-2 rounded-xl custom-accent-bg text-white text-xs md:text-sm font-semibold shadow-lg transition flex items-center gap-2">
+              <button data-open="modal-loan" class="px-4 py-2.5 rounded-xl custom-accent-bg text-white text-xs md:text-sm font-semibold shadow-lg transition active:scale-95 flex items-center gap-2">
                 <i class="fa-solid fa-plus"></i>Catat Pinjam
               </button>
             </div>
@@ -329,17 +345,17 @@
           
           <form id="form-checking" class="glass-card rounded-3xl p-6 shadow-lg grid sm:grid-cols-2 gap-4">
             <div class="sm:col-span-2">
-              <label class="block text-xs font-medium mb-1 opacity-80">Kode PC Unit</label>
+              <label class="block text-xs font-semibold mb-1 opacity-80">Kode PC Unit</label>
               <select id="chk-unit" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none"></select>
             </div>
             <div>
-              <label class="block text-xs font-medium mb-1 opacity-80">Kondisi</label>
+              <label class="block text-xs font-semibold mb-1 opacity-80">Kondisi</label>
               <select id="chk-condition" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none">
                 <option>Sangat Baik</option><option>Baik</option><option>Cukup</option><option>Rusak Ringan</option><option>Rusak Berat</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs font-medium mb-1 opacity-80">Status Utama Stok</label>
+              <label class="block text-xs font-semibold mb-1 opacity-80">Status Utama Stok</label>
               <select id="chk-status" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none">
                 <option value="available">available</option>
                 <option value="checking">checking</option>
@@ -350,9 +366,9 @@
 
             <!-- SECTION 1: CHECKLIST PENGECEKAN KELENGKAPAN STOK -->
             <div class="sm:col-span-2 pt-3 border-t border-black/10 dark:border-white/10">
-              <label class="block text-xs font-semibold mb-1 custom-accent-text">1. Ceklis Kelengkapan Stok Komputer</label>
+              <label class="block text-xs font-bold mb-1 custom-accent-text">1. Ceklis Kelengkapan Stok Komputer</label>
               <span class="block text-[11px] opacity-70 mb-2">(Dicentang = 🟢 Normal, Tidak Dicentang = 🔴 Rusak/Missing)</span>
-              <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs">
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs font-medium">
                 <label class="flex items-center gap-2 cursor-pointer">
                   <input type="checkbox" id="chk-komputer" checked class="rounded app-input h-4 w-4" /> Komputer
                 </label>
@@ -372,12 +388,12 @@
             </div>
 
             <div class="sm:col-span-2">
-              <label class="block text-xs font-medium mb-1 opacity-80">Catatan Pengecekan Rutin</label>
+              <label class="block text-xs font-semibold mb-1 opacity-80">Catatan Pengecekan Rutin</label>
               <input id="chk-notes" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none" placeholder="Catatan pengecekan..." />
             </div>
 
             <div class="sm:col-span-2">
-              <button type="submit" class="w-full py-3 rounded-xl custom-accent-bg text-white font-semibold text-sm transition shadow-lg">Simpan Pengecekan Stok</button>
+              <button type="submit" class="w-full py-3.5 rounded-xl custom-accent-bg hover:opacity-90 active:scale-[0.98] text-white font-semibold text-sm transition shadow-lg">Simpan Pengecekan Stok</button>
             </div>
 
             <!-- SECTION 2: CHECKLIST KHUSUS SERVIS KOMPONEN BERMASALAH -->
@@ -385,7 +401,7 @@
               <label class="block text-xs font-bold text-ios-orange mb-1"><i class="fa-solid fa-screwdriver-wrench mr-1"></i>2. Pengajuan Servis Komponen Bermasalah</label>
               <span class="block text-[11px] opacity-70 mb-2">Pilih komponen yang hendak diservis. Komponen ini otomatis berubah warna menjadi 🟡 Kuning di stok komputer.</span>
               
-              <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs mb-3">
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs font-medium mb-3">
                 <label class="flex items-center gap-2 cursor-pointer">
                   <input type="checkbox" id="svc-chk-komputer" class="rounded app-input h-4 w-4" /> Komputer
                 </label>
@@ -404,11 +420,11 @@
               </div>
 
               <div class="mb-3">
-                <label class="block text-xs font-medium mb-1 opacity-80">Catatan Kendala Servis</label>
+                <label class="block text-xs font-semibold mb-1 opacity-80">Catatan Kendala Servis</label>
                 <input id="svc-chk-notes" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none" placeholder="Deskripsi kerusakan (contoh: Monitor garis biru, mouse klik kiri mati)..." />
               </div>
 
-              <button type="button" onclick="submitCheckingService()" class="w-full py-3 rounded-xl bg-ios-orange hover:opacity-90 text-white font-semibold text-sm transition shadow-lg flex items-center justify-center gap-2">
+              <button type="button" onclick="submitCheckingService()" class="w-full py-3.5 rounded-xl bg-ios-orange hover:opacity-90 active:scale-[0.98] text-white font-semibold text-sm transition shadow-lg flex items-center justify-center gap-2">
                 <i class="fa-solid fa-paper-plane"></i> Kirim Tiket Servis Komponen
               </button>
             </div>
@@ -421,11 +437,11 @@
             <h3 class="text-xl font-bold tracking-tight">Daftar Tiket & Log Servis</h3>
             
             <div class="flex flex-wrap items-center gap-2">
-              <button id="btn-svc-toggle-select" onclick="toggleServiceSelectMode()" class="px-3.5 py-2 rounded-xl bg-black/10 dark:bg-white/10 hover:bg-black/20 text-xs font-semibold transition flex items-center gap-1.5">
+              <button id="btn-svc-toggle-select" onclick="toggleServiceSelectMode()" class="px-3.5 py-2 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/10 text-xs font-semibold transition flex items-center gap-1.5">
                 <i class="fa-solid fa-list-check"></i> <span id="lbl-svc-select">Mode Pilih</span>
               </button>
 
-              <button id="btn-svc-select-all" onclick="toggleServiceSelectAll()" class="hide px-3.5 py-2 rounded-xl bg-black/10 dark:bg-white/10 hover:bg-black/20 text-xs font-semibold transition flex items-center gap-1.5">
+              <button id="btn-svc-select-all" onclick="toggleServiceSelectAll()" class="hide px-3.5 py-2 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/10 text-xs font-semibold transition flex items-center gap-1.5">
                 <i class="fa-regular fa-square-check"></i> <span>Pilih Semua</span>
               </button>
 
@@ -433,7 +449,7 @@
                 <i class="fa-solid fa-trash-can"></i> <span>Hapus (<span id="svc-selected-count">0</span>)</span>
               </button>
 
-              <button data-open="modal-service" class="px-4 py-2 rounded-xl custom-accent-bg text-white text-xs md:text-sm font-semibold shadow-lg transition flex items-center gap-2">
+              <button data-open="modal-service" class="px-4 py-2.5 rounded-xl custom-accent-bg text-white text-xs md:text-sm font-semibold shadow-lg transition active:scale-95 flex items-center gap-2">
                 <i class="fa-solid fa-plus"></i>Tiket Servis
               </button>
             </div>
@@ -450,7 +466,7 @@
               <p class="text-xs opacity-75">Filter data peminjaman, pengecekan, dan servis berdasarkan rentang tanggal serta cetak laporan.</p>
             </div>
 
-            <button onclick="openReportModal()" class="px-5 py-2.5 rounded-xl bg-ios-green hover:opacity-90 text-white font-semibold text-xs md:text-sm shadow-lg transition flex items-center gap-2 self-start md:self-auto">
+            <button onclick="openReportModal()" class="px-5 py-2.5 rounded-xl bg-ios-green hover:opacity-90 active:scale-[0.98] text-white font-semibold text-xs md:text-sm shadow-lg transition flex items-center gap-2 self-start md:self-auto">
               <i class="fa-solid fa-file-export"></i> Fitur Laporkan
             </button>
           </div>
@@ -557,9 +573,9 @@
         <!-- CHAT ROOM (LOCKED & STABLE) -->
         <section id="view-chat" class="hide flex flex-col h-[calc(100dvh-8rem)] md:h-[calc(100vh-6rem)] w-full max-w-4xl mx-auto glass-card rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl relative">
           <!-- CHAT HEADER -->
-          <div class="bg-black/10 dark:bg-white/5 px-4 md:px-6 py-3 border-b border-black/10 dark:border-white/10 flex items-center justify-between shrink-0">
+          <div class="bg-black/5 dark:bg-white/5 px-4 md:px-6 py-3 border-b border-black/10 dark:border-white/10 flex items-center justify-between shrink-0">
             <div class="flex items-center gap-3">
-              <div class="h-9 w-9 md:h-10 md:w-10 rounded-full bg-black/10 dark:bg-white/10 custom-accent-text grid place-items-center"><i class="fa-solid fa-comments text-base md:text-lg"></i></div>
+              <div class="h-9 w-9 md:h-10 md:w-10 rounded-full bg-black/5 dark:bg-white/10 custom-accent-text grid place-items-center"><i class="fa-solid fa-comments text-base md:text-lg"></i></div>
               <div>
                 <p id="chat-title" class="font-bold text-sm">DCC Chat Room</p>
                 <p id="chat-sub" class="text-[11px] opacity-70">Realtime Community Chat</p>
@@ -568,9 +584,9 @@
             <div class="relative">
               <button id="btn-menu" class="p-2 opacity-80 hover:opacity-100 rounded-xl"><i class="fa-solid fa-ellipsis-vertical"></i></button>
               <div id="chat-menu" class="hide absolute right-0 top-11 z-20 w-48 glass-card border rounded-2xl shadow-xl overflow-hidden py-1">
-                <button id="menu-ping" class="w-full text-left px-4 py-2.5 hover:bg-black/10 dark:hover:bg-white/10 text-xs font-medium flex items-center gap-2"><i class="fa-solid fa-bolt text-ios-orange"></i>PING!</button>
-                <button id="menu-select" class="w-full text-left px-4 py-2.5 hover:bg-black/10 dark:hover:bg-white/10 text-xs font-medium flex items-center gap-2"><i class="fa-solid fa-user-group"></i>Select Chat</button>
-                <button id="menu-profile" class="w-full text-left px-4 py-2.5 hover:bg-black/10 dark:hover:bg-white/10 text-xs font-medium flex items-center gap-2"><i class="fa-solid fa-id-badge"></i>Edit Profile</button>
+                <button id="menu-ping" class="w-full text-left px-4 py-2.5 hover:bg-black/5 dark:hover:bg-white/10 text-xs font-medium flex items-center gap-2"><i class="fa-solid fa-bolt text-ios-orange"></i>PING!</button>
+                <button id="menu-select" class="w-full text-left px-4 py-2.5 hover:bg-black/5 dark:hover:bg-white/10 text-xs font-medium flex items-center gap-2"><i class="fa-solid fa-user-group"></i>Select Chat</button>
+                <button id="menu-profile" class="w-full text-left px-4 py-2.5 hover:bg-black/5 dark:hover:bg-white/10 text-xs font-medium flex items-center gap-2"><i class="fa-solid fa-id-badge"></i>Edit Profile</button>
               </div>
             </div>
           </div>
@@ -579,7 +595,7 @@
           <div id="chat-stream" class="flex-1 overflow-y-auto chat-scroll p-3 md:p-6 space-y-3"></div>
 
           <!-- REPLY PREVIEW -->
-          <div id="reply-preview" class="hide px-4 py-2 bg-black/10 dark:bg-white/5 border-t border-black/10 dark:border-white/10 flex items-center justify-between text-xs">
+          <div id="reply-preview" class="hide px-4 py-2 bg-black/5 dark:bg-white/5 border-t border-black/10 dark:border-white/10 flex items-center justify-between text-xs">
             <div class="truncate">
               <span class="font-semibold custom-accent-text">Membalas <span id="reply-to-sender"></span>:</span>
               <p id="reply-to-text" class="opacity-80 truncate"></p>
@@ -588,7 +604,7 @@
           </div>
 
           <!-- ATTACHMENT PREVIEW -->
-          <div id="attach-preview" class="hide px-4 py-2 bg-black/10 dark:bg-white/5 border-t border-black/10 dark:border-white/10 flex items-center justify-between text-xs">
+          <div id="attach-preview" class="hide px-4 py-2 bg-black/5 dark:bg-white/5 border-t border-black/10 dark:border-white/10 flex items-center justify-between text-xs">
             <div class="flex items-center gap-2 truncate">
               <img id="attach-thumb" class="h-8 w-8 object-cover rounded-lg hidden" alt="thumb" />
               <i id="attach-icon" class="fa-solid fa-file text-base custom-accent-text"></i>
@@ -601,12 +617,12 @@
           <div id="emoji-picker" class="hide absolute bottom-16 left-2 md:left-4 z-30 glass-card border rounded-2xl shadow-2xl p-3 grid grid-cols-8 gap-2 w-72 text-lg"></div>
 
           <!-- CHAT FORM INPUT BAR -->
-          <form id="form-chat" class="p-2 md:p-3 bg-black/10 dark:bg-white/5 border-t border-black/10 dark:border-white/10 flex items-center gap-1.5 md:gap-2 shrink-0">
+          <form id="form-chat" class="p-2 md:p-3 bg-black/5 dark:bg-white/5 border-t border-black/10 dark:border-white/10 flex items-center gap-1.5 md:gap-2 shrink-0">
             <button type="button" id="btn-emoji" class="p-2 opacity-80 hover:opacity-100 rounded-full shrink-0"><i class="fa-regular fa-face-smile text-lg"></i></button>
             <button type="button" id="btn-attach" class="p-2 opacity-80 hover:opacity-100 rounded-full shrink-0"><i class="fa-solid fa-paperclip text-lg"></i></button>
             <input type="file" id="chat-file" class="hide" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" />
-            <input id="chat-text" class="flex-1 min-w-0 app-input rounded-full px-3.5 py-2 text-base md:text-sm focus:outline-none" placeholder="Kirim pesan..." autocomplete="off" />
-            <button class="h-9 w-9 md:h-10 md:w-10 rounded-full custom-accent-bg text-white grid place-items-center shrink-0 transition shadow-md"><i class="fa-solid fa-paper-plane text-xs"></i></button>
+            <input id="chat-text" class="flex-1 min-w-0 app-input rounded-full px-3.5 py-2 text-base md:text-sm focus:outline-none shadow-sm" placeholder="Kirim pesan..." autocomplete="off" />
+            <button class="h-9 w-9 md:h-10 md:w-10 rounded-full custom-accent-bg text-white grid place-items-center shrink-0 transition shadow-md active:scale-95"><i class="fa-solid fa-paper-plane text-xs"></i></button>
           </form>
         </section>
       </main>
@@ -647,9 +663,9 @@
     <p class="text-xs opacity-80 leading-relaxed">Berikut adalah ringkasan data yang akan dilaporkan sesuai dengan filter rentang tanggal dan kategori terpilih saat ini:</p>
 
     <!-- RINGKASAN DATA VERIFIKASI -->
-    <div class="space-y-2 bg-black/5 dark:bg-white/5 p-4 rounded-2xl text-xs">
-      <div class="flex justify-between"><span class="opacity-75">Rentang Tanggal:</span><span id="rep-period-label" class="font-semibold custom-accent-text"></span></div>
-      <div class="flex justify-between"><span class="opacity-75">Kategori Aktif:</span><span id="rep-cat-label" class="font-semibold"></span></div>
+    <div class="space-y-2 bg-black/5 dark:bg-white/5 p-4 rounded-2xl text-xs font-medium">
+      <div class="flex justify-between"><span class="opacity-75">Rentang Tanggal:</span><span id="rep-period-label" class="font-bold custom-accent-text"></span></div>
+      <div class="flex justify-between"><span class="opacity-75">Kategori Aktif:</span><span id="rep-cat-label" class="font-bold"></span></div>
       <div class="pt-2 border-t border-black/10 dark:border-white/10 space-y-1">
         <div class="flex justify-between"><span class="opacity-80">· Data Peminjaman:</span><span id="rep-count-loan" class="font-bold">0</span></div>
         <div class="flex justify-between"><span class="opacity-80">· Data Pengecekan:</span><span id="rep-count-checking" class="font-bold">0</span></div>
@@ -658,12 +674,12 @@
     </div>
 
     <!-- PILIHAN AKSI LAPORAN -->
-    <div class="space-y-2 pt-2">
-      <button onclick="exportToExcel()" class="w-full py-3 rounded-xl bg-ios-green hover:opacity-90 text-white font-semibold text-xs md:text-sm transition shadow-md flex items-center justify-center gap-2">
+    <div class="space-y-2.5 pt-2">
+      <button onclick="exportToExcel()" class="w-full py-3.5 rounded-xl bg-ios-green hover:opacity-90 active:scale-[0.98] text-white font-semibold text-xs md:text-sm transition shadow-md flex items-center justify-center gap-2">
         <i class="fa-solid fa-file-excel text-base"></i> Download Format Excel (.xlsx)
       </button>
       
-      <button onclick="sendReportToChat()" class="w-full py-3 rounded-xl custom-accent-bg hover:opacity-90 text-white font-semibold text-xs md:text-sm transition shadow-md flex items-center justify-center gap-2">
+      <button onclick="sendReportToChat()" class="w-full py-3.5 rounded-xl custom-accent-bg hover:opacity-90 active:scale-[0.98] text-white font-semibold text-xs md:text-sm transition shadow-md flex items-center justify-center gap-2">
         <i class="fa-solid fa-paper-plane text-base"></i> Kirim Laporan Singkat ke Room Chat
       </button>
     </div>
@@ -680,33 +696,33 @@
       
       <div class="space-y-3">
         <div>
-          <label class="block text-xs font-medium mb-1 opacity-80">Warna Latar 1 (Atas/Kiri)</label>
+          <label class="block text-xs font-semibold mb-1 opacity-80">Warna Latar 1 (Atas/Kiri)</label>
           <div class="flex items-center gap-3">
-            <input type="color" id="picker-bg1" value="#1e1b4b" class="h-10 w-14 rounded-lg bg-transparent cursor-pointer" oninput="updateGrading()" />
-            <span id="txt-bg1" class="text-xs font-mono opacity-70">#1e1b4b</span>
+            <input type="color" id="picker-bg1" value="#f8fafc" class="h-10 w-14 rounded-lg bg-transparent cursor-pointer" oninput="updateGrading()" />
+            <span id="txt-bg1" class="text-xs font-mono opacity-70 font-bold">#f8fafc</span>
           </div>
         </div>
 
         <div>
-          <label class="block text-xs font-medium mb-1 opacity-80">Warna Latar 2 (Bawah/Kanan)</label>
+          <label class="block text-xs font-semibold mb-1 opacity-80">Warna Latar 2 (Bawah/Kanan)</label>
           <div class="flex items-center gap-3">
-            <input type="color" id="picker-bg2" value="#0f172a" class="h-10 w-14 rounded-lg bg-transparent cursor-pointer" oninput="updateGrading()" />
-            <span id="txt-bg2" class="text-xs font-mono opacity-70">#0f172a</span>
+            <input type="color" id="picker-bg2" value="#e2e8f0" class="h-10 w-14 rounded-lg bg-transparent cursor-pointer" oninput="updateGrading()" />
+            <span id="txt-bg2" class="text-xs font-mono opacity-70 font-bold">#e2e8f0</span>
           </div>
         </div>
 
         <div>
-          <label class="block text-xs font-medium mb-1 opacity-80">Warna Aksen Utama</label>
+          <label class="block text-xs font-semibold mb-1 opacity-80">Warna Aksen Utama</label>
           <div class="flex items-center gap-3">
-            <input type="color" id="picker-accent" value="#6366f1" class="h-10 w-14 rounded-lg bg-transparent cursor-pointer" oninput="updateGrading()" />
-            <span id="txt-accent" class="text-xs font-mono opacity-70">#6366f1</span>
+            <input type="color" id="picker-accent" value="#007AFF" class="h-10 w-14 rounded-lg bg-transparent cursor-pointer" oninput="updateGrading()" />
+            <span id="txt-accent" class="text-xs font-mono opacity-70 font-bold">#007AFF</span>
           </div>
         </div>
       </div>
 
       <div class="flex gap-2 justify-end pt-3 border-t border-black/10 dark:border-white/10">
-        <button onclick="resetGrading()" class="px-4 py-2 text-xs opacity-70 hover:opacity-100">Reset Default</button>
-        <button onclick="$('modal-grading').close()" class="px-4 py-2 custom-accent-bg text-white text-xs rounded-xl font-semibold shadow-md">Terapkan</button>
+        <button onclick="resetGrading()" class="px-4 py-2 text-xs opacity-75 hover:opacity-100 font-semibold">Reset Default</button>
+        <button onclick="$('modal-grading').close()" class="px-4 py-2.5 custom-accent-bg text-white text-xs rounded-xl font-semibold shadow-md">Terapkan</button>
       </div>
     </div>
   </dialog>
@@ -716,12 +732,12 @@
     <form id="form-computer" class="space-y-4">
       <h4 class="text-lg font-bold">Tambah / Perbarui Unit Komputer</h4>
       <div>
-        <label class="block text-xs font-medium mb-1 opacity-80">Kode PC</label>
-        <input id="pc-id" required placeholder="DCC-001" class="w-full app-input rounded-xl px-3.5 py-2 text-base md:text-sm focus:outline-none" />
+        <label class="block text-xs font-semibold mb-1 opacity-80">Kode PC</label>
+        <input id="pc-id" required placeholder="DCC-001" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" />
       </div>
       <div>
-        <label class="block text-xs font-medium mb-1 opacity-80">Status Utama</label>
-        <select id="pc-status" class="w-full app-input rounded-xl px-3.5 py-2 text-base md:text-sm focus:outline-none">
+        <label class="block text-xs font-semibold mb-1 opacity-80">Status Utama</label>
+        <select id="pc-status" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm">
           <option value="available">available (Tersedia - Hijau)</option>
           <option value="borrowed">borrowed (Dipinjam - Merah)</option>
           <option value="maintenance">maintenance (Servis)</option>
@@ -730,11 +746,11 @@
 
       <!-- KELENGKAPAN LAMPU INDIKATOR -->
       <div class="pt-2 border-t border-black/10 dark:border-white/10">
-        <label class="block text-xs font-semibold mb-2 opacity-90">Status Kelengkapan Perangkat (Indikator)</label>
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs">
+        <label class="block text-xs font-bold mb-2 opacity-90">Status Kelengkapan Perangkat (Indikator)</label>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs font-medium">
           <div>
             <span class="block opacity-75 mb-1">Komputer</span>
-            <select id="pc-komputer-st" class="w-full app-input rounded-lg px-2.5 py-1.5 focus:outline-none">
+            <select id="pc-komputer-st" class="w-full app-input rounded-lg px-2.5 py-2 focus:outline-none shadow-sm">
               <option value="ok">🟢 Normal</option>
               <option value="missing">🔴 Rusak/Tidak Ada</option>
               <option value="service">🟡 Servis</option>
@@ -742,7 +758,7 @@
           </div>
           <div>
             <span class="block opacity-75 mb-1">Monitor</span>
-            <select id="pc-monitor-st" class="w-full app-input rounded-lg px-2.5 py-1.5 focus:outline-none">
+            <select id="pc-monitor-st" class="w-full app-input rounded-lg px-2.5 py-2 focus:outline-none shadow-sm">
               <option value="ok">🟢 Normal</option>
               <option value="missing">🔴 Rusak/Tidak Ada</option>
               <option value="service">🟡 Servis</option>
@@ -750,7 +766,7 @@
           </div>
           <div>
             <span class="block opacity-75 mb-1">Mouse</span>
-            <select id="pc-mouse-st" class="w-full app-input rounded-lg px-2.5 py-1.5 focus:outline-none">
+            <select id="pc-mouse-st" class="w-full app-input rounded-lg px-2.5 py-2 focus:outline-none shadow-sm">
               <option value="ok">🟢 Normal</option>
               <option value="missing">🔴 Rusak/Tidak Ada</option>
               <option value="service">🟡 Servis</option>
@@ -758,7 +774,7 @@
           </div>
           <div>
             <span class="block opacity-75 mb-1">Keyboard</span>
-            <select id="pc-keyboard-st" class="w-full app-input rounded-lg px-2.5 py-1.5 focus:outline-none">
+            <select id="pc-keyboard-st" class="w-full app-input rounded-lg px-2.5 py-2 focus:outline-none shadow-sm">
               <option value="ok">🟢 Normal</option>
               <option value="missing">🔴 Rusak/Tidak Ada</option>
               <option value="service">🟡 Servis</option>
@@ -766,7 +782,7 @@
           </div>
           <div>
             <span class="block opacity-75 mb-1">UPS</span>
-            <select id="pc-ups-st" class="w-full app-input rounded-lg px-2.5 py-1.5 focus:outline-none">
+            <select id="pc-ups-st" class="w-full app-input rounded-lg px-2.5 py-2 focus:outline-none shadow-sm">
               <option value="ok">🟢 Normal</option>
               <option value="missing">🔴 Rusak/Tidak Ada</option>
               <option value="service">🟡 Servis</option>
@@ -776,8 +792,8 @@
       </div>
 
       <div class="flex gap-2 justify-end pt-2">
-        <button type="button" data-close class="px-4 py-2 text-xs opacity-70 hover:opacity-100">Batal</button>
-        <button class="px-4 py-2 custom-accent-bg text-white text-xs rounded-xl font-semibold shadow-md">Simpan Unit</button>
+        <button type="button" data-close class="px-4 py-2 text-xs opacity-75 hover:opacity-100 font-semibold">Batal</button>
+        <button class="px-4 py-2.5 custom-accent-bg text-white text-xs rounded-xl font-semibold shadow-md">Simpan Unit</button>
       </div>
     </form>
   </dialog>
@@ -787,34 +803,34 @@
     <form id="form-loan" class="space-y-4">
       <h4 class="text-lg font-bold">Peminjaman Baru & Batas Waktu</h4>
       <div>
-        <label class="block text-xs font-medium mb-1 opacity-80">Pilih Unit Komputer (Hanya Tersedia)</label>
-        <select id="loan-unit" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none"></select>
+        <label class="block text-xs font-semibold mb-1 opacity-80">Pilih Unit Komputer (Hanya Tersedia)</label>
+        <select id="loan-unit" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm"></select>
       </div>
       <div>
-        <label class="block text-xs font-medium mb-1 opacity-80">Nama Peminjam</label>
-        <input id="loan-borrower" required placeholder="Nama peminjam" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none" />
+        <label class="block text-xs font-semibold mb-1 opacity-80">Nama Peminjam</label>
+        <input id="loan-borrower" required placeholder="Nama peminjam" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" />
       </div>
       <div>
-        <label class="block text-xs font-medium mb-1 opacity-80">Keperluan</label>
-        <input id="loan-purpose" required placeholder="Keperluan peminjaman" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none" />
+        <label class="block text-xs font-semibold mb-1 opacity-80">Keperluan</label>
+        <input id="loan-purpose" required placeholder="Keperluan peminjaman" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" />
       </div>
 
       <!-- BATAS PEMINJAMAN (DARI - SAMPAI) -->
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="block text-xs font-medium mb-1 opacity-80">Dari Tanggal</label>
-          <input type="date" id="loan-start" required class="w-full app-input rounded-xl px-3 py-2 text-base md:text-sm focus:outline-none" />
+          <label class="block text-xs font-semibold mb-1 opacity-80">Dari Tanggal</label>
+          <input type="date" id="loan-start" required class="w-full app-input rounded-xl px-3.5 py-2 text-base md:text-sm focus:outline-none shadow-sm" />
         </div>
         <div>
-          <label class="block text-xs font-medium mb-1 opacity-80">Sampai Tanggal</label>
-          <input type="date" id="loan-end" required class="w-full app-input rounded-xl px-3 py-2 text-base md:text-sm focus:outline-none" />
+          <label class="block text-xs font-semibold mb-1 opacity-80">Sampai Tanggal</label>
+          <input type="date" id="loan-end" required class="w-full app-input rounded-xl px-3.5 py-2 text-base md:text-sm focus:outline-none shadow-sm" />
         </div>
       </div>
 
       <!-- CHECKLIST Kelengkapan Peminjaman -->
       <div class="pt-2 border-t border-black/10 dark:border-white/10">
-        <label class="block text-xs font-semibold mb-2 opacity-90">Ceklis Komponen yang Dipinjam</label>
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs">
+        <label class="block text-xs font-bold mb-2 opacity-90">Ceklis Komponen yang Dipinjam</label>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs font-medium">
           <label class="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" id="loan-komputer" checked class="rounded app-input h-4 w-4" /> Komputer
           </label>
@@ -834,8 +850,8 @@
       </div>
 
       <div class="flex gap-2 justify-end pt-2">
-        <button type="button" data-close class="px-4 py-2 text-xs opacity-70 hover:opacity-100">Batal</button>
-        <button class="px-4 py-2 custom-accent-bg text-white text-xs rounded-xl font-semibold shadow-md">Simpan Peminjaman</button>
+        <button type="button" data-close class="px-4 py-2 text-xs opacity-75 hover:opacity-100 font-semibold">Batal</button>
+        <button class="px-4 py-2.5 custom-accent-bg text-white text-xs rounded-xl font-semibold shadow-md">Simpan Peminjaman</button>
       </div>
     </form>
   </dialog>
@@ -846,17 +862,17 @@
       <h4 class="text-lg font-bold">Cek & Pengembalian Unit Komputer</h4>
       <input type="hidden" id="ret-loan-id" />
       <input type="hidden" id="ret-unit-id" />
-      <div class="space-y-1 bg-black/5 dark:bg-white/5 p-3 rounded-2xl text-xs">
-        <p class="opacity-80">Unit PC: <span id="ret-unit-label" class="font-semibold custom-accent-text text-sm"></span></p>
-        <p class="opacity-80">Peminjam: <span id="ret-borrower-label" class="font-semibold text-sm"></span></p>
-        <p class="opacity-80">Keperluan: <span id="ret-purpose-label" class="font-semibold italic"></span></p>
-        <p class="opacity-80">Periode: <span id="ret-period-label" class="font-semibold"></span></p>
+      <div class="space-y-1 bg-black/5 dark:bg-white/5 p-3.5 rounded-2xl text-xs font-medium">
+        <p class="opacity-80">Unit PC: <span id="ret-unit-label" class="font-bold custom-accent-text text-sm"></span></p>
+        <p class="opacity-80">Peminjam: <span id="ret-borrower-label" class="font-bold text-sm"></span></p>
+        <p class="opacity-80">Keperluan: <span id="ret-purpose-label" class="font-bold italic"></span></p>
+        <p class="opacity-80">Periode: <span id="ret-period-label" class="font-bold"></span></p>
       </div>
 
       <!-- CHECKLIST KELENGKAPAN SAAT KEMBALI -->
       <div class="pt-2 border-t border-black/10 dark:border-white/10">
-        <label class="block text-xs font-semibold mb-2 opacity-90">Ceklis Komponen yang Dikembalikan (Normal/Utuh)</label>
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs">
+        <label class="block text-xs font-bold mb-2 opacity-90">Ceklis Komponen yang Dikembalikan (Normal/Utuh)</label>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs font-medium">
           <label class="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" id="ret-komputer" checked class="rounded app-input h-4 w-4" /> Komputer
           </label>
@@ -876,8 +892,8 @@
       </div>
 
       <div class="flex gap-2 justify-end pt-2">
-        <button type="button" data-close class="px-4 py-2 text-xs opacity-70 hover:opacity-100">Batal</button>
-        <button class="px-4 py-2 custom-accent-bg text-white text-xs rounded-xl font-semibold shadow-md">Konfirmasi Pengembalian</button>
+        <button type="button" data-close class="px-4 py-2 text-xs opacity-75 hover:opacity-100 font-semibold">Batal</button>
+        <button class="px-4 py-2.5 custom-accent-bg text-white text-xs rounded-xl font-semibold shadow-md">Konfirmasi Pengembalian</button>
       </div>
     </form>
   </dialog>
@@ -887,32 +903,32 @@
     <form id="form-service" class="space-y-4">
       <h4 class="text-lg font-bold">Tiket Servis</h4>
       <div>
-        <label class="block text-xs font-medium mb-1 opacity-80">Pilih Unit</label>
-        <select id="svc-unit" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none"></select>
+        <label class="block text-xs font-semibold mb-1 opacity-80">Pilih Unit</label>
+        <select id="svc-unit" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm"></select>
       </div>
       <div>
-        <label class="block text-xs font-medium mb-1 opacity-80">Kerusakan / Keluhan</label>
-        <input id="svc-problem" required placeholder="Kerusakan / keluhan" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none" />
+        <label class="block text-xs font-semibold mb-1 opacity-80">Kerusakan / Keluhan</label>
+        <input id="svc-problem" required placeholder="Kerusakan / keluhan" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" />
       </div>
       <div>
-        <label class="block text-xs font-medium mb-1 opacity-80">Teknisi</label>
-        <input id="svc-tech" placeholder="Nama Teknisi Penanggung Jawab" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none" />
+        <label class="block text-xs font-semibold mb-1 opacity-80">Teknisi</label>
+        <input id="svc-tech" placeholder="Nama Teknisi Penanggung Jawab" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" />
       </div>
       <div>
-        <label class="block text-xs font-medium mb-1 opacity-80">Catatan</label>
-        <input id="svc-notes" placeholder="Catatan perbaikan" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none" />
+        <label class="block text-xs font-semibold mb-1 opacity-80">Catatan</label>
+        <input id="svc-notes" placeholder="Catatan perbaikan" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" />
       </div>
       <div>
-        <label class="block text-xs font-medium mb-1 opacity-80">Status Tiket</label>
-        <select id="svc-status" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none">
+        <label class="block text-xs font-semibold mb-1 opacity-80">Status Tiket</label>
+        <select id="svc-status" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm">
           <option value="open">open</option>
           <option value="in_progress">in_progress</option>
           <option value="done">done</option>
         </select>
       </div>
       <div class="flex gap-2 justify-end pt-2">
-        <button type="button" data-close class="px-4 py-2 text-xs opacity-70 hover:opacity-100">Batal</button>
-        <button class="px-4 py-2 custom-accent-bg text-white text-xs rounded-xl font-semibold shadow-md">Simpan</button>
+        <button type="button" data-close class="px-4 py-2 text-xs opacity-75 hover:opacity-100 font-semibold">Batal</button>
+        <button class="px-4 py-2.5 custom-accent-bg text-white text-xs rounded-xl font-semibold shadow-md">Simpan</button>
       </div>
     </form>
   </dialog>
@@ -921,9 +937,9 @@
   <dialog id="modal-select" class="glass-card rounded-3xl p-6 w-[min(92vw,420px)] shadow-2xl m-auto">
     <div>
       <h4 class="text-lg font-bold mb-3">Select Chat</h4>
-      <button id="select-room" class="w-full mb-2 px-3.5 py-2.5 rounded-xl bg-black/5 dark:bg-white/10 text-left text-sm font-medium">DCC Chat Room (semua)</button>
+      <button id="select-room" class="w-full mb-2 px-3.5 py-2.5 rounded-xl bg-black/5 dark:bg-white/10 text-left text-sm font-medium transition hover:bg-black/10">DCC Chat Room (semua)</button>
       <div id="select-list" class="space-y-1 max-h-60 overflow-auto"></div>
-      <button data-close class="mt-4 text-xs opacity-75 hover:opacity-100">Tutup</button>
+      <button data-close class="mt-4 text-xs opacity-75 hover:opacity-100 font-semibold">Tutup</button>
     </div>
   </dialog>
 
@@ -932,16 +948,16 @@
     <form id="form-profile" class="space-y-4">
       <h4 class="text-lg font-bold">Edit Profile</h4>
       <div class="flex items-center gap-3">
-        <img id="prof-preview" class="h-14 w-14 rounded-2xl object-cover border border-black/10 dark:border-white/10" alt="avatar" />
-        <input id="prof-file" type="file" accept="image/*" class="text-xs opacity-70" />
+        <img id="prof-preview" class="h-14 w-14 rounded-2xl object-cover border border-black/10 dark:border-white/10 shadow-sm" alt="avatar" />
+        <input id="prof-file" type="file" accept="image/*" class="text-xs opacity-75" />
       </div>
       <div>
-        <label class="block text-xs font-medium mb-1 opacity-80">Nama Lengkap</label>
-        <input id="prof-name" required class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none" />
+        <label class="block text-xs font-semibold mb-1 opacity-80">Nama Lengkap</label>
+        <input id="prof-name" required class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" />
       </div>
       <div class="flex gap-2 justify-end pt-2">
-        <button type="button" data-close class="px-4 py-2 text-xs opacity-70 hover:opacity-100">Batal</button>
-        <button class="px-4 py-2 custom-accent-bg text-white text-xs rounded-xl font-semibold shadow-md">Simpan</button>
+        <button type="button" data-close class="px-4 py-2 text-xs opacity-75 hover:opacity-100 font-semibold">Batal</button>
+        <button class="px-4 py-2.5 custom-accent-bg text-white text-xs rounded-xl font-semibold shadow-md">Simpan</button>
       </div>
     </form>
   </dialog>
@@ -976,11 +992,11 @@
       if (el) el.textContent = msg || "";
     }
 
-    // THEME & COLOR GRADING LOGIC
+    // THEME & COLOR GRADING LOGIC (DEFAULT LIGHT)
     function setTheme(mode) {
       document.body.className = `theme-${mode} min-h-screen flex flex-col font-sans transition-colors duration-300 overflow-x-hidden`;
       const html = document.documentElement;
-      if (mode === 'dark' || mode === 'custom') {
+      if (mode === 'dark') {
         html.classList.add('dark');
       } else {
         html.classList.remove('dark');
@@ -1007,9 +1023,9 @@
     }
 
     function resetGrading() {
-      $("picker-bg1").value = "#1e1b4b";
-      $("picker-bg2").value = "#0f172a";
-      $("picker-accent").value = "#6366f1";
+      $("picker-bg1").value = "#f8fafc";
+      $("picker-bg2").value = "#e2e8f0";
+      $("picker-accent").value = "#007AFF";
       updateGrading();
     }
 
@@ -1018,15 +1034,15 @@
       if (saved) {
         try {
           const { bg1, bg2, accent } = JSON.parse(saved);
-          $("picker-bg1").value = bg1 || "#1e1b4b";
-          $("picker-bg2").value = bg2 || "#0f172a";
-          $("picker-accent").value = accent || "#6366f1";
+          $("picker-bg1").value = bg1 || "#f8fafc";
+          $("picker-bg2").value = bg2 || "#e2e8f0";
+          $("picker-accent").value = accent || "#007AFF";
         } catch(e) {}
       }
       updateGrading();
     }
 
-    const savedTheme = localStorage.getItem('dcc_theme') || 'dark';
+    const savedTheme = localStorage.getItem('dcc_theme') || 'light';
     loadGrading();
     setTheme(savedTheme);
 
@@ -1216,12 +1232,10 @@
     function renderRecapTables() {
       const { filteredLoans, filteredChecking, filteredServices, showLoan, showChecking, showService } = getFilteredData();
 
-      // Toggle Kategori
       show($("recap-sec-loan"), showLoan);
       show($("recap-sec-checking"), showChecking);
       show($("recap-sec-service"), showService);
 
-      // Render Table Peminjaman
       $("tbl-recap-loan").innerHTML = filteredLoans.map((x, idx) => `
         <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition">
           <td class="p-3.5 text-center font-semibold opacity-70">${idx + 1}</td>
@@ -1229,20 +1243,18 @@
           <td class="font-semibold custom-accent-text">${esc(x.unit_id)}</td>
           <td>${formatDate(x.start_date)} s/d ${formatDate(x.end_date)}</td>
           <td><span class="font-medium">${esc(x.borrower)}</span> (${esc(x.purpose)})</td>
-          <td><span class="px-2.5 py-0.5 rounded-full text-xs font-medium ${x.status === 'returned' ? 'bg-ios-green/20 text-ios-green' : 'bg-ios-orange/20 text-ios-orange'}">${esc(x.status)}</span></td>
+          <td><span class="px-2.5 py-0.5 rounded-full text-xs font-semibold ${x.status === 'returned' ? 'bg-ios-green/20 text-ios-green' : 'bg-ios-orange/20 text-ios-orange'}">${esc(x.status)}</span></td>
         </tr>`).join("") || `<tr><td class="p-6 text-center opacity-70" colspan="6">Tidak ada data peminjaman dalam rentang tanggal ini.</td></tr>`;
 
-      // Render Table Pengecekan
       $("tbl-recap-checking").innerHTML = filteredChecking.map((x, idx) => `
         <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition">
           <td class="p-3.5 text-center font-semibold opacity-70">${idx + 1}</td>
           <td>${formatDate(x.created_at)}</td>
           <td class="font-semibold custom-accent-text">${esc(x.unit_id)}</td>
           <td>${esc(x.problem)} — ${esc(x.notes || '-')}</td>
-          <td><span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-ios-blue/20 text-ios-blue">${esc(x.status === 'open' ? 'checking' : 'baik/normal')}</span></td>
+          <td><span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-ios-blue/20 text-ios-blue">${esc(x.status === 'open' ? 'checking' : 'baik/normal')}</span></td>
         </tr>`).join("") || `<tr><td class="p-6 text-center opacity-70" colspan="5">Tidak ada data pengecekan dalam rentang tanggal ini.</td></tr>`;
 
-      // Render Table Servis
       $("tbl-recap-service").innerHTML = filteredServices.map((x, idx) => `
         <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition">
           <td class="p-3.5 text-center font-semibold opacity-70">${idx + 1}</td>
@@ -1250,7 +1262,7 @@
           <td class="font-semibold custom-accent-text">${esc(x.unit_id)}</td>
           <td>${esc(x.problem)} (${esc(x.notes || '-')})</td>
           <td>${esc(x.technician || '-')}</td>
-          <td><span class="px-2.5 py-0.5 rounded-full text-xs font-medium ${x.status === 'done' ? 'bg-ios-green/20 text-ios-green' : 'bg-ios-pink/20 text-ios-pink'}">${esc(x.status)}</span></td>
+          <td><span class="px-2.5 py-0.5 rounded-full text-xs font-semibold ${x.status === 'done' ? 'bg-ios-green/20 text-ios-green' : 'bg-ios-pink/20 text-ios-pink'}">${esc(x.status)}</span></td>
         </tr>`).join("") || `<tr><td class="p-6 text-center opacity-70" colspan="6">Tidak ada data servis dalam rentang tanggal ini.</td></tr>`;
     }
 
@@ -1327,14 +1339,12 @@
       $("modal-report").close();
     }
 
-    // KIRIM LAPORAN SINGKAT FORMAT WHATSAPP KE ROOMCHAT
     async function sendReportToChat() {
       const { filteredLoans, filteredChecking, filteredServices, showLoan, showChecking, showService } = getFilteredData();
       const fromVal = $("recap-date-from").value;
       const toVal = $("recap-date-to").value;
       const periodStr = (fromVal || toVal) ? `${fromVal || 'Awal'} s/d ${toVal || 'Hari ini'}` : "Keseluruhan Tanggal";
 
-      // FORMAT ALAMAT CHAT WHATSAPP NEAT & CLEAN
       let summaryMsg = `*📋 LAPORAN REKAP OPERASIONAL DCC*\n`;
       summaryMsg += `------------------------------------\n`;
       summaryMsg += `📅 *Periode:* ${periodStr}\n`;
@@ -1436,9 +1446,9 @@
           <td>${esc(x.borrower)}</td>
           <td>${esc(x.purpose)}</td>
           <td><span class="text-xs font-medium opacity-90">${esc(x.start_date || '-')} s/d ${esc(x.end_date || '-')}</span></td>
-          <td><span class="px-2 py-0.5 rounded-full text-xs font-medium ${x.status === 'returned' ? 'bg-ios-green/20 text-ios-green' : 'bg-ios-orange/20 text-ios-orange'}">${esc(x.status)}</span></td>
+          <td><span class="px-2.5 py-0.5 rounded-full text-xs font-semibold ${x.status === 'returned' ? 'bg-ios-green/20 text-ios-green' : 'bg-ios-orange/20 text-ios-orange'}">${esc(x.status)}</span></td>
           <td class="p-4 text-right flex items-center justify-end gap-2">
-            ${x.status !== "returned" ? `<button class="text-xs px-3 py-1.5 rounded-xl custom-accent-bg text-white font-semibold transition shadow-md" onclick="openReturnModal('${x.id}','${esc(x.unit_id)}','${esc(x.borrower)}','${esc(x.purpose)}','${esc(x.start_date || '')} s/d ${esc(x.end_date || '')}')">Kembalikan</button>` : ""}
+            ${x.status !== "returned" ? `<button class="text-xs px-3 py-1.5 rounded-xl custom-accent-bg text-white font-semibold transition shadow-md active:scale-95" onclick="openReturnModal('${x.id}','${esc(x.unit_id)}','${esc(x.borrower)}','${esc(x.purpose)}','${esc(x.start_date || '')} s/d ${esc(x.end_date || '')}')">Kembalikan</button>` : ""}
             ${!state.loanSelectMode ? `
               <button onclick="deleteSingleLoan('${x.id}')" class="p-1.5 opacity-60 hover:opacity-100 hover:text-ios-pink text-xs transition" title="Hapus Riwayat">
                 <i class="fa-solid fa-trash"></i>
@@ -1511,18 +1521,18 @@
       $("svc-list").innerHTML = state.services.map((x) => {
         const isChecked = state.selectedServiceIds.has(String(x.id));
         return `
-        <article class="glass-card rounded-3xl p-5 shadow-lg flex items-center justify-between gap-3">
+        <article class="glass-card glass-card-hover rounded-3xl p-5 shadow-lg flex items-center justify-between gap-3">
           <div class="flex items-center gap-3.5 flex-1 min-w-0">
             ${state.serviceSelectMode ? `
               <input type="checkbox" ${isChecked ? "checked" : ""} onchange="handleServiceCheckChange('${x.id}', this.checked)" class="h-5 w-5 rounded app-input shrink-0 cursor-pointer accent-ios-blue" />
             ` : ""}
             <div class="truncate">
-              <h5 class="font-semibold text-sm truncate"><span class="custom-accent-text">${esc(x.unit_id || "Unit")}</span> · ${esc(x.problem)}</h5>
+              <h5 class="font-bold text-sm truncate"><span class="custom-accent-text">${esc(x.unit_id || "Unit")}</span> · ${esc(x.problem)}</h5>
               <p class="text-xs opacity-75 mt-1 truncate">${esc(x.technician || "-")} · ${esc(x.notes || "")}</p>
             </div>
           </div>
           <div class="flex items-center gap-2 shrink-0">
-            <select onchange="setServiceStatus('${x.id}', this.value)" class="app-input rounded-xl px-3 py-1.5 text-xs font-medium focus:outline-none">
+            <select onchange="setServiceStatus('${x.id}', this.value)" class="app-input rounded-xl px-3 py-1.5 text-xs font-semibold focus:outline-none shadow-sm">
               ${["open","in_progress","done"].map((s) => `<option ${s===x.status?"selected":""}>${s}</option>`).join("")}
             </select>
             ${!state.serviceSelectMode ? `
@@ -1546,20 +1556,19 @@
     function renderAll() {
       fillUnitSelects();
 
-      // Filter hanya Tiket Servis Komponen (Pengecekan Rutin tidak dihitung)
       const componentServices = state.services.filter(s => !s.problem || !s.problem.includes("[CHECKING"));
       const activeLoans = state.loans.filter(l => l.status !== "returned");
       const activeComponentServices = componentServices.filter(s => s.status !== "done");
 
-      // 1. RENDER KARTU RINGKASAN BERANDA
+      // 1. RENDER KARTU RINGKASAN BERANDA DENGAN ANIMASI HOVER
       $("home-cards").innerHTML = [
         ["Total Unit", state.computers.length, "fa-computer", "text-ios-blue"],
         ["Tersedia", state.computers.filter((x) => x.status === "available").length, "fa-circle-check", "text-ios-green"],
         ["Pinjaman Aktif", activeLoans.length, "fa-handshake", "text-ios-orange"],
         ["Tiket Servis Komponen", componentServices.length, "fa-screwdriver-wrench", "text-ios-pink"]
       ].map(([t, n, i, color]) => `
-        <div class="glass-card rounded-3xl p-5 shadow-lg">
-          <p class="text-xs opacity-75 mb-1 flex items-center gap-2"><i class="fa-solid ${i} ${color}"></i>${t}</p>
+        <div class="glass-card glass-card-hover rounded-3xl p-5 shadow-lg">
+          <p class="text-xs font-semibold opacity-75 mb-1.5 flex items-center gap-2"><i class="fa-solid ${i} ${color} text-sm"></i>${t}</p>
           <p class="text-3xl font-bold tracking-tight">${n}</p>
         </div>`).join("");
 
@@ -1570,7 +1579,7 @@
           <td><span class="font-medium">${esc(x.borrower)}</span></td>
           <td>${esc(x.purpose)}</td>
           <td><span class="text-xs font-medium opacity-90">${formatDate(x.start_date)} s/d ${formatDate(x.end_date)}</span></td>
-          <td><span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-ios-orange/20 text-ios-orange">${esc(x.status)}</span></td>
+          <td><span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-ios-orange/20 text-ios-orange">${esc(x.status)}</span></td>
         </tr>`).join("") || `<tr><td class="p-5 text-center opacity-70" colspan="5">Tidak ada peminjaman yang sedang berjalan saat ini.</td></tr>`;
 
       // 3. RENDER TABEL SERVIS KOMPONEN SEDANG BERJALAN DI BERANDA
@@ -1579,14 +1588,14 @@
           <td class="p-3.5 font-semibold custom-accent-text">${esc(x.unit_id)}</td>
           <td>${esc(x.problem)} <span class="opacity-75">(${esc(x.notes || '-')})</span></td>
           <td>${esc(x.technician || '-')}</td>
-          <td><span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-ios-pink/20 text-ios-pink">${esc(x.status)}</span></td>
+          <td><span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-ios-pink/20 text-ios-pink">${esc(x.status)}</span></td>
         </tr>`).join("") || `<tr><td class="p-5 text-center opacity-70" colspan="4">Tidak ada servis komponen yang sedang berjalan saat ini.</td></tr>`;
 
       // 4. RENDER TABEL LAMAN LAINNYA
       $("tbl-computers").innerHTML = state.computers.map((x) => `
         <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition">
           <td class="p-4 font-semibold custom-accent-text">${esc(x.id)}</td>
-          <td><span class="px-2.5 py-1 rounded-full text-xs font-medium ${x.status === 'available' ? 'bg-ios-green/20 text-ios-green' : 'bg-ios-pink/20 text-ios-pink'}">${esc(x.status)}</span></td>
+          <td><span class="px-2.5 py-1 rounded-full text-xs font-semibold ${x.status === 'available' ? 'bg-ios-green/20 text-ios-green' : 'bg-ios-pink/20 text-ios-pink'}">${esc(x.status)}</span></td>
           <td class="text-center">${renderIndicator(x.komputer_st || 'ok')}</td>
           <td class="text-center">${renderIndicator(x.monitor_st || 'ok')}</td>
           <td class="text-center">${renderIndicator(x.mouse_st || 'ok')}</td>
@@ -1722,7 +1731,6 @@
       await refreshAll();
     };
 
-    // FORM 1: SIMPAN PENGECEKAN KELENGKAPAN STOK KOMPUTER
     $("form-checking").onsubmit = async (e) => {
       e.preventDefault();
       const unit_id = $("chk-unit").value;
@@ -1761,7 +1769,6 @@
       alert("Status kelengkapan stok komputer berhasil diperbarui.");
     };
 
-    // FORM 2: FITUR KHUSUS KIRIM SERVIS KOMPONEN (CEKLIS KHUSUS & INDIKATOR KUNING)
     window.submitCheckingService = async () => {
       const unit_id = $("chk-unit").value;
       if (!unit_id) return alert("Pilih unit komputer terlebih dahulu!");
@@ -1769,7 +1776,6 @@
       const svcNotes = $("svc-chk-notes").value.trim();
       if (!svcNotes) return alert("Masukkan catatan kendala kerusakan komponen yang akan diservis!");
 
-      // Ambil daftar komponen khusus dari Ceklis Servis
       const serviceComps = [];
       const updateServiceIndicators = {};
 
@@ -1781,11 +1787,9 @@
 
       if (serviceComps.length === 0) return alert("Pilih minimal satu komponen yang akan diservis pada bagian 'Pengajuan Servis Komponen'!");
 
-      // FITUR VERIFIKASI DATA TIKET SERVIS
       const confirmText = `[VERIFIKASI PENGAJUAN SERVIS]\n\nKode Unit PC: ${unit_id}\nKomponen Diservis: ${serviceComps.join(", ")}\nCatatan Kendala: ${svcNotes}\n\nKonfirmasi untuk mengirim data ini ke Laman Servis dan mengubah indikator stok menjadi Kuning?`;
       if (!confirm(confirmText)) return;
 
-      // 1. Tambah Tiket Servis ke Laman Servis
       const { error: sErr } = await sb.from("services").insert({
         unit_id,
         problem: `[SERVIS KOMPONEN] ${serviceComps.join(", ")}`,
@@ -1795,12 +1799,10 @@
       });
       if (sErr) return alert("Gagal menambah servis: " + sErr.message);
 
-      // 2. Ubah Status Komputer menjadi maintenance & Komponen Terkait menjadi "service" (🟡 Kuning)
       updateServiceIndicators.status = "maintenance";
       const { error: cErr } = await sb.from("computers").update(updateServiceIndicators).eq("id", unit_id);
       if (cErr) return alert("Gagal memperbarui stok komputer: " + cErr.message);
 
-      // Reset form pengajuan servis
       $("svc-chk-notes").value = "";
       ["svc-chk-komputer", "svc-chk-monitor", "svc-chk-mouse", "svc-chk-keyboard", "svc-chk-ups"].forEach(id => $(id).checked = false);
 
@@ -1833,7 +1835,6 @@
 
     function isPing(text) { return /PING!?/i.test(text || ""); }
 
-    // CHAT & EMOJI (LOCKED)
     const emojis = ["😀","😃","😄","😁","😅","😂","🤣","😊","😇","🙂","😉","😍","🥰","😘","😋","🤪","😎","🥳","👍","👎","👏","🤝","🙏","❤️","🔥","⭐","💡","💻"];
     
     $("btn-emoji").onclick = (e) => {
@@ -1864,7 +1865,6 @@
       $("chat-text").focus();
     };
 
-    // FITUR COPY PESAN CHAT
     window.copyMessageText = (text) => {
       if (!text) return;
       navigator.clipboard.writeText(text).then(() => {
@@ -1936,7 +1936,7 @@
 
         let replyHtml = "";
         if (m.reply_to) {
-          replyHtml = `<div class="bg-black/10 dark:bg-black/40 border-l-2 custom-accent-bg p-1.5 mb-1 rounded-lg text-xs">
+          replyHtml = `<div class="bg-black/5 dark:bg-black/40 border-l-2 custom-accent-bg p-1.5 mb-1 rounded-lg text-xs">
             <span class="font-semibold custom-accent-text">${esc(m.reply_to.sender)}</span>
             <p class="truncate opacity-80">${esc(m.reply_to.text)}</p>
           </div>`;
@@ -1947,7 +1947,7 @@
           if (m.attachment_type === "image") {
             attachHtml = `<div class="mb-2"><img src="${m.attachment_url}" class="rounded-2xl max-h-48 w-full object-cover cursor-pointer" onclick="window.open('${m.attachment_url}')" alt="photo" /></div>`;
           } else {
-            attachHtml = `<div class="mb-2 bg-black/10 dark:bg-black/40 p-2.5 rounded-xl flex items-center gap-2 text-xs">
+            attachHtml = `<div class="mb-2 bg-black/5 dark:bg-black/40 p-2.5 rounded-xl flex items-center gap-2 text-xs">
               <i class="fa-solid fa-file-arrow-down custom-accent-text text-base"></i>
               <a href="${m.attachment_url}" download="${esc(m.attachment_name)}" class="underline truncate font-medium">${esc(m.attachment_name)}</a>
             </div>`;
@@ -1956,7 +1956,7 @@
 
         const safeTextEscaped = esc(m.text).replace(/'/g, "\\'").replace(/\n/g, "\\n");
 
-        const actionsHtml = `<div class="opacity-0 group-hover:opacity-100 transition flex items-center gap-2 mt-1.5 text-[10px] opacity-80 justify-end pt-1 border-t border-black/10 dark:border-white/10">
+        const actionsHtml = `<div class="opacity-0 group-hover:opacity-100 transition flex items-center gap-2.5 mt-1.5 text-[10px] opacity-80 justify-end pt-1 border-t border-black/10 dark:border-white/10 font-semibold">
           <button type="button" onclick="copyMessageText('${safeTextEscaped}')" class="hover:underline flex items-center gap-1"><i class="fa-solid fa-copy"></i> Salin</button>
           <button type="button" onclick="setReply('${m.id}','${esc(m.sender)}','${safeTextEscaped}')" class="hover:underline flex items-center gap-1"><i class="fa-solid fa-reply"></i> Balas</button>
           ${mine ? `<button type="button" onclick="editMessage('${m.id}','${safeTextEscaped}')" class="hover:underline flex items-center gap-1"><i class="fa-solid fa-pen"></i> Edit</button>` : ""}
@@ -1978,9 +1978,9 @@
 
         return `<div class="flex ${mine?"justify-end":"justify-start"} group items-end">
           ${avatarImg}
-          <div class="${mine?"custom-accent-bg text-white":"bg-black/10 dark:bg-white/10"} rounded-3xl px-4 py-2.5 max-w-[85%] shadow-sm relative">
+          <div class="${mine?"custom-accent-bg text-white":"bg-black/5 dark:bg-white/10"} rounded-3xl px-4 py-2.5 max-w-[85%] shadow-sm relative">
             ${replyHtml}${attachHtml}
-            <p class="text-[10px] font-semibold ${mine?'text-white/95':'custom-accent-text'} mb-0.5">${esc(m.sender)} · ${esc(m.role || "staff")}</p>
+            <p class="text-[10px] font-bold ${mine?'text-white/95':'custom-accent-text'} mb-0.5">${esc(m.sender)} · ${esc(m.role || "staff")}</p>
             <p class="text-sm break-words whitespace-pre-wrap">${esc(m.text)} ${m.is_edited?'<span class="text-[9px] opacity-75 italic">(edited)</span>':''}</p>
             ${actionsHtml}
           </div></div>`;
@@ -2036,8 +2036,8 @@
     $("menu-select").onclick = () => {
       $("chat-menu").classList.add("hide");
       $("select-list").innerHTML = state.members.map((m) => `
-        <button class="w-full text-left px-3.5 py-2 rounded-xl hover:bg-black/10 dark:hover:bg-white/10 text-xs font-medium" onclick="pickChat('${esc(m.full_name)}')">
-          ${esc(m.full_name)} <span class="text-[10px] opacity-70">${esc(m.email)}</span>
+        <button class="w-full text-left px-3.5 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-xs font-semibold" onclick="pickChat('${esc(m.full_name)}')">
+          ${esc(m.full_name)} <span class="text-[10px] opacity-70 font-normal">${esc(m.email)}</span>
         </button>`).join("");
       $("modal-select").showModal();
     };
