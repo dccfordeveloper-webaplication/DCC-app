@@ -258,7 +258,7 @@
           </div>
         </section>
 
-        <!-- CHECKING WITH CHECKLIST -->
+        <!-- CHECKING WITH CHECKLIST & SERVICE BUTTON -->
         <section id="view-checking" class="space-y-4 max-w-2xl mx-auto hide">
           <h3 class="text-xl font-bold tracking-tight">Pengecekan Unit</h3>
           <p class="text-xs opacity-75">Hasil pengecekan memperbarui kondisi, status komputer, serta indikator kelengkapan komponen secara real-time.</p>
@@ -306,10 +306,17 @@
             </div>
 
             <div class="sm:col-span-2">
-              <label class="block text-xs font-medium mb-1 opacity-80">Catatan</label>
+              <label class="block text-xs font-medium mb-1 opacity-80">Catatan / Kendala Komponen</label>
               <input id="chk-notes" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none" placeholder="Keyboard aus, pendingin berisik, ..." />
             </div>
-            <button class="sm:col-span-2 py-3 rounded-xl custom-accent-bg text-white font-semibold text-sm transition shadow-lg">Simpan Pengecekan</button>
+
+            <!-- TOMBOL AKSI: SIMPAN & KIRIM KE SERVIS -->
+            <div class="sm:col-span-2 flex flex-col sm:flex-row gap-3 pt-2">
+              <button type="submit" class="flex-1 py-3 rounded-xl custom-accent-bg text-white font-semibold text-sm transition shadow-lg">Simpan Pengecekan</button>
+              <button type="button" onclick="submitCheckingService()" class="flex-1 py-3 rounded-xl bg-ios-orange hover:opacity-90 text-white font-semibold text-sm transition shadow-lg flex items-center justify-center gap-2">
+                <i class="fa-solid fa-screwdriver-wrench"></i> Kirim ke Servis
+              </button>
+            </div>
           </form>
         </section>
 
@@ -896,7 +903,6 @@
     function fillUnitSelects() {
       const allOpts = state.computers.map((x) => `<option value="${x.id}">${x.id}</option>`).join("");
       
-      // HANYA tampilkan PC dengan status "available" pada pilihan pinjaman
       const availableComputers = state.computers.filter((x) => x.status === "available");
       const loanOpts = availableComputers.length > 0 
         ? availableComputers.map((x) => `<option value="${x.id}">${x.id}</option>`).join("") 
@@ -912,7 +918,7 @@
       let title = 'Normal / Utuh / Tersedia';
       if (st === 'missing') {
         color = 'bg-ios-pink shadow-[0_0_8px_rgba(255,45,85,0.6)]';
-        title = 'Dipinjam / Rusak / Tidak Ada';
+        title = 'Rusak / Tidak Ada';
       } else if (st === 'service') {
         color = 'bg-ios-orange shadow-[0_0_8px_rgba(255,149,0,0.6)]';
         title = 'Dalam Servis';
@@ -1009,7 +1015,6 @@
       e.preventDefault();
       const unit_id = $("loan-unit").value;
 
-      // VALIDASI KETAT: Mencegah duplikasi pinjaman aktif untuk unit yang sama
       const alreadyActive = state.loans.some(l => l.unit_id === unit_id && l.status === 'active');
       const targetComp = state.computers.find(c => c.id === unit_id);
 
@@ -1099,7 +1104,6 @@
       const status = $("chk-status").value;
       const notes = $("chk-notes").value.trim();
 
-      // Cek status checklist komponen (Ter-checklist = ok/hijau, Tidak = missing/merah)
       const kOk = $("chk-komputer").checked;
       const mOk = $("chk-monitor").checked;
       const moOk = $("chk-mouse").checked;
@@ -1129,6 +1133,55 @@
       $("chk-notes").value = "";
       await refreshAll();
       alert("Pengecekan dan status kelengkapan unit berhasil disimpan.");
+    };
+
+    // FITUR KIRIM KE SERVIS DARI LAMAN PENGECEKAN
+    window.submitCheckingService = async () => {
+      const unit_id = $("chk-unit").value;
+      if (!unit_id) return alert("Pilih unit komputer terlebih dahulu!");
+      const notes = $("chk-notes").value.trim();
+      if (!notes) return alert("Masukkan catatan / kendala kerusakan komponen!");
+
+      // Tentukan komponen yang dicentang untuk diservis
+      const compForService = [];
+      if ($("chk-komputer").checked) compForService.push("Komputer");
+      if ($("chk-monitor").checked) compForService.push("Monitor");
+      if ($("chk-mouse").checked) compForService.push("Mouse");
+      if ($("chk-keyboard").checked) compForService.push("Keyboard");
+      if ($("chk-ups").checked) compForService.push("UPS");
+
+      if (compForService.length === 0) return alert("Pilih minimal satu komponen pada checkbox yang perlu diservis!");
+
+      // FITUR VERIFIKASI (Konfirmasi data unit, komponen, dan kendala)
+      const confirmed = confirm(`[VERIFIKASI TIKET SERVIS]\n\nKode Unit PC: ${unit_id}\nKomponen Bermasalah: ${compForService.join(", ")}\nKendala: ${notes}\n\nKirim data ini ke laman servis?`);
+      if (!confirmed) return;
+
+      const problemDesc = `Servis Komponen: ${compForService.join(", ")} — Kendala: ${notes}`;
+
+      // Masukkan ke tabel services
+      const { error: sErr } = await sb.from("services").insert({
+        unit_id,
+        problem: problemDesc,
+        technician: state.member?.full_name || "staff",
+        notes: notes,
+        status: "open"
+      });
+      if (sErr) return alert(sErr.message);
+
+      // Update status komputer ke maintenance dan komponen terkait ke status "service"
+      const updateData = { status: "maintenance" };
+      if ($("chk-komputer").checked) updateData.komputer_st = "service";
+      if ($("chk-monitor").checked) updateData.monitor_st = "service";
+      if ($("chk-mouse").checked) updateData.mouse_st = "service";
+      if ($("chk-keyboard").checked) updateData.keyboard_st = "service";
+      if ($("chk-ups").checked) updateData.ups_st = "service";
+
+      const { error: cErr } = await sb.from("computers").update(updateData).eq("id", unit_id);
+      if (cErr) return alert(cErr.message);
+
+      $("chk-notes").value = "";
+      await refreshAll();
+      alert("Berhasil! Tiket servis telah ditambahkan dan komponen terkait masuk ke daftar servis.");
     };
 
     $("form-service").onsubmit = async (e) => {
