@@ -210,12 +210,48 @@
 
       <!-- CONTENT VIEWS AREA -->
       <main id="main-content" class="flex-1 overflow-y-auto p-4 md:p-8">
-        <!-- HOME -->
+        <!-- HOME (BERANDA BERSIH HANYA AKTIF & SEDANG BERJALAN) -->
         <section id="view-home" class="space-y-6 max-w-6xl mx-auto">
           <h3 class="text-xl font-bold tracking-tight">Ringkasan Operasional</h3>
+          
+          <!-- KARTU RINGKASAN STATISTIK -->
           <div id="home-cards" class="grid grid-cols-2 lg:grid-cols-4 gap-4"></div>
-          <div class="glass-card p-6 rounded-3xl shadow-lg">
-            <canvas id="home-chart" class="max-h-[280px]"></canvas>
+
+          <!-- TABEL 1: PEMINJAMAN SEDANG BERJALAN -->
+          <div class="space-y-3">
+            <h4 class="text-base font-bold flex items-center gap-2"><i class="fa-solid fa-handshake text-ios-orange"></i> Peminjaman Sedang Berjalan</h4>
+            <div class="glass-card rounded-3xl shadow-lg overflow-x-auto">
+              <table class="w-full text-left text-xs md:text-sm">
+                <thead class="uppercase tracking-wider">
+                  <tr>
+                    <th class="p-3.5">Kode PC</th>
+                    <th>Peminjam</th>
+                    <th>Keperluan</th>
+                    <th>Periode Pinjam</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="tbl-home-active-loans"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- TABEL 2: SERVIS KOMPONEN SEDANG BERJALAN -->
+          <div class="space-y-3">
+            <h4 class="text-base font-bold flex items-center gap-2"><i class="fa-solid fa-screwdriver-wrench text-ios-pink"></i> Servis Komponen Sedang Berjalan</h4>
+            <div class="glass-card rounded-3xl shadow-lg overflow-x-auto">
+              <table class="w-full text-left text-xs md:text-sm">
+                <thead class="uppercase tracking-wider">
+                  <tr>
+                    <th class="p-3.5">Kode PC</th>
+                    <th>Komponen & Kendala Servis</th>
+                    <th>Teknisi</th>
+                    <th>Status Tiket</th>
+                  </tr>
+                </thead>
+                <tbody id="tbl-home-active-services"></tbody>
+              </table>
+            </div>
           </div>
         </section>
 
@@ -912,7 +948,6 @@
 
   <!-- SUPABASE & APP LOGIC -->
   <script>
-    // PERBAIKAN: URL BASE TANPA '/rest/v1/' DAN KUNCI ANON TERBARU
     const SUPABASE_URL = "https://rdwgtohoizmgzcmarybj.supabase.co";
     const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkd2d0b2hvaXptZ3pjbWFyeWJqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIzMzYzNTYsImV4cCI6MjEwNzkxMjM1Nn0._uxw-rNIysobQATHIOTha5Zhfk0HtYNwq4wQiejhlW8";
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
@@ -1026,7 +1061,7 @@
       document.querySelectorAll(".bottom-nav-btn").forEach((x) => x.classList.toggle("active", x.dataset.view === targetView));
 
       ["home","computers","loans","checking","services","recap","chat"].forEach((v) => show($("view-" + v), v === targetView));
-      if (targetView === "recap" || targetView === "home") {
+      if (targetView === "recap") {
         renderRecapTables();
         renderCharts();
       }
@@ -1507,19 +1542,47 @@
       await refreshAll();
     }
 
+    // LOGIC PENAMPILAN DATA RENDER ALL & BERANDA
     function renderAll() {
       fillUnitSelects();
+
+      // Filter hanya Tiket Servis Komponen (Pengecekan Rutin tidak dihitung)
+      const componentServices = state.services.filter(s => !s.problem || !s.problem.includes("[CHECKING"));
+      const activeLoans = state.loans.filter(l => l.status !== "returned");
+      const activeComponentServices = componentServices.filter(s => s.status !== "done");
+
+      // 1. RENDER KARTU RINGKASAN BERANDA
       $("home-cards").innerHTML = [
         ["Total Unit", state.computers.length, "fa-computer", "text-ios-blue"],
         ["Tersedia", state.computers.filter((x) => x.status === "available").length, "fa-circle-check", "text-ios-green"],
-        ["Pinjaman Aktif", state.loans.filter((x) => x.status !== "returned").length, "fa-handshake", "text-ios-orange"],
-        ["Tiket Servis", state.services.length, "fa-screwdriver-wrench", "text-ios-pink"]
+        ["Pinjaman Aktif", activeLoans.length, "fa-handshake", "text-ios-orange"],
+        ["Tiket Servis Komponen", componentServices.length, "fa-screwdriver-wrench", "text-ios-pink"]
       ].map(([t, n, i, color]) => `
         <div class="glass-card rounded-3xl p-5 shadow-lg">
           <p class="text-xs opacity-75 mb-1 flex items-center gap-2"><i class="fa-solid ${i} ${color}"></i>${t}</p>
           <p class="text-3xl font-bold tracking-tight">${n}</p>
         </div>`).join("");
 
+      // 2. RENDER TABEL PEMINJAMAN SEDANG BERJALAN DI BERANDA
+      $("tbl-home-active-loans").innerHTML = activeLoans.map((x) => `
+        <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition">
+          <td class="p-3.5 font-semibold custom-accent-text">${esc(x.unit_id)}</td>
+          <td><span class="font-medium">${esc(x.borrower)}</span></td>
+          <td>${esc(x.purpose)}</td>
+          <td><span class="text-xs font-medium opacity-90">${formatDate(x.start_date)} s/d ${formatDate(x.end_date)}</span></td>
+          <td><span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-ios-orange/20 text-ios-orange">${esc(x.status)}</span></td>
+        </tr>`).join("") || `<tr><td class="p-5 text-center opacity-70" colspan="5">Tidak ada peminjaman yang sedang berjalan saat ini.</td></tr>`;
+
+      // 3. RENDER TABEL SERVIS KOMPONEN SEDANG BERJALAN DI BERANDA
+      $("tbl-home-active-services").innerHTML = activeComponentServices.map((x) => `
+        <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition">
+          <td class="p-3.5 font-semibold custom-accent-text">${esc(x.unit_id)}</td>
+          <td>${esc(x.problem)} <span class="opacity-75">(${esc(x.notes || '-')})</span></td>
+          <td>${esc(x.technician || '-')}</td>
+          <td><span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-ios-pink/20 text-ios-pink">${esc(x.status)}</span></td>
+        </tr>`).join("") || `<tr><td class="p-5 text-center opacity-70" colspan="4">Tidak ada servis komponen yang sedang berjalan saat ini.</td></tr>`;
+
+      // 4. RENDER TABEL LAMAN LAINNYA
       $("tbl-computers").innerHTML = state.computers.map((x) => `
         <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition">
           <td class="p-4 font-semibold custom-accent-text">${esc(x.id)}</td>
@@ -1538,7 +1601,6 @@
       renderServicesList();
       renderRecapTables();
       renderChat();
-      renderCharts();
     }
 
     function esc(s) {
@@ -2046,10 +2108,6 @@
         typeCount[c.type || 'Standard'] = (typeCount[c.type || 'Standard'] || 0) + 1;
       });
       const palette = ["#007AFF", "#34C759", "#FF9500", "#FF2D55", "#5856D6"];
-      draw("home-chart", "bar", {
-        labels: Object.keys(statusCount),
-        datasets: [{ label: "Unit per Status", data: Object.values(statusCount), backgroundColor: palette }]
-      });
       draw("chart-status", "doughnut", {
         labels: Object.keys(statusCount),
         datasets: [{ data: Object.values(statusCount), backgroundColor: palette }]
