@@ -913,7 +913,7 @@
   <!-- SUPABASE & APP LOGIC -->
   <script>
     const SUPABASE_URL = "https://rdwgtohoizmgzcmarybj.supabase.co";
-    const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkd2d0b2hvaXptZ3pjbWFyeWJqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIzMzYzNTYsImV4cCI6MjEwNzkxMjM1Nn0._uxw-rNIysobQATHIOTha5Zhfk0HtYNwq4wQiejhlW8";
+    const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInRefiI6InJkd2d0b2hvaXptZ3pjbWFyeWJqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIzMzYzNTYsImV4cCI6MjEwNzkxMjM1Nn0._uxw-rNIysobQATHIOTha5Zhfk0HtYNwq4wQiejhlW8";
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
     const state = {
@@ -1291,25 +1291,31 @@
       $("modal-report").close();
     }
 
-    // KIRIM LAPORAN RINGKAT KE ROOMCHAT
+    // KIRIM LAPORAN SINGKAT FORMAT WHATSAPP KE ROOMCHAT
     async function sendReportToChat() {
       const { filteredLoans, filteredChecking, filteredServices, showLoan, showChecking, showService } = getFilteredData();
       const fromVal = $("recap-date-from").value;
       const toVal = $("recap-date-to").value;
       const periodStr = (fromVal || toVal) ? `${fromVal || 'Awal'} s/d ${toVal || 'Hari ini'}` : "Keseluruhan Tanggal";
 
-      let summaryMsg = `📊 *LAPORAN RINGKAS REKAP OPERASIONAL DCC*\n📅 *Periode:* ${periodStr}\n\n`;
+      // FORMAT ALAMAT CHAT WHATSAPP NEAT & CLEAN
+      let summaryMsg = `*📋 LAPORAN REKAP OPERASIONAL DCC*\n`;
+      summaryMsg += `------------------------------------\n`;
+      summaryMsg += `📅 *Periode:* ${periodStr}\n`;
+      summaryMsg += `------------------------------------\n\n`;
 
-      if (showLoan) summaryMsg += `• *Peminjaman:* ${filteredLoans.length} record\n`;
-      if (showChecking) summaryMsg += `• *Pengecekan:* ${filteredChecking.length} record\n`;
-      if (showService) summaryMsg += `• *Servis:* ${filteredServices.length} record\n`;
+      summaryMsg += `*📊 RINGKASAN DATA:*\n`;
+      if (showLoan) summaryMsg += `• 🤝 *Peminjaman:* ${filteredLoans.length} Record\n`;
+      if (showChecking) summaryMsg += `• 🔍 *Pengecekan:* ${filteredChecking.length} Record\n`;
+      if (showService) summaryMsg += `• 🛠️ *Servis:* ${filteredServices.length} Record\n`;
 
-      summaryMsg += `\nLaporan detail lengkap dapat diunduh melalui file Excel pada laman Rekap Statistik.`;
+      summaryMsg += `\n------------------------------------\n`;
+      summaryMsg += `_ℹ️ Unduh laporan lengkap format Excel (.xlsx) di Laman Rekap Statistik._`;
 
       await sendChat(summaryMsg);
       $("modal-report").close();
       switchView("chat");
-      alert("Laporan singkat berhasil dikirimkan ke DCC Chat Room.");
+      alert("Laporan singkat format WhatsApp berhasil dikirim ke DCC Chat Room.");
     }
 
     // LOGIC MODE LOAN SELECT & BULK DELETE
@@ -1795,6 +1801,16 @@
       $("chat-text").focus();
     };
 
+    // FITUR COPY PESAN CHAT
+    window.copyMessageText = (text) => {
+      if (!text) return;
+      navigator.clipboard.writeText(text).then(() => {
+        alert("Pesan berhasil disalin ke clipboard!");
+      }).catch(err => {
+        alert("Gagal menyalin pesan: " + err);
+      });
+    };
+
     $("btn-attach").onclick = () => $("chat-file").click();
 
     $("chat-file").onchange = (e) => {
@@ -1875,10 +1891,13 @@
           }
         }
 
-        const actionsHtml = `<div class="opacity-0 group-hover:opacity-100 transition flex items-center gap-2 mt-1 text-[10px] opacity-70 justify-end">
-          <button type="button" onclick="setReply('${m.id}','${esc(m.sender)}','${esc(m.text).replace(/'/g, "\\'")}')" class="hover:underline"><i class="fa-solid fa-reply"></i> Balas</button>
-          ${mine ? `<button type="button" onclick="editMessage('${m.id}','${esc(m.text).replace(/'/g, "\\'")}')" class="hover:underline"><i class="fa-solid fa-pen"></i> Edit</button>` : ""}
-          ${mine ? `<button type="button" onclick="deleteMessage('${m.id}')" class="hover:text-ios-pink"><i class="fa-solid fa-trash"></i> Hapus</button>` : ""}
+        const safeTextEscaped = esc(m.text).replace(/'/g, "\\'").replace(/\n/g, "\\n");
+
+        const actionsHtml = `<div class="opacity-0 group-hover:opacity-100 transition flex items-center gap-2 mt-1.5 text-[10px] opacity-80 justify-end pt-1 border-t border-black/10 dark:border-white/10">
+          <button type="button" onclick="copyMessageText('${safeTextEscaped}')" class="hover:underline flex items-center gap-1"><i class="fa-solid fa-copy"></i> Salin</button>
+          <button type="button" onclick="setReply('${m.id}','${esc(m.sender)}','${safeTextEscaped}')" class="hover:underline flex items-center gap-1"><i class="fa-solid fa-reply"></i> Balas</button>
+          ${mine ? `<button type="button" onclick="editMessage('${m.id}','${safeTextEscaped}')" class="hover:underline flex items-center gap-1"><i class="fa-solid fa-pen"></i> Edit</button>` : ""}
+          ${mine ? `<button type="button" onclick="deleteMessage('${m.id}')" class="hover:text-ios-pink flex items-center gap-1"><i class="fa-solid fa-trash"></i> Hapus</button>` : ""}
         </div>`;
 
         const avatarImg = !mine ? `<img src="${avatarUrl}" class="h-7 w-7 rounded-full object-cover mr-2 mb-1 shrink-0 shadow-sm" alt="avatar" />` : "";
@@ -1899,7 +1918,7 @@
           <div class="${mine?"custom-accent-bg text-white":"bg-black/10 dark:bg-white/10"} rounded-3xl px-4 py-2.5 max-w-[85%] shadow-sm relative">
             ${replyHtml}${attachHtml}
             <p class="text-[10px] font-semibold ${mine?'text-white/95':'custom-accent-text'} mb-0.5">${esc(m.sender)} · ${esc(m.role || "staff")}</p>
-            <p class="text-sm break-words">${esc(m.text)} ${m.is_edited?'<span class="text-[9px] opacity-75 italic">(edited)</span>':''}</p>
+            <p class="text-sm break-words whitespace-pre-wrap">${esc(m.text)} ${m.is_edited?'<span class="text-[9px] opacity-75 italic">(edited)</span>':''}</p>
             ${actionsHtml}
           </div></div>`;
       }).join("");
