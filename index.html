@@ -3,11 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>DCC APP v1.0</title>
-  <!-- Favicon Utama -->
+  <title>DCC Monitor — iOS Edition & Color Grading</title>
+  
+  <!-- FAVICON DARI GITHUB -->
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -38,7 +40,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <!-- SheetJS untuk Export Excel -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
     :root {
@@ -47,7 +48,6 @@
       --cust-accent: #007AFF;
     }
 
-    /* THEME BODY STYLES & ANIMATIONS */
     body.theme-light { background-color: #F2F2F7; color: #1C1C1E; }
     body.theme-dark { background-color: #090a0f; color: #F2F2F7; }
     body.theme-custom { background: linear-gradient(135deg, var(--cust-bg1) 0%, var(--cust-bg2) 100%); color: #1e293b; }
@@ -57,12 +57,10 @@
       -webkit-backdrop-filter: blur(20px);
     }
 
-    /* THEME CARD & MODAL STYLES WITH ANIMATION HOVER */
     body.theme-light .glass-card, body.theme-light dialog { background: #ffffff !important; border: 1px solid rgba(0, 0, 0, 0.08); color: #1C1C1E !important; box-shadow: 0 10px 30px rgba(0,0,0,0.06); }
     body.theme-dark .glass-card, body.theme-dark dialog { background: #181b22 !important; border: 1px solid rgba(255, 255, 255, 0.12); color: #F2F2F7 !important; box-shadow: 0 15px 35px rgba(0,0,0,0.6); }
     body.theme-custom .glass-card, body.theme-custom dialog { background: rgba(255, 255, 255, 0.85) !important; border: 1px solid rgba(0, 0, 0, 0.1); color: #0f172a !important; box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
 
-    /* HOVER LIFT ANIMATION FOR CARDS */
     .glass-card-hover {
       transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
@@ -71,12 +69,10 @@
       box-shadow: 0 18px 40px rgba(0,0,0,0.12);
     }
 
-    /* THEME INPUT STYLES */
     body.theme-light .app-input { background: #f9f9fb !important; color: #1c1c1e !important; border: 1px solid #d1d1d6 !important; }
     body.theme-dark .app-input { background: #12141a !important; color: #ffffff !important; border: 1px solid #2d3748 !important; }
     body.theme-custom .app-input { background: #ffffff !important; color: #0f172a !important; border: 1px solid #cbd5e1 !important; }
 
-    /* THEME TABLE & TEXT */
     body.theme-light th { color: #48484a !important; background: #f2f2f7 !important; }
     body.theme-light td { color: #1c1c1e !important; border-bottom: 1px solid #e5e5ea !important; }
     body.theme-dark th { color: #94a3b8 !important; background: #12141a !important; }
@@ -126,12 +122,11 @@
       <div class="max-w-md mx-auto w-full">
         <span class="inline-block px-3.5 py-1 rounded-full bg-ios-blue/10 text-ios-blue text-xs font-bold tracking-wider mb-4 shadow-sm">DCC GONTOR</span>
         <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">Darussalam<br />Computer Center</h1>
-        <p class="text-sm opacity-85 mb-8 leading-relaxed">Sistem Monitoring Komputer Peminjaman DCC.</p>
-        <p class="text-sm opacity-85 mb-8 leading-relaxed">NB: Setelah Melakukan Pendaftaran Silahkan Konfirmasi Melalui Email Terlebih Dahulu.</p>
+        <p class="text-sm opacity-85 mb-8 leading-relaxed">Sistem Monitoring Stok Komputer, Peminjaman, Pengecekan, Servis, dan Ruang Chat Realtime dengan antarmuka bergaya iOS.</p>
         <div class="space-y-3.5 text-sm opacity-90">
           <p class="flex items-center"><i class="fa-solid fa-laptop text-ios-blue mr-3 w-5 text-base"></i>Manajemen unit komputer & komponen</p>
-          <p class="flex items-center"><i class="fa-solid fa-handshake text-ios-green mr-3 w-5 text-base"></i>Peminjaman & pengembalian </p>
-          <p class="flex items-center"><i class="fa-solid fa-comments text-ios-indigo mr-3 w-5 text-base"></i>Chat room dengan balasan & file</p>
+          <p class="flex items-center"><i class="fa-solid fa-handshake text-ios-green mr-3 w-5 text-base"></i>Peminjaman & pengembalian praktis</p>
+          <p class="flex items-center"><i class="fa-solid fa-comments text-ios-indigo mr-3 w-5 text-base"></i>Chat room dengan emoji, balasan & file</p>
         </div>
       </div>
     </div>
@@ -144,7 +139,7 @@
         <form id="form-login" class="space-y-4">
           <div>
             <label class="block text-xs font-semibold mb-1.5 opacity-80">Email</label>
-            <input required type="email" id="login-email" class="w-full app-input rounded-xl px-4 py-3 text-base md:text-sm focus:outline-none transition shadow-sm" placeholder="staff@gmail.com" />
+            <input required type="email" id="login-email" class="w-full app-input rounded-xl px-4 py-3 text-base md:text-sm focus:outline-none transition shadow-sm" placeholder="staff@dcc.gontor" />
           </div>
           <div>
             <label class="block text-xs font-semibold mb-1.5 opacity-80">Kata Sandi</label>
@@ -180,10 +175,11 @@
         <button id="btn-toggle-sidebar" class="p-2 rounded-xl hover:bg-black/10 dark:hover:bg-white/10 transition active:scale-95">
           <i class="fa-solid fa-bars text-lg"></i>
         </button>
-        <!-- BAGIAN BARU -->
-        <div class="h-9 w-9 rounded-xl overflow-hidden shadow-sm bg-white grid place-items-center shrink-0">
+        <!-- LOGO DARI FILE GITHUB -->
+        <div class="h-9 w-9 rounded-xl overflow-hidden shadow-md bg-white grid place-items-center shrink-0">
           <img src="favicon-32x32.png" alt="Logo DCC" class="h-full w-full object-cover" />
         </div>
+        <div>
           <h2 class="font-bold text-sm tracking-tight">DCC MONITOR</h2>
           <p id="whoami" class="text-[11px] opacity-75 truncate">Staff</p>
         </div>
@@ -233,14 +229,12 @@
 
       <!-- CONTENT VIEWS AREA -->
       <main id="main-content" class="flex-1 overflow-y-auto p-4 md:p-8">
-        <!-- HOME (BERANDA BERSIH HANYA AKTIF & SEDANG BERJALAN) -->
+        <!-- HOME -->
         <section id="view-home" class="space-y-6 max-w-6xl mx-auto">
           <h3 class="text-xl font-bold tracking-tight">Ringkasan Operasional</h3>
           
-          <!-- KARTU RINGKASAN STATISTIK -->
           <div id="home-cards" class="grid grid-cols-2 lg:grid-cols-4 gap-4"></div>
 
-          <!-- TABEL 1: PEMINJAMAN SEDANG BERJALAN -->
           <div class="space-y-3">
             <h4 class="text-base font-bold flex items-center gap-2"><i class="fa-solid fa-handshake text-ios-orange"></i> Peminjaman Sedang Berjalan</h4>
             <div class="glass-card rounded-3xl shadow-lg overflow-x-auto">
@@ -259,7 +253,6 @@
             </div>
           </div>
 
-          <!-- TABEL 2: SERVIS KOMPONEN SEDANG BERJALAN -->
           <div class="space-y-3">
             <h4 class="text-base font-bold flex items-center gap-2"><i class="fa-solid fa-screwdriver-wrench text-ios-pink"></i> Servis Komponen Sedang Berjalan</h4>
             <div class="glass-card rounded-3xl shadow-lg overflow-x-auto">
@@ -371,26 +364,15 @@
               </select>
             </div>
 
-            <!-- SECTION 1: CHECKLIST PENGECEKAN KELENGKAPAN STOK -->
             <div class="sm:col-span-2 pt-3 border-t border-black/10 dark:border-white/10">
               <label class="block text-xs font-bold mb-1 custom-accent-text">1. Ceklis Kelengkapan Stok Komputer</label>
               <span class="block text-[11px] opacity-70 mb-2">(Dicentang = 🟢 Normal, Tidak Dicentang = 🔴 Rusak/Missing)</span>
               <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs font-medium">
-                <label class="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" id="chk-komputer" checked class="rounded app-input h-4 w-4" /> Komputer
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" id="chk-monitor" checked class="rounded app-input h-4 w-4" /> Monitor
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" id="chk-mouse" checked class="rounded app-input h-4 w-4" /> Mouse
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" id="chk-keyboard" checked class="rounded app-input h-4 w-4" /> Keyboard
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" id="chk-ups" checked class="rounded app-input h-4 w-4" /> UPS
-                </label>
+                <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="chk-komputer" checked class="rounded app-input h-4 w-4" /> Komputer</label>
+                <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="chk-monitor" checked class="rounded app-input h-4 w-4" /> Monitor</label>
+                <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="chk-mouse" checked class="rounded app-input h-4 w-4" /> Mouse</label>
+                <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="chk-keyboard" checked class="rounded app-input h-4 w-4" /> Keyboard</label>
+                <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="chk-ups" checked class="rounded app-input h-4 w-4" /> UPS</label>
               </div>
             </div>
 
@@ -403,36 +385,25 @@
               <button type="submit" class="w-full py-3.5 rounded-xl custom-accent-bg hover:opacity-90 active:scale-[0.98] text-white font-semibold text-sm transition shadow-lg">Simpan Pengecekan Stok</button>
             </div>
 
-            <!-- SECTION 2: CHECKLIST KHUSUS SERVIS KOMPONEN BERMASALAH -->
             <div class="sm:col-span-2 pt-4 border-t-2 border-dashed border-ios-orange/30 mt-2">
               <label class="block text-xs font-bold text-ios-orange mb-1"><i class="fa-solid fa-screwdriver-wrench mr-1"></i>2. Pengajuan Servis Komponen Bermasalah</label>
               <span class="block text-[11px] opacity-70 mb-2">Pilih komponen yang hendak diservis. Komponen ini otomatis berubah warna menjadi 🟡 Kuning di stok komputer.</span>
               
               <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs font-medium mb-3">
-                <label class="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" id="svc-chk-komputer" class="rounded app-input h-4 w-4" /> Komputer
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" id="svc-chk-monitor" class="rounded app-input h-4 w-4" /> Monitor
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" id="svc-chk-mouse" class="rounded app-input h-4 w-4" /> Mouse
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" id="svc-chk-keyboard" class="rounded app-input h-4 w-4" /> Keyboard
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" id="svc-chk-ups" class="rounded app-input h-4 w-4" /> UPS
-                </label>
+                <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="svc-chk-komputer" class="rounded app-input h-4 w-4" /> Komputer</label>
+                <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="svc-chk-monitor" class="rounded app-input h-4 w-4" /> Monitor</label>
+                <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="svc-chk-mouse" class="rounded app-input h-4 w-4" /> Mouse</label>
+                <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="svc-chk-keyboard" class="rounded app-input h-4 w-4" /> Keyboard</label>
+                <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="svc-chk-ups" class="rounded app-input h-4 w-4" /> UPS</label>
               </div>
 
               <div class="mb-3">
                 <label class="block text-xs font-semibold mb-1 opacity-80">Catatan Kendala Servis</label>
-                <input id="svc-chk-notes" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none" placeholder="Deskripsi kerusakan (contoh: Monitor garis biru, mouse klik kiri mati)..." />
+                <input id="svc-chk-notes" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none" placeholder="Deskripsi kerusakan..." />
               </div>
 
               <button type="button" onclick="submitCheckingService()" class="w-full py-3.5 rounded-xl bg-ios-orange hover:opacity-90 active:scale-[0.98] text-white font-semibold text-sm transition shadow-lg flex items-center justify-center gap-2">
-                <i class="fa-solid fa-paper-plane"></i> Kirim Servis Komputer
+                <i class="fa-solid fa-paper-plane"></i> Kirim Tiket Servis Komponen
               </button>
             </div>
           </form>
@@ -465,7 +436,7 @@
           <div id="svc-list" class="grid gap-3"></div>
         </section>
 
-        <!-- RECAP & STATISTIK REVISED -->
+        <!-- RECAP -->
         <section id="view-recap" class="space-y-6 max-w-6xl mx-auto hide">
           <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
@@ -478,7 +449,6 @@
             </button>
           </div>
 
-          <!-- FILTER BAR (TANGGAL & KATEGORI) -->
           <div class="glass-card rounded-3xl p-5 shadow-lg space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -494,82 +464,49 @@
             <div class="pt-3 border-t border-black/10 dark:border-white/10">
               <label class="block text-xs font-semibold mb-2 custom-accent-text">Filter Kategori Tampilan Data</label>
               <div class="flex flex-wrap gap-4 text-xs font-medium">
-                <label class="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" id="filter-cat-loan" checked onchange="renderRecapTables()" class="rounded app-input h-4 w-4 accent-ios-blue" />
-                  <span>Peminjaman</span>
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" id="filter-cat-checking" checked onchange="renderRecapTables()" class="rounded app-input h-4 w-4 accent-ios-blue" />
-                  <span>Pengecekan</span>
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" id="filter-cat-service" checked onchange="renderRecapTables()" class="rounded app-input h-4 w-4 accent-ios-blue" />
-                  <span>Servis</span>
-                </label>
+                <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="filter-cat-loan" checked onchange="renderRecapTables()" class="rounded app-input h-4 w-4 accent-ios-blue" /> Peminjaman</label>
+                <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="filter-cat-checking" checked onchange="renderRecapTables()" class="rounded app-input h-4 w-4 accent-ios-blue" /> Pengecekan</label>
+                <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="filter-cat-service" checked onchange="renderRecapTables()" class="rounded app-input h-4 w-4 accent-ios-blue" /> Servis</label>
               </div>
             </div>
           </div>
 
-          <!-- TABEL REKAP 1: PEMINJAMAN -->
           <div id="recap-sec-loan" class="space-y-2">
             <h4 class="text-base font-bold flex items-center gap-2"><i class="fa-solid fa-handshake text-ios-orange"></i> Rekap Peminjaman</h4>
             <div class="glass-card rounded-3xl shadow-lg overflow-x-auto">
               <table class="w-full text-left text-xs md:text-sm">
                 <thead class="uppercase tracking-wider">
-                  <tr>
-                    <th class="p-3.5 w-12 text-center">No</th>
-                    <th>Tanggal Pinjam</th>
-                    <th>Kode PC</th>
-                    <th>Periode Pinjam</th>
-                    <th>Keterangan (Peminjam & Keperluan)</th>
-                    <th>Status</th>
-                  </tr>
+                  <tr><th class="p-3.5 w-12 text-center">No</th><th>Tanggal Pinjam</th><th>Kode PC</th><th>Periode Pinjam</th><th>Keterangan</th><th>Status</th></tr>
                 </thead>
                 <tbody id="tbl-recap-loan"></tbody>
               </table>
             </div>
           </div>
 
-          <!-- TABEL REKAP 2: PENGECEKAN -->
           <div id="recap-sec-checking" class="space-y-2">
             <h4 class="text-base font-bold flex items-center gap-2"><i class="fa-solid fa-clipboard-check text-ios-green"></i> Rekap Pengecekan</h4>
             <div class="glass-card rounded-3xl shadow-lg overflow-x-auto">
               <table class="w-full text-left text-xs md:text-sm">
                 <thead class="uppercase tracking-wider">
-                  <tr>
-                    <th class="p-3.5 w-12 text-center">No</th>
-                    <th>Tanggal Pengecekan</th>
-                    <th>Kode PC</th>
-                    <th>Keterangan (Kondisi & Catatan)</th>
-                    <th>Status Stok</th>
-                  </tr>
+                  <tr><th class="p-3.5 w-12 text-center">No</th><th>Tanggal Pengecekan</th><th>Kode PC</th><th>Keterangan</th><th>Status Stok</th></tr>
                 </thead>
                 <tbody id="tbl-recap-checking"></tbody>
               </table>
             </div>
           </div>
 
-          <!-- TABEL REKAP 3: SERVIS -->
           <div id="recap-sec-service" class="space-y-2">
             <h4 class="text-base font-bold flex items-center gap-2"><i class="fa-solid fa-screwdriver-wrench text-ios-pink"></i> Rekap Servis</h4>
             <div class="glass-card rounded-3xl shadow-lg overflow-x-auto">
               <table class="w-full text-left text-xs md:text-sm">
                 <thead class="uppercase tracking-wider">
-                  <tr>
-                    <th class="p-3.5 w-12 text-center">No</th>
-                    <th>Tanggal Servis</th>
-                    <th>Kode PC</th>
-                    <th>Kendala & Catatan</th>
-                    <th>Teknisi</th>
-                    <th>Status Tiket</th>
-                  </tr>
+                  <tr><th class="p-3.5 w-12 text-center">No</th><th>Tanggal Servis</th><th>Kode PC</th><th>Kendala & Catatan</th><th>Teknisi</th><th>Status Tiket</th></tr>
                 </thead>
                 <tbody id="tbl-recap-service"></tbody>
               </table>
             </div>
           </div>
 
-          <!-- GRAFIK REKAP -->
           <div class="grid md:grid-cols-2 gap-4 pt-4 border-t border-black/10 dark:border-white/10">
             <div class="glass-card rounded-3xl p-6 shadow-lg"><canvas id="chart-status"></canvas></div>
             <div class="glass-card rounded-3xl p-6 shadow-lg"><canvas id="chart-type"></canvas></div>
@@ -577,9 +514,8 @@
           </div>
         </section>
 
-        <!-- CHAT ROOM (LOCKED & STABLE) -->
+        <!-- CHAT ROOM -->
         <section id="view-chat" class="hide flex flex-col h-[calc(100dvh-8rem)] md:h-[calc(100vh-6rem)] w-full max-w-4xl mx-auto glass-card rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl relative">
-          <!-- CHAT HEADER -->
           <div class="bg-black/5 dark:bg-white/5 px-4 md:px-6 py-3 border-b border-black/10 dark:border-white/10 flex items-center justify-between shrink-0">
             <div class="flex items-center gap-3">
               <div class="h-9 w-9 md:h-10 md:w-10 rounded-full bg-black/5 dark:bg-white/10 custom-accent-text grid place-items-center"><i class="fa-solid fa-comments text-base md:text-lg"></i></div>
@@ -598,10 +534,8 @@
             </div>
           </div>
 
-          <!-- CHAT STREAM -->
           <div id="chat-stream" class="flex-1 overflow-y-auto chat-scroll p-3 md:p-6 space-y-3"></div>
 
-          <!-- REPLY PREVIEW -->
           <div id="reply-preview" class="hide px-4 py-2 bg-black/5 dark:bg-white/5 border-t border-black/10 dark:border-white/10 flex items-center justify-between text-xs">
             <div class="truncate">
               <span class="font-semibold custom-accent-text">Membalas <span id="reply-to-sender"></span>:</span>
@@ -610,7 +544,6 @@
             <button type="button" id="cancel-reply" class="opacity-70 hover:opacity-100 px-2"><i class="fa-solid fa-xmark"></i></button>
           </div>
 
-          <!-- ATTACHMENT PREVIEW -->
           <div id="attach-preview" class="hide px-4 py-2 bg-black/5 dark:bg-white/5 border-t border-black/10 dark:border-white/10 flex items-center justify-between text-xs">
             <div class="flex items-center gap-2 truncate">
               <img id="attach-thumb" class="h-8 w-8 object-cover rounded-lg hidden" alt="thumb" />
@@ -620,10 +553,8 @@
             <button type="button" id="cancel-attach" class="opacity-70 hover:opacity-100 px-2"><i class="fa-solid fa-xmark"></i></button>
           </div>
 
-          <!-- EMOJI PICKER -->
           <div id="emoji-picker" class="hide absolute bottom-16 left-2 md:left-4 z-30 glass-card border rounded-2xl shadow-2xl p-3 grid grid-cols-8 gap-2 w-72 text-lg"></div>
 
-          <!-- CHAT FORM INPUT BAR -->
           <form id="form-chat" class="p-2 md:p-3 bg-black/5 dark:bg-white/5 border-t border-black/10 dark:border-white/10 flex items-center gap-1.5 md:gap-2 shrink-0">
             <button type="button" id="btn-emoji" class="p-2 opacity-80 hover:opacity-100 rounded-full shrink-0"><i class="fa-regular fa-face-smile text-lg"></i></button>
             <button type="button" id="btn-attach" class="p-2 opacity-80 hover:opacity-100 rounded-full shrink-0"><i class="fa-solid fa-paperclip text-lg"></i></button>
@@ -635,41 +566,23 @@
       </main>
     </div>
 
-    <!-- IOS BOTTOM NAVIGATION BAR FOR MOBILE -->
+    <!-- IOS BOTTOM NAVIGATION BAR -->
     <nav class="md:hidden fixed bottom-0 inset-x-0 glass-card border-t z-30 h-14 flex items-center justify-around px-2">
-      <button data-view="home" class="bottom-nav-btn active flex flex-col items-center gap-0.5 text-[10px] font-medium transition">
-        <i class="fa-solid fa-house text-base"></i>
-        <span>Beranda</span>
-      </button>
-      <button data-view="computers" class="bottom-nav-btn flex flex-col items-center gap-0.5 text-[10px] font-medium transition">
-        <i class="fa-solid fa-computer text-base"></i>
-        <span>Stok</span>
-      </button>
-      <button data-view="loans" class="bottom-nav-btn flex flex-col items-center gap-0.5 text-[10px] font-medium transition">
-        <i class="fa-solid fa-handshake text-base"></i>
-        <span>Pinjam</span>
-      </button>
-      <button data-view="services" class="bottom-nav-btn flex flex-col items-center gap-0.5 text-[10px] font-medium transition">
-        <i class="fa-solid fa-screwdriver-wrench text-base"></i>
-        <span>Servis</span>
-      </button>
-      <button data-view="chat" class="bottom-nav-btn flex flex-col items-center gap-0.5 text-[10px] font-medium transition">
-        <i class="fa-solid fa-comments text-base"></i>
-        <span>Chat</span>
-      </button>
+      <button data-view="home" class="bottom-nav-btn active flex flex-col items-center gap-0.5 text-[10px] font-medium transition"><i class="fa-solid fa-house text-base"></i><span>Beranda</span></button>
+      <button data-view="computers" class="bottom-nav-btn flex flex-col items-center gap-0.5 text-[10px] font-medium transition"><i class="fa-solid fa-computer text-base"></i><span>Stok</span></button>
+      <button data-view="loans" class="bottom-nav-btn flex flex-col items-center gap-0.5 text-[10px] font-medium transition"><i class="fa-solid fa-handshake text-base"></i><span>Pinjam</span></button>
+      <button data-view="services" class="bottom-nav-btn flex flex-col items-center gap-0.5 text-[10px] font-medium transition"><i class="fa-solid fa-screwdriver-wrench text-base"></i><span>Servis</span></button>
+      <button data-view="chat" class="bottom-nav-btn flex flex-col items-center gap-0.5 text-[10px] font-medium transition"><i class="fa-solid fa-comments text-base"></i><span>Chat</span></button>
     </nav>
   </section>
 
-  <!-- MODAL LAPORKAN / VERIFIKASI DOKUMEN REKAP -->
+  <!-- MODAL LAPORKAN -->
   <dialog id="modal-report" class="glass-card rounded-3xl p-6 w-[min(92vw,480px)] shadow-2xl m-auto space-y-4">
     <div class="flex items-center justify-between border-b border-black/10 dark:border-white/10 pb-3">
       <h4 class="text-lg font-bold flex items-center gap-2 text-ios-green"><i class="fa-solid fa-file-circle-check"></i> Verifikasi Data Laporan</h4>
       <button onclick="$('modal-report').close()" class="opacity-70 hover:opacity-100"><i class="fa-solid fa-xmark text-lg"></i></button>
     </div>
-
     <p class="text-xs opacity-80 leading-relaxed">Berikut adalah ringkasan data yang akan dilaporkan sesuai dengan filter rentang tanggal dan kategori terpilih saat ini:</p>
-
-    <!-- RINGKASAN DATA VERIFIKASI -->
     <div class="space-y-2 bg-black/5 dark:bg-white/5 p-4 rounded-2xl text-xs font-medium">
       <div class="flex justify-between"><span class="opacity-75">Rentang Tanggal:</span><span id="rep-period-label" class="font-bold custom-accent-text"></span></div>
       <div class="flex justify-between"><span class="opacity-75">Kategori Aktif:</span><span id="rep-cat-label" class="font-bold"></span></div>
@@ -679,54 +592,22 @@
         <div class="flex justify-between"><span class="opacity-80">· Data Servis:</span><span id="rep-count-service" class="font-bold">0</span></div>
       </div>
     </div>
-
-    <!-- PILIHAN AKSI LAPORAN -->
     <div class="space-y-2.5 pt-2">
-      <button onclick="exportToExcel()" class="w-full py-3.5 rounded-xl bg-ios-green hover:opacity-90 active:scale-[0.98] text-white font-semibold text-xs md:text-sm transition shadow-md flex items-center justify-center gap-2">
-        <i class="fa-solid fa-file-excel text-base"></i> Download Format Excel (.xlsx)
-      </button>
-      
-      <button onclick="sendReportToChat()" class="w-full py-3.5 rounded-xl custom-accent-bg hover:opacity-90 active:scale-[0.98] text-white font-semibold text-xs md:text-sm transition shadow-md flex items-center justify-center gap-2">
-        <i class="fa-solid fa-paper-plane text-base"></i> Kirim Laporan Singkat ke Room Chat
-      </button>
+      <button onclick="exportToExcel()" class="w-full py-3.5 rounded-xl bg-ios-green hover:opacity-90 active:scale-[0.98] text-white font-semibold text-xs md:text-sm transition shadow-md flex items-center justify-center gap-2"><i class="fa-solid fa-file-excel text-base"></i> Download Format Excel (.xlsx)</button>
+      <button onclick="sendReportToChat()" class="w-full py-3.5 rounded-xl custom-accent-bg hover:opacity-90 active:scale-[0.98] text-white font-semibold text-xs md:text-sm transition shadow-md flex items-center justify-center gap-2"><i class="fa-solid fa-paper-plane text-base"></i> Kirim Laporan Singkat ke Room Chat</button>
     </div>
   </dialog>
 
   <!-- MODAL COLOR GRADING -->
   <dialog id="modal-grading" class="glass-card rounded-3xl p-6 w-[min(92vw,420px)] shadow-2xl m-auto">
     <div class="space-y-4">
-      <div class="flex items-center justify-between">
-        <h4 class="text-lg font-bold">Theme Color Grading</h4>
-        <button onclick="$('modal-grading').close()" class="opacity-70 hover:opacity-100"><i class="fa-solid fa-xmark text-lg"></i></button>
-      </div>
+      <div class="flex items-center justify-between"><h4 class="text-lg font-bold">Theme Color Grading</h4><button onclick="$('modal-grading').close()" class="opacity-70 hover:opacity-100"><i class="fa-solid fa-xmark text-lg"></i></button></div>
       <p class="text-xs opacity-75">Sesuaikan gradasi warna dan aksen sesuai selera Anda.</p>
-      
       <div class="space-y-3">
-        <div>
-          <label class="block text-xs font-semibold mb-1 opacity-80">Warna Latar 1 (Atas/Kiri)</label>
-          <div class="flex items-center gap-3">
-            <input type="color" id="picker-bg1" value="#f8fafc" class="h-10 w-14 rounded-lg bg-transparent cursor-pointer" oninput="updateGrading()" />
-            <span id="txt-bg1" class="text-xs font-mono opacity-70 font-bold">#f8fafc</span>
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold mb-1 opacity-80">Warna Latar 2 (Bawah/Kanan)</label>
-          <div class="flex items-center gap-3">
-            <input type="color" id="picker-bg2" value="#e2e8f0" class="h-10 w-14 rounded-lg bg-transparent cursor-pointer" oninput="updateGrading()" />
-            <span id="txt-bg2" class="text-xs font-mono opacity-70 font-bold">#e2e8f0</span>
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold mb-1 opacity-80">Warna Aksen Utama</label>
-          <div class="flex items-center gap-3">
-            <input type="color" id="picker-accent" value="#007AFF" class="h-10 w-14 rounded-lg bg-transparent cursor-pointer" oninput="updateGrading()" />
-            <span id="txt-accent" class="text-xs font-mono opacity-70 font-bold">#007AFF</span>
-          </div>
-        </div>
+        <div><label class="block text-xs font-semibold mb-1 opacity-80">Warna Latar 1</label><div class="flex items-center gap-3"><input type="color" id="picker-bg1" value="#f8fafc" class="h-10 w-14 rounded-lg bg-transparent cursor-pointer" oninput="updateGrading()" /><span id="txt-bg1" class="text-xs font-mono opacity-70 font-bold">#f8fafc</span></div></div>
+        <div><label class="block text-xs font-semibold mb-1 opacity-80">Warna Latar 2</label><div class="flex items-center gap-3"><input type="color" id="picker-bg2" value="#e2e8f0" class="h-10 w-14 rounded-lg bg-transparent cursor-pointer" oninput="updateGrading()" /><span id="txt-bg2" class="text-xs font-mono opacity-70 font-bold">#e2e8f0</span></div></div>
+        <div><label class="block text-xs font-semibold mb-1 opacity-80">Warna Aksen Utama</label><div class="flex items-center gap-3"><input type="color" id="picker-accent" value="#007AFF" class="h-10 w-14 rounded-lg bg-transparent cursor-pointer" oninput="updateGrading()" /><span id="txt-accent" class="text-xs font-mono opacity-70 font-bold">#007AFF</span></div></div>
       </div>
-
       <div class="flex gap-2 justify-end pt-3 border-t border-black/10 dark:border-white/10">
         <button onclick="resetGrading()" class="px-4 py-2 text-xs opacity-75 hover:opacity-100 font-semibold">Reset Default</button>
         <button onclick="$('modal-grading').close()" class="px-4 py-2.5 custom-accent-bg text-white text-xs rounded-xl font-semibold shadow-md">Terapkan</button>
@@ -734,128 +615,149 @@
     </div>
   </dialog>
 
-  <!-- MODAL COMPUTER -->
-  <dialog id="modal-computer" class="glass-card rounded-3xl p-6 w-[min(92vw,480px)] shadow-2xl m-auto">
+  <!-- MODAL COMPUTER (DENGAN SPESIFIKASI LENGKAP & FLEKSIBEL) -->
+  <dialog id="modal-computer" class="glass-card rounded-3xl p-6 w-[min(92vw,600px)] shadow-2xl m-auto max-h-[90vh] overflow-y-auto">
     <form id="form-computer" class="space-y-4">
-      <h4 class="text-lg font-bold">Tambah / Perbarui Unit Komputer</h4>
-      <div>
-        <label class="block text-xs font-semibold mb-1 opacity-80">Kode PC</label>
-        <input id="pc-id" required placeholder="DCC-001" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" />
-      </div>
-      <div>
-        <label class="block text-xs font-semibold mb-1 opacity-80">Status Utama</label>
-        <select id="pc-status" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm">
-          <option value="available">available (Tersedia - Hijau)</option>
-          <option value="borrowed">borrowed (Dipinjam - Merah)</option>
-          <option value="maintenance">maintenance (Servis)</option>
-        </select>
+      <div class="flex items-center justify-between border-b border-black/10 dark:border-white/10 pb-3">
+        <h4 class="text-lg font-bold">Tambah / Perbarui Unit Komputer</h4>
+        <button type="button" data-close class="opacity-70 hover:opacity-100"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
 
-      <!-- KELENGKAPAN LAMPU INDIKATOR -->
-      <div class="pt-2 border-t border-black/10 dark:border-white/10">
-        <label class="block text-xs font-bold mb-2 opacity-90">Status Kelengkapan Perangkat (Indikator)</label>
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs font-medium">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-semibold mb-1 opacity-80">Kode PC</label>
+          <input id="pc-id" required placeholder="DCC-001" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1 opacity-80">Status Utama</label>
+          <select id="pc-status" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm">
+            <option value="available">available (Tersedia - Hijau)</option>
+            <option value="borrowed">borrowed (Dipinjam - Merah)</option>
+            <option value="maintenance">maintenance (Servis)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- SPESIFIKASI MANUAL KOMPONEN UTAMA (1 per Komputer) -->
+      <div class="pt-2 border-t border-black/10 dark:border-white/10 space-y-3">
+        <label class="block text-xs font-bold uppercase tracking-wider custom-accent-text">Spesifikasi Komponen Utama (Jumlah Pasti)</label>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <span class="block opacity-75 mb-1">Komputer</span>
-            <select id="pc-komputer-st" class="w-full app-input rounded-lg px-2.5 py-2 focus:outline-none shadow-sm">
-              <option value="ok">🟢 Normal</option>
-              <option value="missing">🔴 Rusak/Tidak Ada</option>
-              <option value="service">🟡 Servis</option>
-            </select>
+            <label class="block text-xs font-semibold mb-1 opacity-80">Prosesor</label>
+            <input id="spec-processor" placeholder="Contoh: Intel Core i5-12400" class="w-full app-input rounded-xl px-3 py-2 text-xs focus:outline-none shadow-sm" />
           </div>
           <div>
-            <span class="block opacity-75 mb-1">Monitor</span>
-            <select id="pc-monitor-st" class="w-full app-input rounded-lg px-2.5 py-2 focus:outline-none shadow-sm">
-              <option value="ok">🟢 Normal</option>
-              <option value="missing">🔴 Rusak/Tidak Ada</option>
-              <option value="service">🟡 Servis</option>
-            </select>
+            <label class="block text-xs font-semibold mb-1 opacity-80">Motherboard</label>
+            <input id="spec-motherboard" placeholder="Contoh: MSI H610M" class="w-full app-input rounded-xl px-3 py-2 text-xs focus:outline-none shadow-sm" />
           </div>
           <div>
-            <span class="block opacity-75 mb-1">Mouse</span>
-            <select id="pc-mouse-st" class="w-full app-input rounded-lg px-2.5 py-2 focus:outline-none shadow-sm">
-              <option value="ok">🟢 Normal</option>
-              <option value="missing">🔴 Rusak/Tidak Ada</option>
-              <option value="service">🟡 Servis</option>
-            </select>
+            <label class="block text-xs font-semibold mb-1 opacity-80">PSU (Power Supply)</label>
+            <input id="spec-psu" placeholder="Contoh: 500W 80+" class="w-full app-input rounded-xl px-3 py-2 text-xs focus:outline-none shadow-sm" />
           </div>
           <div>
-            <span class="block opacity-75 mb-1">Keyboard</span>
-            <select id="pc-keyboard-st" class="w-full app-input rounded-lg px-2.5 py-2 focus:outline-none shadow-sm">
-              <option value="ok">🟢 Normal</option>
-              <option value="missing">🔴 Rusak/Tidak Ada</option>
-              <option value="service">🟡 Servis</option>
-            </select>
+            <label class="block text-xs font-semibold mb-1 opacity-80">GPU (VGA)</label>
+            <input id="spec-gpu" placeholder="Contoh: NVIDIA GTX 1650 / Onboard" class="w-full app-input rounded-xl px-3 py-2 text-xs focus:outline-none shadow-sm" />
           </div>
           <div>
-            <span class="block opacity-75 mb-1">UPS</span>
-            <select id="pc-ups-st" class="w-full app-input rounded-lg px-2.5 py-2 focus:outline-none shadow-sm">
-              <option value="ok">🟢 Normal</option>
-              <option value="missing">🔴 Rusak/Tidak Ada</option>
-              <option value="service">🟡 Servis</option>
-            </select>
+            <label class="block text-xs font-semibold mb-1 opacity-80">Mouse</label>
+            <input id="spec-mouse" placeholder="Contoh: Logitech B100" class="w-full app-input rounded-xl px-3 py-2 text-xs focus:outline-none shadow-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold mb-1 opacity-80">Keyboard</label>
+            <input id="spec-keyboard" placeholder="Contoh: Logitech K120" class="w-full app-input rounded-xl px-3 py-2 text-xs focus:outline-none shadow-sm" />
+          </div>
+          <div class="sm:col-span-2">
+            <label class="block text-xs font-semibold mb-1 opacity-80">Monitor</label>
+            <input id="spec-monitor" placeholder="Contoh: LG 22 inch Full HD" class="w-full app-input rounded-xl px-3 py-2 text-xs focus:outline-none shadow-sm" />
           </div>
         </div>
       </div>
 
-      <div class="flex gap-2 justify-end pt-2">
+      <!-- SPESIFIKASI KOMPONEN FLEKSIBEL (RAM, SSD, HDD, UPS) -->
+      <div class="pt-2 border-t border-black/10 dark:border-white/10 space-y-3">
+        <label class="block text-xs font-bold uppercase tracking-wider text-ios-orange">Komponen Fleksibel (Merk, Jumlah, & Kapasitas)</label>
+        
+        <!-- RAM -->
+        <div class="bg-black/5 dark:bg-white/5 p-3 rounded-2xl space-y-2">
+          <span class="block text-xs font-semibold">RAM</span>
+          <div class="grid grid-cols-3 gap-2">
+            <input id="spec-ram-brand" placeholder="Merk (Contoh: Kingston)" class="app-input rounded-lg px-2.5 py-1.5 text-xs focus:outline-none" />
+            <input type="number" id="spec-ram-qty" placeholder="Jumlah" min="1" value="1" class="app-input rounded-lg px-2.5 py-1.5 text-xs focus:outline-none" />
+            <input id="spec-ram-cap" placeholder="Kapasitas (Contoh: 16GB)" class="app-input rounded-lg px-2.5 py-1.5 text-xs focus:outline-none" />
+          </div>
+        </div>
+
+        <!-- SSD -->
+        <div class="bg-black/5 dark:bg-white/5 p-3 rounded-2xl space-y-2">
+          <span class="block text-xs font-semibold">SSD</span>
+          <div class="grid grid-cols-3 gap-2">
+            <input id="spec-ssd-brand" placeholder="Merk (Contoh: Samsung)" class="app-input rounded-lg px-2.5 py-1.5 text-xs focus:outline-none" />
+            <input type="number" id="spec-ssd-qty" placeholder="Jumlah" min="0" value="1" class="app-input rounded-lg px-2.5 py-1.5 text-xs focus:outline-none" />
+            <input id="spec-ssd-cap" placeholder="Kapasitas (Contoh: 512GB)" class="app-input rounded-lg px-2.5 py-1.5 text-xs focus:outline-none" />
+          </div>
+        </div>
+
+        <!-- HDD -->
+        <div class="bg-black/5 dark:bg-white/5 p-3 rounded-2xl space-y-2">
+          <span class="block text-xs font-semibold">HDD</span>
+          <div class="grid grid-cols-3 gap-2">
+            <input id="spec-hdd-brand" placeholder="Merk (Contoh: Seagate)" class="app-input rounded-lg px-2.5 py-1.5 text-xs focus:outline-none" />
+            <input type="number" id="spec-hdd-qty" placeholder="Jumlah" min="0" value="0" class="app-input rounded-lg px-2.5 py-1.5 text-xs focus:outline-none" />
+            <input id="spec-hdd-cap" placeholder="Kapasitas (Contoh: 1TB)" class="app-input rounded-lg px-2.5 py-1.5 text-xs focus:outline-none" />
+          </div>
+        </div>
+
+        <!-- UPS -->
+        <div class="bg-black/5 dark:bg-white/5 p-3 rounded-2xl space-y-2">
+          <span class="block text-xs font-semibold">UPS</span>
+          <div class="grid grid-cols-2 gap-2">
+            <input id="spec-ups-brand" placeholder="Merk (Contoh: ICA / Prolink)" class="app-input rounded-lg px-2.5 py-1.5 text-xs focus:outline-none" />
+            <input id="spec-ups-cap" placeholder="Kapasitas (Contoh: 600VA)" class="app-input rounded-lg px-2.5 py-1.5 text-xs focus:outline-none" />
+          </div>
+        </div>
+      </div>
+
+      <!-- STATUS KELENGKAPAN LAMPU INDIKATOR -->
+      <div class="pt-2 border-t border-black/10 dark:border-white/10">
+        <label class="block text-xs font-bold mb-2 opacity-90">Status Indikator Perangkat Saat Ini</label>
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs font-medium">
+          <div><span class="block opacity-75 mb-1">PC</span><select id="pc-komputer-st" class="w-full app-input rounded-lg px-2 py-1.5 focus:outline-none"><option value="ok">🟢 Normal</option><option value="missing">🔴 Rusak</option><option value="service">🟡 Servis</option></select></div>
+          <div><span class="block opacity-75 mb-1">Monitor</span><select id="pc-monitor-st" class="w-full app-input rounded-lg px-2 py-1.5 focus:outline-none"><option value="ok">🟢 Normal</option><option value="missing">🔴 Rusak</option><option value="service">🟡 Servis</option></select></div>
+          <div><span class="block opacity-75 mb-1">Mouse</span><select id="pc-mouse-st" class="w-full app-input rounded-lg px-2 py-1.5 focus:outline-none"><option value="ok">🟢 Normal</option><option value="missing">🔴 Rusak</option><option value="service">🟡 Servis</option></select></div>
+          <div><span class="block opacity-75 mb-1">Keyboard</span><select id="pc-keyboard-st" class="w-full app-input rounded-lg px-2 py-1.5 focus:outline-none"><option value="ok">🟢 Normal</option><option value="missing">🔴 Rusak</option><option value="service">🟡 Servis</option></select></div>
+          <div><span class="block opacity-75 mb-1">UPS</span><select id="pc-ups-st" class="w-full app-input rounded-lg px-2 py-1.5 focus:outline-none"><option value="ok">🟢 Normal</option><option value="missing">🔴 Rusak</option><option value="service">🟡 Servis</option></select></div>
+        </div>
+      </div>
+
+      <div class="flex gap-2 justify-end pt-3 border-t border-black/10 dark:border-white/10">
         <button type="button" data-close class="px-4 py-2 text-xs opacity-75 hover:opacity-100 font-semibold">Batal</button>
-        <button class="px-4 py-2.5 custom-accent-bg text-white text-xs rounded-xl font-semibold shadow-md">Simpan Unit</button>
+        <button class="px-5 py-2.5 custom-accent-bg text-white text-xs rounded-xl font-semibold shadow-md active:scale-95">Simpan Unit Komputer</button>
       </div>
     </form>
   </dialog>
 
-  <!-- MODAL LOAN WITH DATES & PERIPHERALS -->
+  <!-- MODAL LOAN -->
   <dialog id="modal-loan" class="glass-card rounded-3xl p-6 w-[min(92vw,480px)] shadow-2xl m-auto">
     <form id="form-loan" class="space-y-4">
       <h4 class="text-lg font-bold">Peminjaman Baru & Batas Waktu</h4>
-      <div>
-        <label class="block text-xs font-semibold mb-1 opacity-80">Pilih Unit Komputer (Hanya Tersedia)</label>
-        <select id="loan-unit" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm"></select>
-      </div>
-      <div>
-        <label class="block text-xs font-semibold mb-1 opacity-80">Nama Peminjam</label>
-        <input id="loan-borrower" required placeholder="Nama peminjam" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" />
-      </div>
-      <div>
-        <label class="block text-xs font-semibold mb-1 opacity-80">Keperluan</label>
-        <input id="loan-purpose" required placeholder="Keperluan peminjaman" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" />
-      </div>
-
-      <!-- BATAS PEMINJAMAN (DARI - SAMPAI) -->
+      <div><label class="block text-xs font-semibold mb-1 opacity-80">Pilih Unit Komputer (Tersedia)</label><select id="loan-unit" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm"></select></div>
+      <div><label class="block text-xs font-semibold mb-1 opacity-80">Nama Peminjam</label><input id="loan-borrower" required placeholder="Nama peminjam" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" /></div>
+      <div><label class="block text-xs font-semibold mb-1 opacity-80">Keperluan</label><input id="loan-purpose" required placeholder="Keperluan peminjaman" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" /></div>
       <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="block text-xs font-semibold mb-1 opacity-80">Dari Tanggal</label>
-          <input type="date" id="loan-start" required class="w-full app-input rounded-xl px-3.5 py-2 text-base md:text-sm focus:outline-none shadow-sm" />
-        </div>
-        <div>
-          <label class="block text-xs font-semibold mb-1 opacity-80">Sampai Tanggal</label>
-          <input type="date" id="loan-end" required class="w-full app-input rounded-xl px-3.5 py-2 text-base md:text-sm focus:outline-none shadow-sm" />
-        </div>
+        <div><label class="block text-xs font-semibold mb-1 opacity-80">Dari Tanggal</label><input type="date" id="loan-start" required class="w-full app-input rounded-xl px-3.5 py-2 text-base md:text-sm focus:outline-none shadow-sm" /></div>
+        <div><label class="block text-xs font-semibold mb-1 opacity-80">Sampai Tanggal</label><input type="date" id="loan-end" required class="w-full app-input rounded-xl px-3.5 py-2 text-base md:text-sm focus:outline-none shadow-sm" /></div>
       </div>
-
-      <!-- CHECKLIST Kelengkapan Peminjaman -->
       <div class="pt-2 border-t border-black/10 dark:border-white/10">
         <label class="block text-xs font-bold mb-2 opacity-90">Ceklis Komponen yang Dipinjam</label>
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs font-medium">
-          <label class="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" id="loan-komputer" checked class="rounded app-input h-4 w-4" /> Komputer
-          </label>
-          <label class="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" id="loan-monitor" checked class="rounded app-input h-4 w-4" /> Monitor
-          </label>
-          <label class="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" id="loan-mouse" checked class="rounded app-input h-4 w-4" /> Mouse
-          </label>
-          <label class="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" id="loan-keyboard" checked class="rounded app-input h-4 w-4" /> Keyboard
-          </label>
-          <label class="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" id="loan-ups" checked class="rounded app-input h-4 w-4" /> UPS
-          </label>
+          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="loan-komputer" checked class="rounded app-input h-4 w-4" /> Komputer</label>
+          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="loan-monitor" checked class="rounded app-input h-4 w-4" /> Monitor</label>
+          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="loan-mouse" checked class="rounded app-input h-4 w-4" /> Mouse</label>
+          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="loan-keyboard" checked class="rounded app-input h-4 w-4" /> Keyboard</label>
+          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="loan-ups" checked class="rounded app-input h-4 w-4" /> UPS</label>
         </div>
       </div>
-
       <div class="flex gap-2 justify-end pt-2">
         <button type="button" data-close class="px-4 py-2 text-xs opacity-75 hover:opacity-100 font-semibold">Batal</button>
         <button class="px-4 py-2.5 custom-accent-bg text-white text-xs rounded-xl font-semibold shadow-md">Simpan Peminjaman</button>
@@ -863,41 +765,27 @@
     </form>
   </dialog>
 
-  <!-- MODAL RETURN WITH CHECKLIST & PURPOSE -->
+  <!-- MODAL RETURN -->
   <dialog id="modal-return" class="glass-card rounded-3xl p-6 w-[min(92vw,480px)] shadow-2xl m-auto">
     <form id="form-return" class="space-y-4">
       <h4 class="text-lg font-bold">Cek & Pengembalian Unit Komputer</h4>
-      <input type="hidden" id="ret-loan-id" />
-      <input type="hidden" id="ret-unit-id" />
+      <input type="hidden" id="ret-loan-id" /><input type="hidden" id="ret-unit-id" />
       <div class="space-y-1 bg-black/5 dark:bg-white/5 p-3.5 rounded-2xl text-xs font-medium">
         <p class="opacity-80">Unit PC: <span id="ret-unit-label" class="font-bold custom-accent-text text-sm"></span></p>
         <p class="opacity-80">Peminjam: <span id="ret-borrower-label" class="font-bold text-sm"></span></p>
         <p class="opacity-80">Keperluan: <span id="ret-purpose-label" class="font-bold italic"></span></p>
         <p class="opacity-80">Periode: <span id="ret-period-label" class="font-bold"></span></p>
       </div>
-
-      <!-- CHECKLIST KELENGKAPAN SAAT KEMBALI -->
       <div class="pt-2 border-t border-black/10 dark:border-white/10">
         <label class="block text-xs font-bold mb-2 opacity-90">Ceklis Komponen yang Dikembalikan (Normal/Utuh)</label>
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs font-medium">
-          <label class="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" id="ret-komputer" checked class="rounded app-input h-4 w-4" /> Komputer
-          </label>
-          <label class="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" id="ret-monitor" checked class="rounded app-input h-4 w-4" /> Monitor
-          </label>
-          <label class="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" id="ret-mouse" checked class="rounded app-input h-4 w-4" /> Mouse
-          </label>
-          <label class="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" id="ret-keyboard" checked class="rounded app-input h-4 w-4" /> Keyboard
-          </label>
-          <label class="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" id="ret-ups" checked class="rounded app-input h-4 w-4" /> UPS
-          </label>
+          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="ret-komputer" checked class="rounded app-input h-4 w-4" /> Komputer</label>
+          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="ret-monitor" checked class="rounded app-input h-4 w-4" /> Monitor</label>
+          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="ret-mouse" checked class="rounded app-input h-4 w-4" /> Mouse</label>
+          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="ret-keyboard" checked class="rounded app-input h-4 w-4" /> Keyboard</label>
+          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="ret-ups" checked class="rounded app-input h-4 w-4" /> UPS</label>
         </div>
       </div>
-
       <div class="flex gap-2 justify-end pt-2">
         <button type="button" data-close class="px-4 py-2 text-xs opacity-75 hover:opacity-100 font-semibold">Batal</button>
         <button class="px-4 py-2.5 custom-accent-bg text-white text-xs rounded-xl font-semibold shadow-md">Konfirmasi Pengembalian</button>
@@ -909,28 +797,14 @@
   <dialog id="modal-service" class="glass-card rounded-3xl p-6 w-[min(92vw,480px)] shadow-2xl m-auto">
     <form id="form-service" class="space-y-4">
       <h4 class="text-lg font-bold">Tiket Servis</h4>
-      <div>
-        <label class="block text-xs font-semibold mb-1 opacity-80">Pilih Unit</label>
-        <select id="svc-unit" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm"></select>
-      </div>
-      <div>
-        <label class="block text-xs font-semibold mb-1 opacity-80">Kerusakan / Keluhan</label>
-        <input id="svc-problem" required placeholder="Kerusakan / keluhan" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" />
-      </div>
-      <div>
-        <label class="block text-xs font-semibold mb-1 opacity-80">Teknisi</label>
-        <input id="svc-tech" placeholder="Nama Teknisi Penanggung Jawab" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" />
-      </div>
-      <div>
-        <label class="block text-xs font-semibold mb-1 opacity-80">Catatan</label>
-        <input id="svc-notes" placeholder="Catatan perbaikan" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" />
-      </div>
+      <div><label class="block text-xs font-semibold mb-1 opacity-80">Pilih Unit</label><select id="svc-unit" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm"></select></div>
+      <div><label class="block text-xs font-semibold mb-1 opacity-80">Kerusakan / Keluhan</label><input id="svc-problem" required placeholder="Kerusakan / keluhan" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" /></div>
+      <div><label class="block text-xs font-semibold mb-1 opacity-80">Teknisi</label><input id="svc-tech" placeholder="Nama Teknisi" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" /></div>
+      <div><label class="block text-xs font-semibold mb-1 opacity-80">Catatan</label><input id="svc-notes" placeholder="Catatan perbaikan" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" /></div>
       <div>
         <label class="block text-xs font-semibold mb-1 opacity-80">Status Tiket</label>
         <select id="svc-status" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm">
-          <option value="open">open</option>
-          <option value="in_progress">in_progress</option>
-          <option value="done">done</option>
+          <option value="open">open</option><option value="in_progress">in_progress</option><option value="done">done</option>
         </select>
       </div>
       <div class="flex gap-2 justify-end pt-2">
@@ -940,7 +814,7 @@
     </form>
   </dialog>
 
-  <!-- MODAL SELECT -->
+  <!-- MODAL SELECT & PROFILE -->
   <dialog id="modal-select" class="glass-card rounded-3xl p-6 w-[min(92vw,420px)] shadow-2xl m-auto">
     <div>
       <h4 class="text-lg font-bold mb-3">Select Chat</h4>
@@ -950,7 +824,6 @@
     </div>
   </dialog>
 
-  <!-- MODAL PROFILE -->
   <dialog id="modal-profile" class="glass-card rounded-3xl p-6 w-[min(92vw,420px)] shadow-2xl m-auto">
     <form id="form-profile" class="space-y-4">
       <h4 class="text-lg font-bold">Edit Profile</h4>
@@ -958,10 +831,7 @@
         <img id="prof-preview" class="h-14 w-14 rounded-2xl object-cover border border-black/10 dark:border-white/10 shadow-sm" alt="avatar" />
         <input id="prof-file" type="file" accept="image/*" class="text-xs opacity-75" />
       </div>
-      <div>
-        <label class="block text-xs font-semibold mb-1 opacity-80">Nama Lengkap</label>
-        <input id="prof-name" required class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" />
-      </div>
+      <div><label class="block text-xs font-semibold mb-1 opacity-80">Nama Lengkap</label><input id="prof-name" required class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" /></div>
       <div class="flex gap-2 justify-end pt-2">
         <button type="button" data-close class="px-4 py-2 text-xs opacity-75 hover:opacity-100 font-semibold">Batal</button>
         <button class="px-4 py-2.5 custom-accent-bg text-white text-xs rounded-xl font-semibold shadow-md">Simpan</button>
@@ -999,7 +869,6 @@
       if (el) el.textContent = msg || "";
     }
 
-    // THEME & COLOR GRADING LOGIC (DEFAULT LIGHT)
     function setTheme(mode) {
       document.body.className = `theme-${mode} min-h-screen flex flex-col font-sans transition-colors duration-300 overflow-x-hidden`;
       const html = document.documentElement;
@@ -1016,16 +885,13 @@
       const bg1 = $("picker-bg1").value;
       const bg2 = $("picker-bg2").value;
       const accent = $("picker-accent").value;
-
       document.documentElement.style.setProperty('--cust-bg1', bg1);
       document.documentElement.style.setProperty('--cust-bg2', bg2);
       document.documentElement.style.setProperty('--cust-accent', accent);
       document.documentElement.style.setProperty('--active-accent', accent);
-
       $("txt-bg1").textContent = bg1;
       $("txt-bg2").textContent = bg2;
       $("txt-accent").textContent = accent;
-
       localStorage.setItem('dcc_grading', JSON.stringify({ bg1, bg2, accent }));
     }
 
@@ -1053,7 +919,6 @@
     loadGrading();
     setTheme(savedTheme);
 
-    // SIDEBAR MOBILE TOGGLE LOGIC
     const sidebar = $("sidebar");
     const overlay = $("sidebar-overlay");
     function toggleSidebar() {
@@ -1078,7 +943,6 @@
     document.querySelectorAll("[data-open]").forEach((b) => b.onclick = () => $(b.dataset.open).showModal());
     document.querySelectorAll("[data-close]").forEach((b) => b.onclick = () => b.closest("dialog").close());
 
-    // NAVIGASI VIEW
     function switchView(targetView) {
       document.querySelectorAll(".nav-item").forEach((x) => x.classList.toggle("active", x.dataset.view === targetView));
       document.querySelectorAll(".bottom-nav-btn").forEach((x) => x.classList.toggle("active", x.dataset.view === targetView));
@@ -1179,7 +1043,6 @@
 
     function fillUnitSelects() {
       const allOpts = state.computers.map((x) => `<option value="${x.id}">${x.id}</option>`).join("");
-      
       const availableComputers = state.computers.filter((x) => x.status === "available");
       const loanOpts = availableComputers.length > 0 
         ? availableComputers.map((x) => `<option value="${x.id}">${x.id}</option>`).join("") 
@@ -1203,7 +1066,6 @@
       return `<div class="flex justify-center"><span class="h-3 w-3 rounded-full ${color} inline-block" title="${title}"></span></div>`;
     }
 
-    // LOGIC REKAP STATISTIK & LAPORAN
     function formatDate(dStr) {
       if (!dStr) return "-";
       const d = new Date(dStr);
@@ -1213,7 +1075,6 @@
     function getFilteredData() {
       const fromVal = $("recap-date-from").value;
       const toVal = $("recap-date-to").value;
-
       const fromDate = fromVal ? new Date(fromVal + "T00:00:00") : null;
       const toDate = toVal ? new Date(toVal + "T23:59:59") : null;
 
@@ -1238,7 +1099,6 @@
 
     function renderRecapTables() {
       const { filteredLoans, filteredChecking, filteredServices, showLoan, showChecking, showService } = getFilteredData();
-
       show($("recap-sec-loan"), showLoan);
       show($("recap-sec-checking"), showChecking);
       show($("recap-sec-service"), showService);
@@ -1273,10 +1133,8 @@
         </tr>`).join("") || `<tr><td class="p-6 text-center opacity-70" colspan="6">Tidak ada data servis dalam rentang tanggal ini.</td></tr>`;
     }
 
-    // VERIFIKASI & MODAL LAPORKAN
     function openReportModal() {
       const { filteredLoans, filteredChecking, filteredServices, showLoan, showChecking, showService } = getFilteredData();
-
       const fromVal = $("recap-date-from").value;
       const toVal = $("recap-date-to").value;
       const periodStr = (fromVal || toVal) ? `${fromVal || 'Awal'} s/d ${toVal || 'Sekarang'}` : "Semua Tanggal";
@@ -1295,51 +1153,28 @@
       $("modal-report").showModal();
     }
 
-    // EXPORT TO EXCEL
     function exportToExcel() {
       const { filteredLoans, filteredChecking, filteredServices, showLoan, showChecking, showService } = getFilteredData();
       const wb = XLSX.utils.book_new();
 
       if (showLoan) {
         const loanData = filteredLoans.map((x, i) => ({
-          "No": i + 1,
-          "Tanggal Pinjam": formatDate(x.start_date || x.created_at),
-          "Kode PC": x.unit_id,
-          "Tanggal Dari": x.start_date || "-",
-          "Tanggal Sampai": x.end_date || "-",
-          "Peminjam": x.borrower,
-          "Keperluan": x.purpose,
-          "Status": x.status
+          "No": i + 1, "Tanggal Pinjam": formatDate(x.start_date || x.created_at), "Kode PC": x.unit_id,
+          "Tanggal Dari": x.start_date || "-", "Tanggal Sampai": x.end_date || "-", "Peminjam": x.borrower, "Keperluan": x.purpose, "Status": x.status
         }));
-        const wsLoan = XLSX.utils.json_to_sheet(loanData);
-        XLSX.utils.book_append_sheet(wb, wsLoan, "Peminjaman");
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(loanData), "Peminjaman");
       }
-
       if (showChecking) {
         const checkingData = filteredChecking.map((x, i) => ({
-          "No": i + 1,
-          "Tanggal Pengecekan": formatDate(x.created_at),
-          "Kode PC": x.unit_id,
-          "Kondisi & Problem": x.problem,
-          "Catatan": x.notes || "-",
-          "Status": x.status
+          "No": i + 1, "Tanggal Pengecekan": formatDate(x.created_at), "Kode PC": x.unit_id, "Kondisi & Problem": x.problem, "Catatan": x.notes || "-", "Status": x.status
         }));
-        const wsChecking = XLSX.utils.json_to_sheet(checkingData);
-        XLSX.utils.book_append_sheet(wb, wsChecking, "Pengecekan");
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(checkingData), "Pengecekan");
       }
-
       if (showService) {
         const serviceData = filteredServices.map((x, i) => ({
-          "No": i + 1,
-          "Tanggal Servis": formatDate(x.created_at),
-          "Kode PC": x.unit_id,
-          "Kendala Servis": x.problem,
-          "Catatan": x.notes || "-",
-          "Teknisi": x.technician || "-",
-          "Status Tiket": x.status
+          "No": i + 1, "Tanggal Servis": formatDate(x.created_at), "Kode PC": x.unit_id, "Kendala Servis": x.problem, "Catatan": x.notes || "-", "Teknisi": x.technician || "-", "Status Tiket": x.status
         }));
-        const wsService = XLSX.utils.json_to_sheet(serviceData);
-        XLSX.utils.book_append_sheet(wb, wsService, "Servis");
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(serviceData), "Servis");
       }
 
       XLSX.writeFile(wb, `Laporan_Rekap_DCC_${new Date().toISOString().slice(0,10)}.xlsx`);
@@ -1356,7 +1191,6 @@
       summaryMsg += `------------------------------------\n`;
       summaryMsg += `📅 *Periode:* ${periodStr}\n`;
       summaryMsg += `------------------------------------\n\n`;
-
       summaryMsg += `*📊 RINGKASAN DATA:*\n`;
       if (showLoan) summaryMsg += `• 🤝 *Peminjaman:* ${filteredLoans.length} Record\n`;
       if (showChecking) summaryMsg += `• 🔍 *Pengecekan:* ${filteredChecking.length} Record\n`;
@@ -1364,7 +1198,6 @@
 
       summaryMsg += `\n------------------------------------\n`;
       summaryMsg += `_ℹ️ Unduh laporan lengkap format Excel (.xlsx) di Laman Rekap Statistik._`;
-      summaryMsg += `\n_ℹ️ Klik link berikut untuk masuk ke aplikasi: dcc-gontor.vercel.app_\n`;
 
       await sendChat(summaryMsg);
       $("modal-report").close();
@@ -1372,16 +1205,14 @@
       alert("Laporan singkat format WhatsApp berhasil dikirim ke DCC Chat Room.");
     }
 
-    // LOGIC MODE LOAN SELECT & BULK DELETE
+    // LOAN SELECT & BULK DELETE
     function toggleLoanSelectMode() {
       state.loanSelectMode = !state.loanSelectMode;
       state.selectedLoanIds.clear();
-
       $("lbl-loan-select").textContent = state.loanSelectMode ? "Batal Pilih" : "Mode Pilih";
       show($("btn-loan-select-all"), state.loanSelectMode);
       show($("btn-loan-delete-selected"), state.loanSelectMode);
       show($("th-loan-select"), state.loanSelectMode);
-
       updateLoanSelectedCount();
       renderLoansList();
     }
@@ -1397,11 +1228,8 @@
     }
 
     function handleLoanCheckChange(id, checked) {
-      if (checked) {
-        state.selectedLoanIds.add(String(id));
-      } else {
-        state.selectedLoanIds.delete(String(id));
-      }
+      if (checked) state.selectedLoanIds.add(String(id));
+      else state.selectedLoanIds.delete(String(id));
       updateLoanSelectedCount();
     }
 
@@ -1414,12 +1242,11 @@
 
     async function deleteSelectedLoans() {
       const idsToDelete = Array.from(state.selectedLoanIds);
-      if (idsToDelete.length === 0) return alert("Pilih minimal satu log peminjaman yang akan dihapus!");
-
+      if (idsToDelete.length === 0) return alert("Pilih minimal satu log peminjaman!");
       if (!confirm(`Konfirmasi Hapus:\nApakah Anda yakin ingin menghapus ${idsToDelete.length} data peminjaman terpilih?`)) return;
 
       const { error } = await sb.from("loans").delete().in("id", idsToDelete);
-      if (error) return alert("Gagal menghapus log peminjaman: " + error.message);
+      if (error) return alert("Gagal menghapus: " + error.message);
 
       state.selectedLoanIds.clear();
       state.loanSelectMode = false;
@@ -1427,7 +1254,6 @@
       show($("btn-loan-select-all"), false);
       show($("btn-loan-delete-selected"), false);
       show($("th-loan-select"), false);
-
       await refreshAll();
       alert("Berhasil menghapus log peminjaman terpilih.");
     }
@@ -1445,11 +1271,7 @@
         const isChecked = state.selectedLoanIds.has(String(x.id));
         return `
         <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition">
-          ${state.loanSelectMode ? `
-            <td class="p-4 text-center">
-              <input type="checkbox" ${isChecked ? "checked" : ""} onchange="handleLoanCheckChange('${x.id}', this.checked)" class="h-4 w-4 rounded app-input cursor-pointer accent-ios-blue" />
-            </td>
-          ` : ""}
+          ${state.loanSelectMode ? `<td class="p-4 text-center"><input type="checkbox" ${isChecked ? "checked" : ""} onchange="handleLoanCheckChange('${x.id}', this.checked)" class="h-4 w-4 rounded app-input cursor-pointer accent-ios-blue" /></td>` : ""}
           <td class="p-4 font-semibold custom-accent-text">${esc(x.unit_id)}</td>
           <td>${esc(x.borrower)}</td>
           <td>${esc(x.purpose)}</td>
@@ -1457,25 +1279,19 @@
           <td><span class="px-2.5 py-0.5 rounded-full text-xs font-semibold ${x.status === 'returned' ? 'bg-ios-green/20 text-ios-green' : 'bg-ios-orange/20 text-ios-orange'}">${esc(x.status)}</span></td>
           <td class="p-4 text-right flex items-center justify-end gap-2">
             ${x.status !== "returned" ? `<button class="text-xs px-3 py-1.5 rounded-xl custom-accent-bg text-white font-semibold transition shadow-md active:scale-95" onclick="openReturnModal('${x.id}','${esc(x.unit_id)}','${esc(x.borrower)}','${esc(x.purpose)}','${esc(x.start_date || '')} s/d ${esc(x.end_date || '')}')">Kembalikan</button>` : ""}
-            ${!state.loanSelectMode ? `
-              <button onclick="deleteSingleLoan('${x.id}')" class="p-1.5 opacity-60 hover:opacity-100 hover:text-ios-pink text-xs transition" title="Hapus Riwayat">
-                <i class="fa-solid fa-trash"></i>
-              </button>
-            ` : ""}
+            ${!state.loanSelectMode ? `<button onclick="deleteSingleLoan('${x.id}')" class="p-1.5 opacity-60 hover:opacity-100 hover:text-ios-pink text-xs transition" title="Hapus"><i class="fa-solid fa-trash"></i></button>` : ""}
           </td>
         </tr>`;
       }).join("") || `<tr><td class="p-6 text-center opacity-70" colspan="${state.loanSelectMode ? 7 : 6}">Belum ada peminjaman.</td></tr>`;
     }
 
-    // LOGIC MODE SERVIS SELECT & BULK DELETE
+    // SERVICE SELECT & BULK DELETE
     function toggleServiceSelectMode() {
       state.serviceSelectMode = !state.serviceSelectMode;
       state.selectedServiceIds.clear();
-
       $("lbl-svc-select").textContent = state.serviceSelectMode ? "Batal Pilih" : "Mode Pilih";
       show($("btn-svc-select-all"), state.serviceSelectMode);
       show($("btn-svc-delete-selected"), state.serviceSelectMode);
-      
       updateServiceSelectedCount();
       renderServicesList();
     }
@@ -1491,11 +1307,8 @@
     }
 
     function handleServiceCheckChange(id, checked) {
-      if (checked) {
-        state.selectedServiceIds.add(String(id));
-      } else {
-        state.selectedServiceIds.delete(String(id));
-      }
+      if (checked) state.selectedServiceIds.add(String(id));
+      else state.selectedServiceIds.delete(String(id));
       updateServiceSelectedCount();
     }
 
@@ -1508,19 +1321,17 @@
 
     async function deleteSelectedServices() {
       const idsToDelete = Array.from(state.selectedServiceIds);
-      if (idsToDelete.length === 0) return alert("Pilih minimal satu tiket servis yang akan dihapus!");
-
-      if (!confirm(`Konfirmasi Hapus:\nApakah Anda yakin ingin menghapus ${idsToDelete.length} log tiket servis terpilih?`)) return;
+      if (idsToDelete.length === 0) return alert("Pilih minimal satu tiket servis!");
+      if (!confirm(`Konfirmasi Hapus:\nApakah Anda yakin ingin menghapus ${idsToDelete.length} tiket servis terpilih?`)) return;
 
       const { error } = await sb.from("services").delete().in("id", idsToDelete);
-      if (error) return alert("Gagal menghapus log servis: " + error.message);
+      if (error) return alert("Gagal menghapus: " + error.message);
 
       state.selectedServiceIds.clear();
       state.serviceSelectMode = false;
       $("lbl-svc-select").textContent = "Mode Pilih";
       show($("btn-svc-select-all"), false);
       show($("btn-svc-delete-selected"), false);
-
       await refreshAll();
       alert("Berhasil menghapus tiket servis terpilih.");
     }
@@ -1531,9 +1342,7 @@
         return `
         <article class="glass-card glass-card-hover rounded-3xl p-5 shadow-lg flex items-center justify-between gap-3">
           <div class="flex items-center gap-3.5 flex-1 min-w-0">
-            ${state.serviceSelectMode ? `
-              <input type="checkbox" ${isChecked ? "checked" : ""} onchange="handleServiceCheckChange('${x.id}', this.checked)" class="h-5 w-5 rounded app-input shrink-0 cursor-pointer accent-ios-blue" />
-            ` : ""}
+            ${state.serviceSelectMode ? `<input type="checkbox" ${isChecked ? "checked" : ""} onchange="handleServiceCheckChange('${x.id}', this.checked)" class="h-5 w-5 rounded app-input shrink-0 cursor-pointer accent-ios-blue" />` : ""}
             <div class="truncate">
               <h5 class="font-bold text-sm truncate"><span class="custom-accent-text">${esc(x.unit_id || "Unit")}</span> · ${esc(x.problem)}</h5>
               <p class="text-xs opacity-75 mt-1 truncate">${esc(x.technician || "-")} · ${esc(x.notes || "")}</p>
@@ -1543,11 +1352,7 @@
             <select onchange="setServiceStatus('${x.id}', this.value)" class="app-input rounded-xl px-3 py-1.5 text-xs font-semibold focus:outline-none shadow-sm">
               ${["open","in_progress","done"].map((s) => `<option ${s===x.status?"selected":""}>${s}</option>`).join("")}
             </select>
-            ${!state.serviceSelectMode ? `
-              <button onclick="deleteSingleService('${x.id}')" class="p-2 opacity-60 hover:opacity-100 hover:text-ios-pink text-xs transition" title="Hapus Tiket">
-                <i class="fa-solid fa-trash"></i>
-              </button>
-            ` : ""}
+            ${!state.serviceSelectMode ? `<button onclick="deleteSingleService('${x.id}')" class="p-2 opacity-60 hover:opacity-100 hover:text-ios-pink text-xs transition" title="Hapus"><i class="fa-solid fa-trash"></i></button>` : ""}
           </div>
         </article>`;
       }).join("") || `<p class="opacity-70 text-sm p-4 text-center">Belum ada tiket servis.</p>`;
@@ -1560,7 +1365,7 @@
       await refreshAll();
     }
 
-    // LOGIC PENAMPILAN DATA RENDER ALL & BERANDA
+    // RENDER ALL
     function renderAll() {
       fillUnitSelects();
 
@@ -1568,19 +1373,17 @@
       const activeLoans = state.loans.filter(l => l.status !== "returned");
       const activeComponentServices = componentServices.filter(s => s.status !== "done");
 
-      // 1. RENDER KARTU RINGKASAN BERANDA DENGAN ANIMASI HOVER
       $("home-cards").innerHTML = [
         ["Total Unit", state.computers.length, "fa-computer", "text-ios-blue"],
         ["Tersedia", state.computers.filter((x) => x.status === "available").length, "fa-circle-check", "text-ios-green"],
         ["Pinjaman Aktif", activeLoans.length, "fa-handshake", "text-ios-orange"],
-        ["Servis Komputer", componentServices.length, "fa-screwdriver-wrench", "text-ios-pink"]
+        ["Tiket Servis Komponen", componentServices.length, "fa-screwdriver-wrench", "text-ios-pink"]
       ].map(([t, n, i, color]) => `
         <div class="glass-card glass-card-hover rounded-3xl p-5 shadow-lg">
           <p class="text-xs font-semibold opacity-75 mb-1.5 flex items-center gap-2"><i class="fa-solid ${i} ${color} text-sm"></i>${t}</p>
           <p class="text-3xl font-bold tracking-tight">${n}</p>
         </div>`).join("");
 
-      // 2. RENDER TABEL PEMINJAMAN SEDANG BERJALAN DI BERANDA
       $("tbl-home-active-loans").innerHTML = activeLoans.map((x) => `
         <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition">
           <td class="p-3.5 font-semibold custom-accent-text">${esc(x.unit_id)}</td>
@@ -1588,18 +1391,16 @@
           <td>${esc(x.purpose)}</td>
           <td><span class="text-xs font-medium opacity-90">${formatDate(x.start_date)} s/d ${formatDate(x.end_date)}</span></td>
           <td><span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-ios-orange/20 text-ios-orange">${esc(x.status)}</span></td>
-        </tr>`).join("") || `<tr><td class="p-5 text-center opacity-70" colspan="5">Tidak ada peminjaman yang sedang berjalan saat ini.</td></tr>`;
+        </tr>`).join("") || `<tr><td class="p-5 text-center opacity-70" colspan="5">Tidak ada peminjaman aktif.</td></tr>`;
 
-      // 3. RENDER TABEL SERVIS KOMPONEN SEDANG BERJALAN DI BERANDA
       $("tbl-home-active-services").innerHTML = activeComponentServices.map((x) => `
         <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition">
           <td class="p-3.5 font-semibold custom-accent-text">${esc(x.unit_id)}</td>
           <td>${esc(x.problem)} <span class="opacity-75">(${esc(x.notes || '-')})</span></td>
           <td>${esc(x.technician || '-')}</td>
           <td><span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-ios-pink/20 text-ios-pink">${esc(x.status)}</span></td>
-        </tr>`).join("") || `<tr><td class="p-5 text-center opacity-70" colspan="4">Tidak ada servis komponen yang sedang berjalan saat ini.</td></tr>`;
+        </tr>`).join("") || `<tr><td class="p-5 text-center opacity-70" colspan="4">Tidak ada servis komponen aktif.</td></tr>`;
 
-      // 4. RENDER TABEL LAMAN LAINNYA
       $("tbl-computers").innerHTML = state.computers.map((x) => `
         <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition">
           <td class="p-4 font-semibold custom-accent-text">${esc(x.id)}</td>
@@ -1624,13 +1425,30 @@
       return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[c]));
     }
 
+    // FORM TAMBAH KOMPUTER DENGAN SPESIFIKASI LENGKAP & FLEKSIBEL
     $("form-computer").onsubmit = async (e) => {
       e.preventDefault();
+      const unit_id = $("pc-id").value.trim();
+      
+      const specsObj = {
+        processor: $("spec-processor").value.trim(),
+        motherboard: $("spec-motherboard").value.trim(),
+        psu: $("spec-psu").value.trim(),
+        gpu: $("spec-gpu").value.trim(),
+        mouse: $("spec-mouse").value.trim(),
+        keyboard: $("spec-keyboard").value.trim(),
+        monitor: $("spec-monitor").value.trim(),
+        ram: { brand: $("spec-ram-brand").value.trim(), qty: $("spec-ram-qty").value, capacity: $("spec-ram-cap").value.trim() },
+        ssd: { brand: $("spec-ssd-brand").value.trim(), qty: $("spec-ssd-qty").value, capacity: $("spec-ssd-cap").value.trim() },
+        hdd: { brand: $("spec-hdd-brand").value.trim(), qty: $("spec-hdd-qty").value, capacity: $("spec-hdd-cap").value.trim() },
+        ups: { brand: $("spec-ups-brand").value.trim(), capacity: $("spec-ups-cap").value.trim() }
+      };
+
       const row = {
-        id: $("pc-id").value.trim(),
-        model: "-",
-        type: "-",
-        specs: "-",
+        id: unit_id,
+        model: specsObj.processor || "-",
+        type: specsObj.gpu || "Standard",
+        specs: JSON.stringify(specsObj),
         status: $("pc-status").value,
         condition: "Baik",
         komputer_st: $("pc-komputer-st").value,
@@ -1639,11 +1457,13 @@
         keyboard_st: $("pc-keyboard-st").value,
         ups_st: $("pc-ups-st").value
       };
+
       const { error } = await sb.from("computers").upsert(row);
       if (error) return alert(error.message);
       $("modal-computer").close();
       e.target.reset();
       await refreshAll();
+      alert("Unit komputer & spesifikasi detail berhasil disimpan!");
     };
 
     window.removeComputer = async (id) => {
@@ -1656,12 +1476,11 @@
     $("form-loan").onsubmit = async (e) => {
       e.preventDefault();
       const unit_id = $("loan-unit").value;
-
       const alreadyActive = state.loans.some(l => l.unit_id === unit_id && l.status === 'active');
       const targetComp = state.computers.find(c => c.id === unit_id);
 
       if (alreadyActive || (targetComp && targetComp.status === 'borrowed')) {
-        alert("Gagal: Unit komputer " + unit_id + " saat ini sedang dipinjam (active/borrowed)!");
+        alert("Gagal: Unit komputer " + unit_id + " sedang dipinjam!");
         return;
       }
 
@@ -1670,30 +1489,19 @@
       const start_date = $("loan-start").value;
       const end_date = $("loan-end").value;
 
-      const kChecked = $("loan-komputer").checked;
-      const mChecked = $("loan-monitor").checked;
-      const moChecked = $("loan-mouse").checked;
-      const kbChecked = $("loan-keyboard").checked;
-      const upsChecked = $("loan-ups").checked;
-
       const row = {
-        unit_id,
-        borrower,
-        purpose,
-        start_date,
-        end_date,
-        status: "active"
+        unit_id, borrower, purpose, start_date, end_date, status: "active"
       };
       const { error } = await sb.from("loans").insert(row);
       if (error) return alert(error.message);
 
       await sb.from("computers").update({ 
         status: "borrowed",
-        komputer_st: kChecked ? 'missing' : 'ok',
-        monitor_st: mChecked ? 'missing' : 'ok',
-        mouse_st: moChecked ? 'missing' : 'ok',
-        keyboard_st: kbChecked ? 'missing' : 'ok',
-        ups_st: upsChecked ? 'missing' : 'ok'
+        komputer_st: $("loan-komputer").checked ? 'missing' : 'ok',
+        monitor_st: $("loan-monitor").checked ? 'missing' : 'ok',
+        mouse_st: $("loan-mouse").checked ? 'missing' : 'ok',
+        keyboard_st: $("loan-keyboard").checked ? 'missing' : 'ok',
+        ups_st: $("loan-ups").checked ? 'missing' : 'ok'
       }).eq("id", unit_id);
 
       $("modal-loan").close();
@@ -1717,22 +1525,16 @@
       const id = $("ret-loan-id").value;
       const unit = $("ret-unit-id").value;
 
-      const kOk = $("ret-komputer").checked;
-      const mOk = $("ret-monitor").checked;
-      const moOk = $("ret-mouse").checked;
-      const kbOk = $("ret-keyboard").checked;
-      const upsOk = $("ret-ups").checked;
-
       const { error } = await sb.from("loans").update({ status: "returned" }).eq("id", id);
       if (error) return alert(error.message);
 
       await sb.from("computers").update({ 
         status: "available",
-        komputer_st: kOk ? 'ok' : 'missing',
-        monitor_st: mOk ? 'ok' : 'missing',
-        mouse_st: moOk ? 'ok' : 'missing',
-        keyboard_st: kbOk ? 'ok' : 'missing',
-        ups_st: upsOk ? 'ok' : 'missing'
+        komputer_st: $("ret-komputer").checked ? 'ok' : 'missing',
+        monitor_st: $("ret-monitor").checked ? 'ok' : 'missing',
+        mouse_st: $("ret-mouse").checked ? 'ok' : 'missing',
+        keyboard_st: $("ret-keyboard").checked ? 'ok' : 'missing',
+        ups_st: $("ret-ups").checked ? 'ok' : 'missing'
       }).eq("id", unit);
 
       $("modal-return").close();
@@ -1746,20 +1548,13 @@
       const status = $("chk-status").value;
       const notes = $("chk-notes").value.trim();
 
-      const kOk = $("chk-komputer").checked;
-      const mOk = $("chk-monitor").checked;
-      const moOk = $("chk-mouse").checked;
-      const kbOk = $("chk-keyboard").checked;
-      const upsOk = $("chk-ups").checked;
-
       const { error: uErr } = await sb.from("computers").update({ 
-        condition, 
-        status,
-        komputer_st: kOk ? 'ok' : 'missing',
-        monitor_st: mOk ? 'ok' : 'missing',
-        mouse_st: moOk ? 'ok' : 'missing',
-        keyboard_st: kbOk ? 'ok' : 'missing',
-        ups_st: upsOk ? 'ok' : 'missing'
+        condition, status,
+        komputer_st: $("chk-komputer").checked ? 'ok' : 'missing',
+        monitor_st: $("chk-monitor").checked ? 'ok' : 'missing',
+        mouse_st: $("chk-mouse").checked ? 'ok' : 'missing',
+        keyboard_st: $("chk-keyboard").checked ? 'ok' : 'missing',
+        ups_st: $("chk-ups").checked ? 'ok' : 'missing'
       }).eq("id", unit_id);
 
       if (uErr) return alert(uErr.message);
@@ -1782,7 +1577,7 @@
       if (!unit_id) return alert("Pilih unit komputer terlebih dahulu!");
 
       const svcNotes = $("svc-chk-notes").value.trim();
-      if (!svcNotes) return alert("Masukkan catatan kendala kerusakan komponen yang akan diservis!");
+      if (!svcNotes) return alert("Masukkan catatan kendala kerusakan komponen!");
 
       const serviceComps = [];
       const updateServiceIndicators = {};
@@ -1793,10 +1588,9 @@
       if ($("svc-chk-keyboard").checked) { serviceComps.push("Keyboard"); updateServiceIndicators.keyboard_st = "service"; }
       if ($("svc-chk-ups").checked) { serviceComps.push("UPS"); updateServiceIndicators.ups_st = "service"; }
 
-      if (serviceComps.length === 0) return alert("Pilih minimal satu komponen yang akan diservis pada bagian 'Pengajuan Servis Komponen'!");
+      if (serviceComps.length === 0) return alert("Pilih minimal satu komponen yang akan diservis!");
 
-      const confirmText = `[VERIFIKASI PENGAJUAN SERVIS]\n\nKode Unit PC: ${unit_id}\nKomponen Diservis: ${serviceComps.join(", ")}\nCatatan Kendala: ${svcNotes}\n\nKonfirmasi untuk mengirim data ini ke Laman Servis dan mengubah indikator stok menjadi Kuning?`;
-      if (!confirm(confirmText)) return;
+      if (!confirm(`[VERIFIKASI SERVIS]\nUnit: ${unit_id}\nKomponen: ${serviceComps.join(", ")}\nKendala: ${svcNotes}`)) return;
 
       const { error: sErr } = await sb.from("services").insert({
         unit_id,
@@ -1805,17 +1599,16 @@
         notes: svcNotes,
         status: "open"
       });
-      if (sErr) return alert("Gagal menambah servis: " + sErr.message);
+      if (sErr) return alert(sErr.message);
 
       updateServiceIndicators.status = "maintenance";
-      const { error: cErr } = await sb.from("computers").update(updateServiceIndicators).eq("id", unit_id);
-      if (cErr) return alert("Gagal memperbarui stok komputer: " + cErr.message);
+      await sb.from("computers").update(updateServiceIndicators).eq("id", unit_id);
 
       $("svc-chk-notes").value = "";
       ["svc-chk-komputer", "svc-chk-monitor", "svc-chk-mouse", "svc-chk-keyboard", "svc-chk-ups"].forEach(id => $(id).checked = false);
 
       await refreshAll();
-      alert("Berhasil! Komponen " + serviceComps.join(", ") + " pada unit " + unit_id + " telah didaftarkan ke Laman Servis & Indikator Stok berubah menjadi Kuning.");
+      alert("Tiket servis komponen berhasil dikirim & indikator stok berubah menjadi Kuning.");
     };
 
     $("form-service").onsubmit = async (e) => {
@@ -1853,9 +1646,8 @@
     };
 
     window.insertEmoji = (em) => {
-      const input = $("chat-text");
-      input.value += em;
-      input.focus();
+      $("chat-text").value += em;
+      $("chat-text").focus();
     };
 
     document.addEventListener("click", () => $("emoji-picker").classList.add("hide"));
@@ -1875,11 +1667,7 @@
 
     window.copyMessageText = (text) => {
       if (!text) return;
-      navigator.clipboard.writeText(text).then(() => {
-        alert("Pesan berhasil disalin ke clipboard!");
-      }).catch(err => {
-        alert("Gagal menyalin pesan: " + err);
-      });
+      navigator.clipboard.writeText(text).then(() => alert("Pesan disalin!"));
     };
 
     $("btn-attach").onclick = () => $("chat-file").click();
@@ -1915,14 +1703,12 @@
     window.editMessage = async (id, currentText) => {
       const newText = prompt("Edit pesan:", currentText);
       if (newText === null || newText.trim() === "" || newText === currentText) return;
-      const { error } = await sb.from("chat_messages").update({ text: newText.trim(), is_edited: true }).eq("id", id);
-      if (error) alert(error.message);
+      await sb.from("chat_messages").update({ text: newText.trim(), is_edited: true }).eq("id", id);
     };
 
     window.deleteMessage = async (id) => {
       if (!confirm("Hapus pesan ini?")) return;
-      const { error } = await sb.from("chat_messages").delete().eq("id", id);
-      if (error) alert(error.message);
+      await sb.from("chat_messages").delete().eq("id", id);
     };
 
     function renderChat() {
@@ -1942,28 +1728,17 @@
         const senderMember = state.members.find(mem => mem.full_name === m.sender);
         const avatarUrl = senderMember?.avatar_url || `https://ui-avatars.com/api/?background=007AFF&color=fff&name=` + encodeURIComponent(m.sender || "DCC");
 
-        let replyHtml = "";
-        if (m.reply_to) {
-          replyHtml = `<div class="bg-black/5 dark:bg-black/40 border-l-2 custom-accent-bg p-1.5 mb-1 rounded-lg text-xs">
-            <span class="font-semibold custom-accent-text">${esc(m.reply_to.sender)}</span>
-            <p class="truncate opacity-80">${esc(m.reply_to.text)}</p>
-          </div>`;
-        }
-
+        let replyHtml = m.reply_to ? `<div class="bg-black/5 dark:bg-black/40 border-l-2 custom-accent-bg p-1.5 mb-1 rounded-lg text-xs"><span class="font-semibold custom-accent-text">${esc(m.reply_to.sender)}</span><p class="truncate opacity-80">${esc(m.reply_to.text)}</p></div>` : "";
         let attachHtml = "";
         if (m.attachment_url) {
           if (m.attachment_type === "image") {
             attachHtml = `<div class="mb-2"><img src="${m.attachment_url}" class="rounded-2xl max-h-48 w-full object-cover cursor-pointer" onclick="window.open('${m.attachment_url}')" alt="photo" /></div>`;
           } else {
-            attachHtml = `<div class="mb-2 bg-black/5 dark:bg-black/40 p-2.5 rounded-xl flex items-center gap-2 text-xs">
-              <i class="fa-solid fa-file-arrow-down custom-accent-text text-base"></i>
-              <a href="${m.attachment_url}" download="${esc(m.attachment_name)}" class="underline truncate font-medium">${esc(m.attachment_name)}</a>
-            </div>`;
+            attachHtml = `<div class="mb-2 bg-black/5 dark:bg-black/40 p-2.5 rounded-xl flex items-center gap-2 text-xs"><i class="fa-solid fa-file-arrow-down custom-accent-text text-base"></i><a href="${m.attachment_url}" download="${esc(m.attachment_name)}" class="underline truncate font-medium">${esc(m.attachment_name)}</a></div>`;
           }
         }
 
         const safeTextEscaped = esc(m.text).replace(/'/g, "\\'").replace(/\n/g, "\\n");
-
         const actionsHtml = `<div class="opacity-0 group-hover:opacity-100 transition flex items-center gap-2.5 mt-1.5 text-[10px] opacity-80 justify-end pt-1 border-t border-black/10 dark:border-white/10 font-semibold">
           <button type="button" onclick="copyMessageText('${safeTextEscaped}')" class="hover:underline flex items-center gap-1"><i class="fa-solid fa-copy"></i> Salin</button>
           <button type="button" onclick="setReply('${m.id}','${esc(m.sender)}','${safeTextEscaped}')" class="hover:underline flex items-center gap-1"><i class="fa-solid fa-reply"></i> Balas</button>
@@ -1974,24 +1749,10 @@
         const avatarImg = !mine ? `<img src="${avatarUrl}" class="h-7 w-7 rounded-full object-cover mr-2 mb-1 shrink-0 shadow-sm" alt="avatar" />` : "";
 
         if (isPing(m.text)) {
-          return `<div class="flex ${mine?"justify-end":"justify-start"} group items-end">
-            ${avatarImg}
-            <div class="bg-gradient-to-r from-ios-orange to-ios-pink text-white rounded-3xl px-5 py-3 max-w-[85%] text-center font-bold tracking-widest relative shadow-lg">
-              ${replyHtml}${attachHtml}
-              PING!
-              <div class="text-[9px] tracking-normal mt-1 opacity-90">${esc(m.sender)} ${m.is_edited?'(edited)':''}</div>
-              ${actionsHtml}
-            </div></div>`;
+          return `<div class="flex ${mine?"justify-end":"justify-start"} group items-end">${avatarImg}<div class="bg-gradient-to-r from-ios-orange to-ios-pink text-white rounded-3xl px-5 py-3 max-w-[85%] text-center font-bold tracking-widest relative shadow-lg">${replyHtml}${attachHtml}PING!<div class="text-[9px] tracking-normal mt-1 opacity-90">${esc(m.sender)}</div>${actionsHtml}</div></div>`;
         }
 
-        return `<div class="flex ${mine?"justify-end":"justify-start"} group items-end">
-          ${avatarImg}
-          <div class="${mine?"custom-accent-bg text-white":"bg-black/5 dark:bg-white/10"} rounded-3xl px-4 py-2.5 max-w-[85%] shadow-sm relative">
-            ${replyHtml}${attachHtml}
-            <p class="text-[10px] font-bold ${mine?'text-white/95':'custom-accent-text'} mb-0.5">${esc(m.sender)} · ${esc(m.role || "staff")}</p>
-            <p class="text-sm break-words whitespace-pre-wrap">${esc(m.text)} ${m.is_edited?'<span class="text-[9px] opacity-75 italic">(edited)</span>':''}</p>
-            ${actionsHtml}
-          </div></div>`;
+        return `<div class="flex ${mine?"justify-end":"justify-start"} group items-end">${avatarImg}<div class="${mine?"custom-accent-bg text-white":"bg-black/5 dark:bg-white/10"} rounded-3xl px-4 py-2.5 max-w-[85%] shadow-sm relative">${replyHtml}${attachHtml}<p class="text-[10px] font-bold ${mine?'text-white/95':'custom-accent-text'} mb-0.5">${esc(m.sender)}</p><p class="text-sm break-words whitespace-pre-wrap">${esc(m.text)}</p>${actionsHtml}</div></div>`;
       }).join("");
       scrollChat();
     }
@@ -2013,9 +1774,7 @@
         attachment_type: state.attachmentData?.type || null,
         is_edited: false
       };
-      const { error } = await sb.from("chat_messages").insert(payload);
-      if (error) alert(error.message);
-      
+      await sb.from("chat_messages").insert(payload);
       state.replyingTo = null;
       state.attachmentData = null;
       $("reply-preview").classList.add("hide");
@@ -2031,22 +1790,13 @@
       await sendChat(text);
     };
 
-    $("btn-menu").onclick = (e) => {
-      e.stopPropagation();
-      $("chat-menu").classList.toggle("hide");
-    };
+    $("btn-menu").onclick = (e) => { e.stopPropagation(); $("chat-menu").classList.toggle("hide"); };
     document.body.addEventListener("click", () => $("chat-menu").classList.add("hide"));
 
-    $("menu-ping").onclick = async () => {
-      $("chat-menu").classList.add("hide");
-      await sendChat("PING!");
-    };
+    $("menu-ping").onclick = async () => { $("chat-menu").classList.add("hide"); await sendChat("PING!"); };
     $("menu-select").onclick = () => {
       $("chat-menu").classList.add("hide");
-      $("select-list").innerHTML = state.members.map((m) => `
-        <button class="w-full text-left px-3.5 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-xs font-semibold" onclick="pickChat('${esc(m.full_name)}')">
-          ${esc(m.full_name)} <span class="text-[10px] opacity-70 font-normal">${esc(m.email)}</span>
-        </button>`).join("");
+      $("select-list").innerHTML = state.members.map((m) => `<button class="w-full text-left px-3.5 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-xs font-semibold" onclick="pickChat('${esc(m.full_name)}')">${esc(m.full_name)}</button>`).join("");
       $("modal-select").showModal();
     };
     $("select-room").onclick = () => { state.filterSender = null; $("modal-select").close(); renderChat(); };
@@ -2071,10 +1821,8 @@
         const url = URL.createObjectURL(file);
         img.onload = () => {
           const c = document.createElement("canvas");
-          const size = 160;
-          c.width = size; c.height = size;
-          const ctx = c.getContext("2d");
-          ctx.drawImage(img, 0, 0, size, size);
+          c.width = 160; c.height = 160;
+          c.getContext("2d").drawImage(img, 0, 0, 160, 160);
           resolve(c.toDataURL("image/jpeg", 0.7));
           URL.revokeObjectURL(url);
         };
@@ -2087,8 +1835,7 @@
       if (!state.member) return;
       const full_name = $("prof-name").value.trim();
       const avatar_url = $("prof-preview").src;
-      const { error } = await sb.from("members").update({ full_name, avatar_url }).eq("id", state.member.id);
-      if (error) return alert(error.message);
+      await sb.from("members").update({ full_name, avatar_url }).eq("id", state.member.id);
       state.member.full_name = full_name;
       state.member.avatar_url = avatar_url;
       $("whoami").textContent = full_name + " · " + (state.member.role || "member");
@@ -2100,10 +1847,7 @@
       sb.channel("dcc-chat")
         .on("postgres_changes", { event: "*", schema: "public", table: "chat_messages" }, async () => {
           const { data } = await sb.from("chat_messages").select("*").order("created_at", { ascending: true }).limit(200);
-          if (data) {
-            state.messages = data;
-            renderChat();
-          }
+          if (data) { state.messages = data; renderChat(); }
         })
         .subscribe();
     }
@@ -2116,21 +1860,11 @@
         typeCount[c.type || 'Standard'] = (typeCount[c.type || 'Standard'] || 0) + 1;
       });
       const palette = ["#007AFF", "#34C759", "#FF9500", "#FF2D55", "#5856D6"];
-      draw("chart-status", "doughnut", {
-        labels: Object.keys(statusCount),
-        datasets: [{ data: Object.values(statusCount), backgroundColor: palette }]
-      });
-      draw("chart-type", "pie", {
-        labels: Object.keys(typeCount),
-        datasets: [{ data: Object.values(typeCount), backgroundColor: palette }]
-      });
+      draw("chart-status", "doughnut", { labels: Object.keys(statusCount), datasets: [{ data: Object.values(statusCount), backgroundColor: palette }] });
+      draw("chart-type", "pie", { labels: Object.keys(typeCount), datasets: [{ data: Object.values(typeCount), backgroundColor: palette }] });
       draw("chart-ops", "bar", {
         labels: ["Komputer", "Pinjaman", "Servis", "Member"],
-        datasets: [{
-          label: "Rekap DCC",
-          data: [state.computers.length, state.loans.length, state.services.length, state.members.length],
-          backgroundColor: ["#007AFF", "#34C759", "#FF2D55", "#5856D6"]
-        }]
+        datasets: [{ label: "Rekap DCC", data: [state.computers.length, state.loans.length, state.services.length, state.members.length], backgroundColor: ["#007AFF", "#34C759", "#FF2D55", "#5856D6"] }]
       });
     }
 
@@ -2138,11 +1872,7 @@
       const canvas = $(id);
       if (!canvas) return;
       if (state.charts[id]) state.charts[id].destroy();
-      state.charts[id] = new Chart(canvas, {
-        type,
-        data,
-        options: { responsive: true, plugins: { legend: { labels: { color: "#8E8E93" } } } }
-      });
+      state.charts[id] = new Chart(canvas, { type, data, options: { responsive: true, plugins: { legend: { labels: { color: "#8E8E93" } } } } });
     }
 
     boot();
