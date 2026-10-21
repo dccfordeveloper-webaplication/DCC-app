@@ -351,12 +351,12 @@
               <select id="chk-unit" onchange="onCheckingUnitChange()" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none"></select>
             </div>
 
-            <!-- PANEL SPESIFIKASI UNIT TERPILIH UNTUK CEKLIST KECOCOKAN -->
-            <div class="sm:col-span-2 bg-black/5 dark:bg-white/5 p-4 rounded-2xl space-y-2 border border-black/10 dark:border-white/10">
+            <!-- PANEL SPESIFIKASI & PENYIMPANAN UNIT TERPILIH UNTUK ACUAN -->
+            <div class="sm:col-span-2 bg-black/5 dark:bg-white/5 p-4 rounded-2xl space-y-3 border border-black/10 dark:border-white/10">
               <span class="block font-bold text-xs uppercase tracking-wider custom-accent-text flex items-center gap-1.5">
-                <i class="fa-solid fa-circle-info"></i> Data Spesifikasi Unit Terpilih (Acuan Pengecekan)
+                <i class="fa-solid fa-circle-info"></i> Data Spesifikasi & Penyimpanan Unit Terpilih (Acuan Pengecekan)
               </span>
-              <div id="chk-spec-summary" class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs opacity-90 pt-1">
+              <div id="chk-spec-summary" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs opacity-90 pt-1">
                 <!-- Diisi secara dinamis via JS -->
               </div>
             </div>
@@ -843,8 +843,8 @@
     </form>
   </dialog>
 
-  <!-- MODAL RETURN (DENGAN PENAMBAHAN INFO & CEKLIST SPESIFIKASI UNIT) -->
-  <dialog id="modal-return" class="glass-card rounded-3xl p-6 w-[min(92vw,520px)] shadow-2xl m-auto max-h-[90vh] overflow-y-auto">
+  <!-- MODAL RETURN (DENGAN PENAMBAHAN INFO & CEKLIST SPESIFIKASI DAN PENYIMPANAN UNIT) -->
+  <dialog id="modal-return" class="glass-card rounded-3xl p-6 w-[min(92vw,540px)] shadow-2xl m-auto max-h-[90vh] overflow-y-auto">
     <form id="form-return" class="space-y-4">
       <h4 class="text-lg font-bold">Cek & Pengembalian Unit Komputer</h4>
       <input type="hidden" id="ret-loan-id" /><input type="hidden" id="ret-unit-id" />
@@ -857,12 +857,12 @@
         <p class="opacity-80">Periode: <span id="ret-period-label" class="font-bold"></span></p>
       </div>
 
-      <!-- KOTAK INFO SPESIFIKASI UNIT UNTUK KECOCOKAN SAAT KEMBALI -->
-      <div class="bg-black/5 dark:bg-white/5 p-3.5 rounded-2xl space-y-2 border border-black/10 dark:border-white/10 text-xs">
+      <!-- KOTAK INFO SPESIFIKASI & PENYIMPANAN LENGKAP UNTUK KECOCOKAN SAAT KEMBALI -->
+      <div class="bg-black/5 dark:bg-white/5 p-4 rounded-2xl space-y-3 border border-black/10 dark:border-white/10 text-xs">
         <span class="block font-bold uppercase tracking-wider custom-accent-text flex items-center gap-1.5">
-          <i class="fa-solid fa-list-check"></i> Rincian Spesifikasi Asli (Acuan Pengembalian)
+          <i class="fa-solid fa-list-check"></i> Rincian Spesifikasi & Penyimpanan Asli (Acuan Pengembalian)
         </span>
-        <div id="ret-spec-summary" class="grid grid-cols-2 gap-2 opacity-90 pt-1">
+        <div id="ret-spec-summary" class="grid grid-cols-1 sm:grid-cols-2 gap-2 opacity-90 pt-1">
           <!-- Diisi via JS -->
         </div>
       </div>
@@ -1162,7 +1162,7 @@
       onCheckingUnitChange();
     }
 
-    // FUNGSI RENDER ACUAN SPESIFIKASI DI LAMAN PENGECEKAN
+    // FUNGSI RENDER ACUAN SPESIFIKASI & PENYIMPANAN DI LAMAN PENGECEKAN
     window.onCheckingUnitChange = () => {
       const unitId = $("chk-unit").value;
       const pc = state.computers.find(x => x.id === unitId);
@@ -1180,10 +1180,12 @@
       container.innerHTML = `
         <div><span class="opacity-70 block">Prosesor:</span><span class="font-bold">${esc(specs.processor || pc.model || '-')}</span></div>
         <div><span class="opacity-70 block">Motherboard:</span><span class="font-bold">${esc(specs.motherboard || '-')}</span></div>
-        <div><span class="opacity-70 block">RAM:</span><span class="font-bold">${esc(ram.brand || '')} ${esc(ram.capacity || '')} (${ram.qty || 1} unit)</span></div>
-        <div><span class="opacity-70 block">SSD/HDD:</span><span class="font-bold">${esc(ssd.capacity || '-')} / ${esc(hdd.capacity || '0GB')}</span></div>
-        <div><span class="opacity-70 block">GPU (VGA):</span><span class="font-bold">${esc(specs.gpu || pc.type || '-')}</span></div>
+        <div><span class="opacity-70 block">RAM:</span><span class="font-bold">${esc(ram.brand || '-')} ${esc(ram.capacity || '')} (${ram.qty || 1} unit)</span></div>
+        <div><span class="opacity-70 block">SSD:</span><span class="font-bold">${esc(ssd.brand || '-')} ${esc(ssd.capacity || '')} (${ssd.qty || 1} unit)</span></div>
+        <div><span class="opacity-70 block">HDD:</span><span class="font-bold">${esc(hdd.brand || '-')} ${esc(hdd.capacity || '0GB')} (${hdd.qty || 0} unit)</span></div>
         <div><span class="opacity-70 block">UPS:</span><span class="font-bold">${esc(ups.brand || '-')} ${esc(ups.capacity || '')}</span></div>
+        <div><span class="opacity-70 block">GPU (VGA):</span><span class="font-bold">${esc(specs.gpu || pc.type || '-')}</span></div>
+        <div><span class="opacity-70 block">Monitor / Periferal:</span><span class="font-bold">${esc(specs.monitor || '-')}</span></div>
       `;
     };
 
@@ -1728,7 +1730,7 @@
       await refreshAll();
     };
 
-    // MODAL RETURN DENGAN PENGISIAN RINGKASAN SPESIFIKASI ACUAN KECOCOKAN
+    // MODAL RETURN DENGAN PENGISIAN RINGKASAN SPESIFIKASI & PENYIMPANAN LENGKAP
     window.openReturnModal = (id, unit, borrower, purpose, office, period) => {
       $("ret-loan-id").value = id;
       $("ret-unit-id").value = unit;
@@ -1751,10 +1753,12 @@
         specContainer.innerHTML = `
           <div><span class="opacity-70">Prosesor:</span> <span class="font-bold">${esc(specs.processor || comp.model || '-')}</span></div>
           <div><span class="opacity-70">Motherboard:</span> <span class="font-bold">${esc(specs.motherboard || '-')}</span></div>
-          <div><span class="opacity-70">RAM:</span> <span class="font-bold">${esc(ram.brand || '')} ${esc(ram.capacity || '')} (${ram.qty || 1} unit)</span></div>
-          <div><span class="opacity-70">Storage:</span> <span class="font-bold">${esc(ssd.capacity || '-')} / ${esc(hdd.capacity || '0GB')}</span></div>
-          <div><span class="opacity-70">GPU:</span> <span class="font-bold">${esc(specs.gpu || comp.type || '-')}</span></div>
+          <div><span class="opacity-70">RAM:</span> <span class="font-bold">${esc(ram.brand || '-')} ${esc(ram.capacity || '')} (${ram.qty || 1} unit)</span></div>
+          <div><span class="opacity-70">SSD:</span> <span class="font-bold">${esc(ssd.brand || '-')} ${esc(ssd.capacity || '')} (${ssd.qty || 1} unit)</span></div>
+          <div><span class="opacity-70">HDD:</span> <span class="font-bold">${esc(hdd.brand || '-')} ${esc(hdd.capacity || '0GB')} (${hdd.qty || 0} unit)</span></div>
           <div><span class="opacity-70">UPS:</span> <span class="font-bold">${esc(ups.brand || '-')} ${esc(ups.capacity || '')}</span></div>
+          <div><span class="opacity-70">GPU:</span> <span class="font-bold">${esc(specs.gpu || comp.type || '-')}</span></div>
+          <div><span class="opacity-70">Monitor:</span> <span class="font-bold">${esc(specs.monitor || '-')}</span></div>
         `;
       }
 
