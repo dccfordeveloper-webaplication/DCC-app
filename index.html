@@ -576,6 +576,81 @@
     </nav>
   </section>
 
+  <!-- MODAL VIEW SPESIFIKASI DETAIL KOMPUTER -->
+  <dialog id="modal-view-spec" class="glass-card rounded-3xl p-6 w-[min(92vw,520px)] shadow-2xl m-auto">
+    <div class="space-y-4">
+      <div class="flex items-center justify-between border-b border-black/10 dark:border-white/10 pb-3">
+        <h4 class="text-lg font-bold flex items-center gap-2 custom-accent-text">
+          <i class="fa-solid fa-desktop"></i> Spesifikasi Unit <span id="vspec-unit-id" class="underline"></span>
+        </h4>
+        <button onclick="$('modal-view-spec').close()" class="opacity-70 hover:opacity-100"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <div class="space-y-3 text-xs max-h-[60vh] overflow-y-auto pr-1">
+        <!-- KOMPONEN UTAMA -->
+        <div class="bg-black/5 dark:bg-white/5 p-3.5 rounded-2xl space-y-2">
+          <span class="block font-bold text-xs uppercase tracking-wider custom-accent-text">Komponen Utama</span>
+          <div class="grid grid-cols-2 gap-2">
+            <div><span class="opacity-70 block">Prosesor:</span><span id="vspec-proc" class="font-semibold"></span></div>
+            <div><span class="opacity-70 block">Motherboard:</span><span id="vspec-mobo" class="font-semibold"></span></div>
+            <div><span class="opacity-70 block">PSU:</span><span id="vspec-psu" class="font-semibold"></span></div>
+            <div><span class="opacity-70 block">GPU / VGA:</span><span id="vspec-gpu" class="font-semibold"></span></div>
+            <div><span class="opacity-70 block">Mouse:</span><span id="vspec-mouse" class="font-semibold"></span></div>
+            <div><span class="opacity-70 block">Keyboard:</span><span id="vspec-kb" class="font-semibold"></span></div>
+            <div class="col-span-2"><span class="opacity-70 block">Monitor:</span><span id="vspec-mon" class="font-semibold"></span></div>
+          </div>
+        </div>
+
+        <!-- KOMPONEN FLEKSIBEL -->
+        <div class="bg-black/5 dark:bg-white/5 p-3.5 rounded-2xl space-y-2">
+          <span class="block font-bold text-xs uppercase tracking-wider text-ios-orange">Komponen Memori & Penyimpanan</span>
+          <div class="space-y-1.5">
+            <div class="flex justify-between border-b border-black/5 dark:border-white/5 pb-1">
+              <span class="opacity-70">RAM:</span>
+              <span id="vspec-ram" class="font-semibold text-right"></span>
+            </div>
+            <div class="flex justify-between border-b border-black/5 dark:border-white/5 pb-1">
+              <span class="opacity-70">SSD:</span>
+              <span id="vspec-ssd" class="font-semibold text-right"></span>
+            </div>
+            <div class="flex justify-between border-b border-black/5 dark:border-white/5 pb-1">
+              <span class="opacity-70">HDD:</span>
+              <span id="vspec-hdd" class="font-semibold text-right"></span>
+            </div>
+            <div class="flex justify-between">
+              <span class="opacity-70">UPS:</span>
+              <span id="vspec-ups" class="font-semibold text-right"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-2 border-t border-black/10 dark:border-white/10">
+        <button onclick="$('modal-view-spec').close()" class="px-5 py-2.5 custom-accent-bg text-white text-xs rounded-xl font-semibold shadow-md">Tutup</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- MODAL VIEW DETAIL PEMINJAM KOMPUTER -->
+  <dialog id="modal-view-borrower" class="glass-card rounded-3xl p-6 w-[min(92vw,480px)] shadow-2xl m-auto">
+    <div class="space-y-4">
+      <div class="flex items-center justify-between border-b border-black/10 dark:border-white/10 pb-3">
+        <h4 class="text-lg font-bold flex items-center gap-2 text-ios-orange">
+          <i class="fa-solid fa-id-card"></i> Detail Peminjam <span id="vbor-unit-id" class="underline"></span>
+        </h4>
+        <button onclick="$('modal-view-borrower').close()" class="opacity-70 hover:opacity-100"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <div id="vbor-content" class="space-y-3 text-xs">
+        <!-- DIISI DINAMIS VIA JS -->
+      </div>
+
+      <div class="flex justify-end pt-2 border-t border-black/10 dark:border-white/10">
+        <button onclick="$('modal-view-borrower').close()" class="px-5 py-2.5 custom-accent-bg text-white text-xs rounded-xl font-semibold shadow-md">Tutup</button>
+      </div>
+    </div>
+  </dialog>
+
   <!-- MODAL LAPORKAN -->
   <dialog id="modal-report" class="glass-card rounded-3xl p-6 w-[min(92vw,480px)] shadow-2xl m-auto space-y-4">
     <div class="flex items-center justify-between border-b border-black/10 dark:border-white/10 pb-3">
@@ -615,7 +690,7 @@
     </div>
   </dialog>
 
-  <!-- MODAL COMPUTER (DENGAN SPESIFIKASI LENGKAP & FLEKSIBEL) -->
+  <!-- MODAL COMPUTER -->
   <dialog id="modal-computer" class="glass-card rounded-3xl p-6 w-[min(92vw,600px)] shadow-2xl m-auto max-h-[90vh] overflow-y-auto">
     <form id="form-computer" class="space-y-4">
       <div class="flex items-center justify-between border-b border-black/10 dark:border-white/10 pb-3">
@@ -638,7 +713,7 @@
         </div>
       </div>
 
-      <!-- SPESIFIKASI MANUAL KOMPONEN UTAMA (1 per Komputer) -->
+      <!-- SPESIFIKASI MANUAL KOMPONEN UTAMA -->
       <div class="pt-2 border-t border-black/10 dark:border-white/10 space-y-3">
         <label class="block text-xs font-bold uppercase tracking-wider custom-accent-text">Spesifikasi Komponen Utama (Jumlah Pasti)</label>
         
@@ -674,7 +749,7 @@
         </div>
       </div>
 
-      <!-- SPESIFIKASI KOMPONEN FLEKSIBEL (RAM, SSD, HDD, UPS) -->
+      <!-- SPESIFIKASI KOMPONEN FLEKSIBEL -->
       <div class="pt-2 border-t border-black/10 dark:border-white/10 space-y-3">
         <label class="block text-xs font-bold uppercase tracking-wider text-ios-orange">Komponen Fleksibel (Merk, Jumlah, & Kapasitas)</label>
         
@@ -842,7 +917,7 @@
   <!-- SUPABASE & APP LOGIC -->
   <script>
     const SUPABASE_URL = "https://rdwgtohoizmgzcmarybj.supabase.co";
-    const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkd2d0b2hvaXptZ3pjbWFyeWJqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIzMzYzNTYsImV4cCI6MjEwNzkxMjM1Nn0._uxw-rNIysobQATHIOTha5Zhfk0HtYNwq4wQiejhlW8";
+    const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInRefSI6InJkd2d0b2hvaXptZ3pjbWFyeWJqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIzMzYzNTYsImV4cCI6MjEwNzkxMjM1Nn0._uxw-rNIysobQATHIOTha5Zhfk0HtYNwq4wQiejhlW8";
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
     const state = {
@@ -1071,6 +1146,83 @@
       const d = new Date(dStr);
       return isNaN(d.getTime()) ? dStr : d.toLocaleDateString("id-ID", { year: 'numeric', month: 'short', day: 'numeric' });
     }
+
+    // FUNGSI BARU: TAMPILKAN MODAL SPESIFIKASI DETAIL
+    window.viewPCDetail = (pcId) => {
+      const pc = state.computers.find(x => x.id === pcId);
+      if (!pc) return;
+
+      $("vspec-unit-id").textContent = pc.id;
+
+      let specs = {};
+      try {
+        specs = JSON.parse(pc.specs || "{}");
+      } catch(e) {}
+
+      $("vspec-proc").textContent = specs.processor || pc.model || "-";
+      $("vspec-mobo").textContent = specs.motherboard || "-";
+      $("vspec-psu").textContent = specs.psu || "-";
+      $("vspec-gpu").textContent = specs.gpu || pc.type || "-";
+      $("vspec-mouse").textContent = specs.mouse || "-";
+      $("vspec-kb").textContent = specs.keyboard || "-";
+      $("vspec-mon").textContent = specs.monitor || "-";
+
+      const r = specs.ram || {};
+      $("vspec-ram").textContent = r.brand || r.capacity ? `${r.brand || ''} ${r.capacity || ''} (${r.qty || 1} unit)`.trim() : "-";
+
+      const s = specs.ssd || {};
+      $("vspec-ssd").textContent = s.brand || s.capacity ? `${s.brand || ''} ${s.capacity || ''} (${s.qty || 1} unit)`.trim() : "-";
+
+      const h = specs.hdd || {};
+      $("vspec-hdd").textContent = h.brand || h.capacity ? `${h.brand || ''} ${h.capacity || ''} (${h.qty || 0} unit)`.trim() : "-";
+
+      const u = specs.ups || {};
+      $("vspec-ups").textContent = u.brand || u.capacity ? `${u.brand || ''} ${u.capacity || ''}`.trim() : "-";
+
+      $("modal-view-spec").showModal();
+    };
+
+    // FUNGSI BARU: TAMPILKAN MODAL DETAIL PEMINJAM KOMPUTER
+    window.viewBorrowerDetail = (pcId) => {
+      const pc = state.computers.find(x => x.id === pcId);
+      if (!pc) return;
+
+      $("vbor-unit-id").textContent = pc.id;
+      const activeLoan = state.loans.find(l => l.unit_id === pcId && l.status !== 'returned');
+
+      if (activeLoan) {
+        $("vbor-content").innerHTML = `
+          <div class="bg-black/5 dark:bg-white/5 p-4 rounded-2xl space-y-2.5">
+            <div class="flex justify-between border-b border-black/10 dark:border-white/10 pb-2">
+              <span class="opacity-70">Status Unit:</span>
+              <span class="px-2.5 py-0.5 rounded-full font-bold bg-ios-pink/20 text-ios-pink uppercase">SEDANG DIPINJAM</span>
+            </div>
+            <div>
+              <span class="opacity-70 block">Nama Peminjam:</span>
+              <span class="font-bold text-sm custom-accent-text">${esc(activeLoan.borrower)}</span>
+            </div>
+            <div>
+              <span class="opacity-70 block">Keperluan:</span>
+              <span class="font-semibold italic">${esc(activeLoan.purpose)}</span>
+            </div>
+            <div>
+              <span class="opacity-70 block">Periode Pinjam:</span>
+              <span class="font-semibold">${formatDate(activeLoan.start_date)} s/d ${formatDate(activeLoan.end_date)}</span>
+            </div>
+          </div>
+        `;
+      } else {
+        $("vbor-content").innerHTML = `
+          <div class="bg-black/5 dark:bg-white/5 p-4 rounded-2xl text-center space-y-2">
+            <i class="fa-solid fa-circle-check text-3xl text-ios-green"></i>
+            <p class="font-bold text-sm">Unit Komputer Tersedia</p>
+            <p class="opacity-75">Unit ini sedang berada di stok DCC dan tidak dalam status dipinjam.</p>
+          </div>
+        `;
+      }
+
+      $("modal-view-borrower").showModal();
+    };
 
     function getFilteredData() {
       const fromVal = $("recap-date-from").value;
@@ -1365,7 +1517,7 @@
       await refreshAll();
     }
 
-    // RENDER ALL
+    // RENDER ALL (DENGAN KLIK INTERAKTIF)
     function renderAll() {
       fillUnitSelects();
 
@@ -1386,25 +1538,32 @@
 
       $("tbl-home-active-loans").innerHTML = activeLoans.map((x) => `
         <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition">
-          <td class="p-3.5 font-semibold custom-accent-text">${esc(x.unit_id)}</td>
+          <td class="p-3.5 font-semibold custom-accent-text cursor-pointer hover:underline" onclick="viewPCDetail('${esc(x.unit_id)}')">${esc(x.unit_id)}</td>
           <td><span class="font-medium">${esc(x.borrower)}</span></td>
           <td>${esc(x.purpose)}</td>
           <td><span class="text-xs font-medium opacity-90">${formatDate(x.start_date)} s/d ${formatDate(x.end_date)}</span></td>
-          <td><span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-ios-orange/20 text-ios-orange">${esc(x.status)}</span></td>
+          <td><span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-ios-orange/20 text-ios-orange cursor-pointer" onclick="viewBorrowerDetail('${esc(x.unit_id)}')">${esc(x.status)}</span></td>
         </tr>`).join("") || `<tr><td class="p-5 text-center opacity-70" colspan="5">Tidak ada peminjaman aktif.</td></tr>`;
 
       $("tbl-home-active-services").innerHTML = activeComponentServices.map((x) => `
         <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition">
-          <td class="p-3.5 font-semibold custom-accent-text">${esc(x.unit_id)}</td>
+          <td class="p-3.5 font-semibold custom-accent-text cursor-pointer hover:underline" onclick="viewPCDetail('${esc(x.unit_id)}')">${esc(x.unit_id)}</td>
           <td>${esc(x.problem)} <span class="opacity-75">(${esc(x.notes || '-')})</span></td>
           <td>${esc(x.technician || '-')}</td>
           <td><span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-ios-pink/20 text-ios-pink">${esc(x.status)}</span></td>
         </tr>`).join("") || `<tr><td class="p-5 text-center opacity-70" colspan="4">Tidak ada servis komponen aktif.</td></tr>`;
 
+      // STOK KOMPUTER & KELENGKAPAN (PEMBARUAN TOMBOL KLIK)
       $("tbl-computers").innerHTML = state.computers.map((x) => `
         <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition">
-          <td class="p-4 font-semibold custom-accent-text">${esc(x.id)}</td>
-          <td><span class="px-2.5 py-1 rounded-full text-xs font-semibold ${x.status === 'available' ? 'bg-ios-green/20 text-ios-green' : 'bg-ios-pink/20 text-ios-pink'}">${esc(x.status)}</span></td>
+          <td class="p-4 font-bold custom-accent-text cursor-pointer hover:underline" onclick="viewPCDetail('${esc(x.id)}') flex items-center gap-1.5" title="Sentuh untuk lihat Spesifikasi">
+            <i class="fa-solid fa-circle-info text-xs opacity-60 mr-1"></i>${esc(x.id)}
+          </td>
+          <td>
+            <span class="px-2.5 py-1 rounded-full text-xs font-semibold cursor-pointer hover:opacity-80 transition ${x.status === 'available' ? 'bg-ios-green/20 text-ios-green' : 'bg-ios-pink/20 text-ios-pink'}" onclick="viewBorrowerDetail('${esc(x.id)}')" title="Sentuh untuk lihat Detail Peminjam">
+              ${esc(x.status)}
+            </span>
+          </td>
           <td class="text-center">${renderIndicator(x.komputer_st || 'ok')}</td>
           <td class="text-center">${renderIndicator(x.monitor_st || 'ok')}</td>
           <td class="text-center">${renderIndicator(x.mouse_st || 'ok')}</td>
