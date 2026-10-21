@@ -348,8 +348,19 @@
           <form id="form-checking" class="glass-card rounded-3xl p-6 shadow-lg grid sm:grid-cols-2 gap-4">
             <div class="sm:col-span-2">
               <label class="block text-xs font-semibold mb-1 opacity-80">Kode PC Unit</label>
-              <select id="chk-unit" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none"></select>
+              <select id="chk-unit" onchange="onCheckingUnitChange()" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none"></select>
             </div>
+
+            <!-- PANEL SPESIFIKASI UNIT TERPILIH UNTUK CEKLIST KECOCOKAN -->
+            <div class="sm:col-span-2 bg-black/5 dark:bg-white/5 p-4 rounded-2xl space-y-2 border border-black/10 dark:border-white/10">
+              <span class="block font-bold text-xs uppercase tracking-wider custom-accent-text flex items-center gap-1.5">
+                <i class="fa-solid fa-circle-info"></i> Data Spesifikasi Unit Terpilih (Acuan Pengecekan)
+              </span>
+              <div id="chk-spec-summary" class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs opacity-90 pt-1">
+                <!-- Diisi secara dinamis via JS -->
+              </div>
+            </div>
+
             <div>
               <label class="block text-xs font-semibold mb-1 opacity-80">Kondisi</label>
               <select id="chk-condition" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none">
@@ -367,8 +378,8 @@
             </div>
 
             <div class="sm:col-span-2 pt-3 border-t border-black/10 dark:border-white/10">
-              <label class="block text-xs font-bold mb-1 custom-accent-text">1. Ceklis Kelengkapan Stok Komputer</label>
-              <span class="block text-[11px] opacity-70 mb-2">(Dicentang = 🟢 Normal, Tidak Dicentang = 🔴 Rusak/Missing)</span>
+              <label class="block text-xs font-bold mb-1 custom-accent-text">1. Ceklis Kelengkapan & Kesesuaian Stok Komputer</label>
+              <span class="block text-[11px] opacity-70 mb-2">(Dicentang = 🟢 Normal/Sesuai Spesifikasi, Tidak Dicentang = 🔴 Rusak/Tidak Sesuai/Missing)</span>
               <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs font-medium">
                 <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="chk-komputer" checked class="rounded app-input h-4 w-4" /> Komputer</label>
                 <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="chk-monitor" checked class="rounded app-input h-4 w-4" /> Monitor</label>
@@ -803,14 +814,13 @@
     </form>
   </dialog>
 
-  <!-- MODAL LOAN (DENGAN PENAMBAHAN KANTOR / HEAD OFFICE) -->
+  <!-- MODAL LOAN -->
   <dialog id="modal-loan" class="glass-card rounded-3xl p-6 w-[min(92vw,480px)] shadow-2xl m-auto">
     <form id="form-loan" class="space-y-4">
       <h4 class="text-lg font-bold">Peminjaman Baru & Batas Waktu</h4>
       <div><label class="block text-xs font-semibold mb-1 opacity-80">Pilih Unit Komputer (Tersedia)</label><select id="loan-unit" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm"></select></div>
       <div><label class="block text-xs font-semibold mb-1 opacity-80">Nama Peminjam</label><input id="loan-borrower" required placeholder="Nama peminjam" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" /></div>
       <div><label class="block text-xs font-semibold mb-1 opacity-80">Keperluan</label><input id="loan-purpose" required placeholder="Keperluan peminjaman" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" /></div>
-      <!-- DITAMBAHKAN INPUT KANTOR / HEAD OFFICE -->
       <div><label class="block text-xs font-semibold mb-1 opacity-80">Kantor / Head Office (Lokasi Unit Dipinjam)</label><input id="loan-office" required placeholder="Contoh: Kantor Pengasuhan / Gedung Indonesia 1" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" /></div>
       <div class="grid grid-cols-2 gap-3">
         <div><label class="block text-xs font-semibold mb-1 opacity-80">Dari Tanggal</label><input type="date" id="loan-start" required class="w-full app-input rounded-xl px-3.5 py-2 text-base md:text-sm focus:outline-none shadow-sm" /></div>
@@ -833,11 +843,12 @@
     </form>
   </dialog>
 
-  <!-- MODAL RETURN -->
-  <dialog id="modal-return" class="glass-card rounded-3xl p-6 w-[min(92vw,480px)] shadow-2xl m-auto">
+  <!-- MODAL RETURN (DENGAN PENAMBAHAN INFO & CEKLIST SPESIFIKASI UNIT) -->
+  <dialog id="modal-return" class="glass-card rounded-3xl p-6 w-[min(92vw,520px)] shadow-2xl m-auto max-h-[90vh] overflow-y-auto">
     <form id="form-return" class="space-y-4">
       <h4 class="text-lg font-bold">Cek & Pengembalian Unit Komputer</h4>
       <input type="hidden" id="ret-loan-id" /><input type="hidden" id="ret-unit-id" />
+      
       <div class="space-y-1 bg-black/5 dark:bg-white/5 p-3.5 rounded-2xl text-xs font-medium">
         <p class="opacity-80">Unit PC: <span id="ret-unit-label" class="font-bold custom-accent-text text-sm"></span></p>
         <p class="opacity-80">Peminjam: <span id="ret-borrower-label" class="font-bold text-sm"></span></p>
@@ -845,8 +856,19 @@
         <p class="opacity-80">Lokasi Kantor: <span id="ret-office-label" class="font-bold custom-accent-text"></span></p>
         <p class="opacity-80">Periode: <span id="ret-period-label" class="font-bold"></span></p>
       </div>
+
+      <!-- KOTAK INFO SPESIFIKASI UNIT UNTUK KECOCOKAN SAAT KEMBALI -->
+      <div class="bg-black/5 dark:bg-white/5 p-3.5 rounded-2xl space-y-2 border border-black/10 dark:border-white/10 text-xs">
+        <span class="block font-bold uppercase tracking-wider custom-accent-text flex items-center gap-1.5">
+          <i class="fa-solid fa-list-check"></i> Rincian Spesifikasi Asli (Acuan Pengembalian)
+        </span>
+        <div id="ret-spec-summary" class="grid grid-cols-2 gap-2 opacity-90 pt-1">
+          <!-- Diisi via JS -->
+        </div>
+      </div>
+
       <div class="pt-2 border-t border-black/10 dark:border-white/10">
-        <label class="block text-xs font-bold mb-2 opacity-90">Ceklis Komponen yang Dikembalikan (Normal/Utuh)</label>
+        <label class="block text-xs font-bold mb-2 opacity-90">Ceklis Komponen yang Dikembalikan (Normal/Utuh Sesuai Spesifikasi)</label>
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs font-medium">
           <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="ret-komputer" checked class="rounded app-input h-4 w-4" /> Komputer</label>
           <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="ret-monitor" checked class="rounded app-input h-4 w-4" /> Monitor</label>
@@ -1022,6 +1044,9 @@
         renderCharts();
       }
       if (targetView === "chat") scrollChat();
+      if (targetView === "checking") {
+        onCheckingUnitChange();
+      }
       
       if (!sidebar.classList.contains("-translate-x-full") && window.innerWidth < 768) {
         toggleSidebar();
@@ -1134,7 +1159,33 @@
       $("chk-unit").innerHTML = allOpts;
       $("loan-unit").innerHTML = loanOpts;
       $("svc-unit").innerHTML = allOpts;
+      onCheckingUnitChange();
     }
+
+    // FUNGSI RENDER ACUAN SPESIFIKASI DI LAMAN PENGECEKAN
+    window.onCheckingUnitChange = () => {
+      const unitId = $("chk-unit").value;
+      const pc = state.computers.find(x => x.id === unitId);
+      const container = $("chk-spec-summary");
+      if (!pc || !container) return;
+
+      let specs = {};
+      try { specs = JSON.parse(pc.specs || "{}"); } catch(e) {}
+
+      const ram = specs.ram || {};
+      const ssd = specs.ssd || {};
+      const hdd = specs.hdd || {};
+      const ups = specs.ups || {};
+
+      container.innerHTML = `
+        <div><span class="opacity-70 block">Prosesor:</span><span class="font-bold">${esc(specs.processor || pc.model || '-')}</span></div>
+        <div><span class="opacity-70 block">Motherboard:</span><span class="font-bold">${esc(specs.motherboard || '-')}</span></div>
+        <div><span class="opacity-70 block">RAM:</span><span class="font-bold">${esc(ram.brand || '')} ${esc(ram.capacity || '')} (${ram.qty || 1} unit)</span></div>
+        <div><span class="opacity-70 block">SSD/HDD:</span><span class="font-bold">${esc(ssd.capacity || '-')} / ${esc(hdd.capacity || '0GB')}</span></div>
+        <div><span class="opacity-70 block">GPU (VGA):</span><span class="font-bold">${esc(specs.gpu || pc.type || '-')}</span></div>
+        <div><span class="opacity-70 block">UPS:</span><span class="font-bold">${esc(ups.brand || '-')} ${esc(ups.capacity || '')}</span></div>
+      `;
+    };
 
     function renderIndicator(st) {
       let color = 'bg-ios-green shadow-[0_0_8px_rgba(52,199,89,0.6)]';
@@ -1189,7 +1240,6 @@
       $("modal-view-spec").showModal();
     };
 
-    // INTERAKTIF: KLIK STATUS PEMINJAM (DISESUAIKAN DENGAN KANTOR / HEAD OFFICE)
     window.viewBorrowerDetail = (pcId) => {
       const pc = state.computers.find(x => x.id === pcId);
       if (!pc) return;
@@ -1428,7 +1478,6 @@
       await refreshAll();
     }
 
-    // TABEL LOG PEMINJAMAN (DENGAN PENAMBAHAN KANTOR / LOKASI)
     function renderLoansList() {
       show($("th-loan-select"), state.loanSelectMode);
       $("tbl-loans").innerHTML = state.loans.map((x) => {
@@ -1642,7 +1691,6 @@
       await refreshAll();
     };
 
-    // SUBMIT PEMINJAMAN DENGAN PENAMBAHAN FIELD OFFICE
     $("form-loan").onsubmit = async (e) => {
       e.preventDefault();
       const unit_id = $("loan-unit").value;
@@ -1680,6 +1728,7 @@
       await refreshAll();
     };
 
+    // MODAL RETURN DENGAN PENGISIAN RINGKASAN SPESIFIKASI ACUAN KECOCOKAN
     window.openReturnModal = (id, unit, borrower, purpose, office, period) => {
       $("ret-loan-id").value = id;
       $("ret-unit-id").value = unit;
@@ -1688,6 +1737,27 @@
       $("ret-purpose-label").textContent = purpose;
       $("ret-office-label").textContent = office;
       $("ret-period-label").textContent = period;
+
+      const comp = state.computers.find(c => c.id === unit);
+      const specContainer = $("ret-spec-summary");
+      if (comp && specContainer) {
+        let specs = {};
+        try { specs = JSON.parse(comp.specs || "{}"); } catch(e) {}
+        const ram = specs.ram || {};
+        const ssd = specs.ssd || {};
+        const hdd = specs.hdd || {};
+        const ups = specs.ups || {};
+
+        specContainer.innerHTML = `
+          <div><span class="opacity-70">Prosesor:</span> <span class="font-bold">${esc(specs.processor || comp.model || '-')}</span></div>
+          <div><span class="opacity-70">Motherboard:</span> <span class="font-bold">${esc(specs.motherboard || '-')}</span></div>
+          <div><span class="opacity-70">RAM:</span> <span class="font-bold">${esc(ram.brand || '')} ${esc(ram.capacity || '')} (${ram.qty || 1} unit)</span></div>
+          <div><span class="opacity-70">Storage:</span> <span class="font-bold">${esc(ssd.capacity || '-')} / ${esc(hdd.capacity || '0GB')}</span></div>
+          <div><span class="opacity-70">GPU:</span> <span class="font-bold">${esc(specs.gpu || comp.type || '-')}</span></div>
+          <div><span class="opacity-70">UPS:</span> <span class="font-bold">${esc(ups.brand || '-')} ${esc(ups.capacity || '')}</span></div>
+        `;
+      }
+
       ["ret-komputer", "ret-monitor", "ret-mouse", "ret-keyboard", "ret-ups"].forEach(chkId => $(chkId).checked = true);
       $("modal-return").showModal();
     };
