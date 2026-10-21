@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>DCC Monitor — iOS Edition & Color Grading</title>
+  <title>DCC Monitor</title>
   
   <!-- FAVICON DARI GITHUB -->
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
@@ -122,7 +122,8 @@
       <div class="max-w-md mx-auto w-full">
         <span class="inline-block px-3.5 py-1 rounded-full bg-ios-blue/10 text-ios-blue text-xs font-bold tracking-wider mb-4 shadow-sm">DCC GONTOR</span>
         <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">Darussalam<br />Computer Center</h1>
-        <p class="text-sm opacity-85 mb-8 leading-relaxed">Sistem Monitoring Stok Komputer, Peminjaman, Pengecekan, Servis, dan Ruang Chat Realtime dengan antarmuka bergaya iOS.</p>
+        <p class="text-sm opacity-85 mb-8 leading-relaxed">Sistem Monitoring Stok Komputer, Peminjaman, Pengecekan, Servis, dan Ruang Chat Realtime.</p>
+        <p class="text-sm opacity-85 mb-8 leading-relaxed">NB: Mohon Konfirmasi Terlebih Dahulu Melalui Email Setelah Melakukan Pendaftaran.</p>
         <div class="space-y-3.5 text-sm opacity-90">
           <p class="flex items-center"><i class="fa-solid fa-laptop text-ios-blue mr-3 w-5 text-base"></i>Manajemen unit komputer & komponen</p>
           <p class="flex items-center"><i class="fa-solid fa-handshake text-ios-green mr-3 w-5 text-base"></i>Peminjaman & pengembalian praktis</p>
@@ -139,7 +140,7 @@
         <form id="form-login" class="space-y-4">
           <div>
             <label class="block text-xs font-semibold mb-1.5 opacity-80">Email</label>
-            <input required type="email" id="login-email" class="w-full app-input rounded-xl px-4 py-3 text-base md:text-sm focus:outline-none transition shadow-sm" placeholder="staff@dcc.gontor" />
+            <input required type="email" id="login-email" class="w-full app-input rounded-xl px-4 py-3 text-base md:text-sm focus:outline-none transition shadow-sm" placeholder="stafdcc@gmai.com" />
           </div>
           <div>
             <label class="block text-xs font-semibold mb-1.5 opacity-80">Kata Sandi</label>
@@ -433,7 +434,7 @@
               </div>
 
               <button type="button" onclick="submitCheckingService()" class="w-full py-3.5 rounded-xl bg-ios-orange hover:opacity-90 active:scale-[0.98] text-white font-semibold text-sm transition shadow-lg flex items-center justify-center gap-2">
-                <i class="fa-solid fa-paper-plane"></i> Kirim Tiket Servis Komponen
+                <i class="fa-solid fa-paper-plane"></i> Kirim service komponen
               </button>
             </div>
           </form>
@@ -1552,7 +1553,8 @@
 
       summaryMsg += `\n------------------------------------\n`;
       summaryMsg += `_ℹ️ Unduh laporan lengkap format Excel (.xlsx) di Laman Rekap Statistik._`;
-
+      summaryMsg += `\n Masuk aplikasi untuk mendapatkan informasi lebih lanjut https://dcc-gontor.vercel.app/\n`;
+      
       await sendChat(summaryMsg);
       $("modal-report").close();
       switchView("chat");
@@ -1729,7 +1731,7 @@
         ["Total Unit", state.computers.length, "fa-computer", "text-ios-blue"],
         ["Tersedia", state.computers.filter((x) => x.status === "available").length, "fa-circle-check", "text-ios-green"],
         ["Pinjaman Aktif", activeLoans.length, "fa-handshake", "text-ios-orange"],
-        ["Tiket Servis Komponen", componentServices.length, "fa-screwdriver-wrench", "text-ios-pink"]
+        ["service komponen", componentServices.length, "fa-screwdriver-wrench", "text-ios-pink"]
       ].map(([t, n, i, color]) => `
         <div class="glass-card glass-card-hover rounded-3xl p-5 shadow-lg">
           <p class="text-xs font-semibold opacity-75 mb-1.5 flex items-center gap-2"><i class="fa-solid ${i} ${color} text-sm"></i>${t}</p>
@@ -2061,7 +2063,7 @@
       ["svc-chk-komputer", "svc-chk-monitor", "svc-chk-mouse", "svc-chk-keyboard", "svc-chk-ups"].forEach(id => $(id).checked = false);
 
       await refreshAll();
-      alert("Tiket servis komponen berhasil dikirim & indikator stok berubah menjadi Kuning.");
+      alert("service komponen berhasil dikirim & indikator stok berubah menjadi Kuning.");
     };
 
     $("form-service").onsubmit = async (e) => {
