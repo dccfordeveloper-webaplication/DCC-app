@@ -235,8 +235,25 @@
           
           <div id="home-cards" class="grid grid-cols-2 lg:grid-cols-4 gap-4"></div>
 
+          <!-- DASHBOARD LOANS WITH DEADLINE WARNING LEGEND -->
           <div class="space-y-3">
-            <h4 class="text-base font-bold flex items-center gap-2"><i class="fa-solid fa-handshake text-ios-orange"></i> Peminjaman Sedang Berjalan</h4>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <h4 class="text-base font-bold flex items-center gap-2"><i class="fa-solid fa-handshake text-ios-orange"></i> Peminjaman Sedang Berjalan</h4>
+              
+              <!-- LEGENDA WARNA PERINGATAN -->
+              <div class="flex flex-wrap items-center gap-2 text-[11px] font-semibold">
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 border border-yellow-500/30">
+                  <span class="h-2 w-2 rounded-full bg-yellow-500"></span> H-3 s/d H-2
+                </span>
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-orange-500/20 text-orange-600 dark:text-orange-400 border border-orange-500/30">
+                  <span class="h-2 w-2 rounded-full bg-orange-500"></span> H-1
+                </span>
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/30">
+                  <span class="h-2 w-2 rounded-full bg-rose-500 animate-ping"></span> Hari H / Terlambat
+                </span>
+              </div>
+            </div>
+
             <div class="glass-card rounded-3xl shadow-lg overflow-x-auto">
               <table class="w-full text-left text-xs md:text-sm">
                 <thead class="uppercase tracking-wider">
@@ -246,7 +263,7 @@
                     <th>Keperluan</th>
                     <th>Kantor / Lokasi</th>
                     <th>Periode Pinjam</th>
-                    <th>Status</th>
+                    <th>Peringatan Batas Waktu</th>
                   </tr>
                 </thead>
                 <tbody id="tbl-home-active-loans"></tbody>
@@ -838,9 +855,82 @@
       </div>
       <div class="flex gap-2 justify-end pt-2">
         <button type="button" data-close class="px-4 py-2 text-xs opacity-75 hover:opacity-100 font-semibold">Batal</button>
-        <button class="px-4 py-2.5 custom-accent-bg text-white text-xs rounded-xl font-semibold shadow-md">Simpan Peminjaman</button>
+        <button type="submit" class="px-4 py-2.5 custom-accent-bg text-white text-xs rounded-xl font-semibold shadow-md">Simpan Peminjaman</button>
       </div>
     </form>
+  </dialog>
+
+  <!-- MODAL SYARAT & KETENTUAN (TERMS & CONDITIONS AGREEMENT) -->
+  <dialog id="modal-terms" class="glass-card rounded-3xl p-6 w-[min(92vw,560px)] shadow-2xl m-auto">
+    <div class="space-y-4">
+      <div class="flex items-center justify-between border-b border-black/10 dark:border-white/10 pb-3">
+        <h4 class="text-base font-bold flex items-center gap-2 text-ios-orange">
+          <i class="fa-solid fa-file-contract text-lg"></i> Tata Tertib, Ketentuan & Risiko Peminjaman
+        </h4>
+        <button type="button" onclick="$('modal-terms').close()" class="opacity-70 hover:opacity-100"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <p class="text-xs opacity-80 leading-relaxed">
+        Mohon baca seluruh tata tertib dan ketentuan di bawah ini sampai ke bagian paling bawah untuk mengaktifkan persetujuan.
+      </p>
+
+      <!-- KOTAK TEKS TATA TERTIB BISA DI-SCROLL -->
+      <div id="terms-scroll-box" class="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-2xl h-56 overflow-y-auto text-xs space-y-3 leading-relaxed">
+        <div class="font-bold text-sm custom-accent-text text-center border-b border-black/10 dark:border-white/10 pb-2">
+          SURAT PERJANJIAN & TATA TERTIB PEMINJAMAN UNIT DARUSSALAM COMPUTER CENTER (DCC)
+        </div>
+
+        <p class="font-semibold text-ios-blue">1. KETENTUAN UMUM PEMINJAMAN:</p>
+        <ul class="list-disc pl-4 space-y-1 opacity-90">
+          <li>Peminjam bertanggung jawab penuh atas unit komputer beserta seluruh periferal (Komputer, Monitor, Mouse, Keyboard, UPS, dan kabel) yang diterima dalam kondisi baik.</li>
+          <li>Unit komputer hanya boleh dipergunakan untuk kepentingan operasional kantor/lembaga resmi yang telah disetujui.</li>
+          <li>Peminjam dilarang memindah tangankan unit kepada pihak ketiga tanpa persetujuan tertulis dari pihak pengelola DCC.</li>
+        </ul>
+
+        <p class="font-semibold text-ios-orange">2. TATA TERTIB PEMAKAIAN & PERAWATAN:</p>
+        <ul class="list-disc pl-4 space-y-1 opacity-90">
+          <li>Peminjam wajib menjaga kebersihan, kerapihan, dan keamanan unit selama masa peminjaman.</li>
+          <li>Dilarang membongkar, mengganti komponen internal (RAM, SSD, HDD, VGA), atau merusak segel perangkat.</li>
+          <li>Wajib mematikan perangkat (shut down) dan mematikan UPS secara benar setelah selesai digunakan.</li>
+        </ul>
+
+        <p class="font-semibold text-ios-pink">3. TANGGUNG JAWAB RISIKO & KERUSAKAN:</p>
+        <ul class="list-disc pl-4 space-y-1 opacity-90">
+          <li>Apabila terjadi kerusakan akibat kelalaian pemakai (terjatuh, terkena cairan, lonjakan listrik tanpa UPS, dsb), peminjam bersedia menanggung biaya perbaikan atau penggantian unit.</li>
+          <li>Apabila terjadi kehilangan unit atau komponen (RAM/SSD/UPS/Periferal), peminjam wajib mengganti unit sesuai dengan spesifikasi semula.</li>
+          <li>Keterlambatan pengembalian tanpa konfirmasi perpanjangan akan dikenakan teguran dan sanksi penangguhan izin peminjaman berikutnya.</li>
+        </ul>
+
+        <p class="font-semibold text-ios-green">4. PENGEMBALIAN UNIT:</p>
+        <ul class="list-disc pl-4 space-y-1 opacity-90">
+          <li>Unit wajib dikembalikan tepat waktu sesuai dengan periode batas tanggal peminjaman.</li>
+          <li>Saat pengembalian, petugas DCC akan melakukan cek kelengkapan fisik dan tes fungsi seluruh komponen.</li>
+        </ul>
+
+        <div class="pt-3 border-t border-black/10 dark:border-white/10 text-center font-bold text-ios-green">
+          --- AKHIR DARI TATA TERTIB & KETENTUAN ---
+        </div>
+      </div>
+
+      <!-- STATUS INDIKATOR SCROLL -->
+      <div id="terms-scroll-status" class="text-[11px] text-ios-orange font-semibold flex items-center justify-center gap-1.5 bg-ios-orange/10 py-1.5 rounded-xl">
+        <i class="fa-solid fa-arrow-down-long animate-bounce"></i> Silakan scroll teks di atas sampai ke bagian paling bawah
+      </div>
+
+      <!-- CHECKBOX PERSATUAN (DISABLED SAMPAI DI-SCROLL KE BOTTOM) -->
+      <div class="pt-2 border-t border-black/10 dark:border-white/10">
+        <label class="flex items-start gap-2.5 cursor-pointer text-xs font-semibold">
+          <input type="checkbox" id="chk-agree-terms" disabled onchange="onAgreeTermsChange()" class="mt-0.5 rounded app-input h-4 w-4 accent-ios-blue disabled:opacity-40 disabled:cursor-not-allowed" />
+          <span id="lbl-agree-terms" class="opacity-50 select-none">Saya telah membaca dan menyetujui seluruh tata tertib, ketentuan, serta risiko peminjaman ini.</span>
+        </label>
+      </div>
+
+      <!-- TOMBOL AKSI -->
+      <div class="flex gap-2 justify-end pt-2">
+        <button type="button" onclick="$('modal-terms').close()" class="px-4 py-2 text-xs opacity-75 hover:opacity-100 font-semibold">Batal</button>
+        <button id="btn-confirm-loan" type="button" disabled onclick="executeLoanSubmission()" class="px-5 py-2.5 custom-accent-bg text-white text-xs rounded-xl font-semibold shadow-md disabled:opacity-40 disabled:cursor-not-allowed transition">Setuju & Terima Peminjaman</button>
+      </div>
+    </div>
   </dialog>
 
   <!-- MODAL RETURN (DENGAN PENAMBAHAN INFO & CEKLIST SPESIFIKASI DAN PENYIMPANAN UNIT) -->
@@ -950,7 +1040,8 @@
       serviceSelectMode: false,
       selectedServiceIds: new Set(),
       loanSelectMode: false,
-      selectedLoanIds: new Set()
+      selectedLoanIds: new Set(),
+      pendingLoanPayload: null // MENYIMPAN TRANSAKSI PEMINJAMAN SEMENTARA SEBELUM DI-VERIFIKASI
     };
 
     const $ = (id) => document.getElementById(id);
@@ -1206,6 +1297,53 @@
       if (!dStr) return "-";
       const d = new Date(dStr);
       return isNaN(d.getTime()) ? dStr : d.toLocaleDateString("id-ID", { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+
+    // LOGIKA PERHITUNGAN PERINGATAN BATAS WAKTU (DEADLINE) PEMINJAMAN
+    function getDeadlineStatus(endDateStr) {
+      if (!endDateStr) return { rowBg: "", badge: `<span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-ios-orange/20 text-ios-orange">Aktif</span>` };
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const endDate = new Date(endDateStr);
+      endDate.setHours(0, 0, 0, 0);
+
+      const diffTime = endDate.getTime() - today.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 3600 * 24));
+
+      if (diffDays < 0) {
+        // SUDAH LEWAT BATAS AKHIR (TERLAMBAT) -> MERAH
+        const lateDays = Math.abs(diffDays);
+        return {
+          rowBg: "bg-rose-500/15 dark:bg-rose-950/40 border-l-4 border-rose-500",
+          badge: `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-500 text-white shadow-sm animate-pulse"><i class="fa-solid fa-triangle-exclamation"></i> Terlambat ${lateDays} Hari</span>`
+        };
+      } else if (diffDays === 0) {
+        // HARI H (BATAS AKHIR AKAN HABIS HARI INI) -> MERAH
+        return {
+          rowBg: "bg-rose-500/15 dark:bg-rose-950/40 border-l-4 border-rose-500",
+          badge: `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-500 text-white shadow-sm"><i class="fa-solid fa-clock"></i> Jatuh Tempo Hari Ini</span>`
+        };
+      } else if (diffDays === 1) {
+        // H-1 SEBELUM BATAS AKHIR -> OREN
+        return {
+          rowBg: "bg-orange-500/15 dark:bg-orange-950/40 border-l-4 border-orange-500",
+          badge: `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-orange-500 text-white shadow-sm"><i class="fa-solid fa-bell"></i> Sisa 1 Hari (H-1)</span>`
+        };
+      } else if (diffDays <= 3) {
+        // H-3 S/D H-2 SEBELUM BATAS AKHIR -> KUNING
+        return {
+          rowBg: "bg-yellow-500/15 dark:bg-yellow-950/40 border-l-4 border-yellow-500",
+          badge: `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-yellow-500 text-black shadow-sm"><i class="fa-solid fa-hourglass-half"></i> Sisa ${diffDays} Hari</span>`
+        };
+      } else {
+        // LEBIH DARI 3 HARI -> NORMAL
+        return {
+          rowBg: "",
+          badge: `<span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-ios-orange/20 text-ios-orange">Aktif</span>`
+        };
+      }
     }
 
     window.viewPCDetail = (pcId) => {
@@ -1598,15 +1736,19 @@
           <p class="text-3xl font-bold tracking-tight">${n}</p>
         </div>`).join("");
 
-      $("tbl-home-active-loans").innerHTML = activeLoans.map((x) => `
-        <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition">
-          <td class="p-3.5 font-semibold custom-accent-text cursor-pointer hover:underline" onclick="viewPCDetail('${esc(x.unit_id)}')">${esc(x.unit_id)}</td>
-          <td><span class="font-medium">${esc(x.borrower)}</span></td>
+      // RENDER PEMINJAMAN BERJALAN DI DASHBOARD DENGAN HIGHLIGHT PERINGATAN WARNA (KUNING / OREN / MERAH)
+      $("tbl-home-active-loans").innerHTML = activeLoans.map((x) => {
+        const deadline = getDeadlineStatus(x.end_date);
+        return `
+        <tr class="transition hover:opacity-90 ${deadline.rowBg}">
+          <td class="p-3.5 font-bold custom-accent-text cursor-pointer hover:underline" onclick="viewPCDetail('${esc(x.unit_id)}')">${esc(x.unit_id)}</td>
+          <td><span class="font-semibold">${esc(x.borrower)}</span></td>
           <td>${esc(x.purpose)}</td>
           <td><span class="font-semibold text-ios-indigo">${esc(x.office || '-')}</span></td>
           <td><span class="text-xs font-medium opacity-90">${formatDate(x.start_date)} s/d ${formatDate(x.end_date)}</span></td>
-          <td><span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-ios-orange/20 text-ios-orange cursor-pointer" onclick="viewBorrowerDetail('${esc(x.unit_id)}')">${esc(x.status)}</span></td>
-        </tr>`).join("") || `<tr><td class="p-5 text-center opacity-70" colspan="6">Tidak ada peminjaman aktif.</td></tr>`;
+          <td class="cursor-pointer" onclick="viewBorrowerDetail('${esc(x.unit_id)}')">${deadline.badge}</td>
+        </tr>`;
+      }).join("") || `<tr><td class="p-5 text-center opacity-70" colspan="6">Tidak ada peminjaman aktif.</td></tr>`;
 
       $("tbl-home-active-services").innerHTML = activeComponentServices.map((x) => `
         <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition">
@@ -1693,7 +1835,8 @@
       await refreshAll();
     };
 
-    $("form-loan").onsubmit = async (e) => {
+    // PROSES SUBMIT FORM PEMINJAMAN -> MEMBUKA MODAL VERIFIKASI TATA TERTIB
+    $("form-loan").onsubmit = (e) => {
       e.preventDefault();
       const unit_id = $("loan-unit").value;
       const alreadyActive = state.loans.some(l => l.unit_id === unit_id && l.status === 'active');
@@ -1704,30 +1847,94 @@
         return;
       }
 
-      const borrower = $("loan-borrower").value.trim();
-      const purpose = $("loan-purpose").value.trim();
-      const office = $("loan-office").value.trim();
-      const start_date = $("loan-start").value;
-      const end_date = $("loan-end").value;
-
-      const row = {
-        unit_id, borrower, purpose, office, start_date, end_date, status: "active"
+      state.pendingLoanPayload = {
+        unit_id,
+        borrower: $("loan-borrower").value.trim(),
+        purpose: $("loan-purpose").value.trim(),
+        office: $("loan-office").value.trim(),
+        start_date: $("loan-start").value,
+        end_date: $("loan-end").value,
+        komputer: $("loan-komputer").checked,
+        monitor: $("loan-monitor").checked,
+        mouse: $("loan-mouse").checked,
+        keyboard: $("loan-keyboard").checked,
+        ups: $("loan-ups").checked
       };
+
+      // RESET MODAL SYARAT & KETENTUAN
+      const chk = $("chk-agree-terms");
+      const btn = $("btn-confirm-loan");
+      const statusBox = $("terms-scroll-status");
+
+      chk.checked = false;
+      chk.disabled = true;
+      btn.disabled = true;
+      $("lbl-agree-terms").classList.add("opacity-50");
+      statusBox.innerHTML = `<i class="fa-solid fa-arrow-down-long animate-bounce"></i> Silakan scroll teks di atas sampai ke bagian paling bawah`;
+      statusBox.className = "text-[11px] text-ios-orange font-semibold flex items-center justify-center gap-1.5 bg-ios-orange/10 py-1.5 rounded-xl";
+
+      $("modal-loan").close();
+      $("modal-terms").showModal();
+
+      // AUTO CHECK SCROLL CONTAINER BILA TEKS PENDEK / LAYAR BESAR
+      setTimeout(() => checkTermsScroll(), 200);
+    };
+
+    // LOGIKA SCROLL-TO-BOTTOM VERIFIKASI
+    const termsBox = $("terms-scroll-box");
+    function checkTermsScroll() {
+      const chk = $("chk-agree-terms");
+      const statusBox = $("terms-scroll-status");
+      
+      // PERHITUNGAN SCROLL LENGKAP
+      const isBottom = Math.ceil(termsBox.scrollTop + termsBox.clientHeight) >= (termsBox.scrollHeight - 10);
+
+      if (isBottom) {
+        chk.disabled = false;
+        $("lbl-agree-terms").classList.remove("opacity-50");
+        statusBox.innerHTML = `<i class="fa-solid fa-circle-check"></i> Seluruh ketentuan telah dibaca. Silakan centang persetujuan di bawah ini.`;
+        statusBox.className = "text-[11px] text-ios-green font-semibold flex items-center justify-center gap-1.5 bg-ios-green/10 py-1.5 rounded-xl";
+      }
+    }
+    termsBox.onscroll = checkTermsScroll;
+
+    window.onAgreeTermsChange = () => {
+      const chk = $("chk-agree-terms");
+      $("btn-confirm-loan").disabled = !chk.checked;
+    };
+
+    // EKSEKUSI PENYIMPANAN PEMINJAMAN SETELAH DITERIMA & DICEKLIST
+    window.executeLoanSubmission = async () => {
+      if (!state.pendingLoanPayload) return;
+
+      const p = state.pendingLoanPayload;
+      const row = {
+        unit_id: p.unit_id,
+        borrower: p.borrower,
+        purpose: p.purpose,
+        office: p.office,
+        start_date: p.start_date,
+        end_date: p.end_date,
+        status: "active"
+      };
+
       const { error } = await sb.from("loans").insert(row);
       if (error) return alert(error.message);
 
       await sb.from("computers").update({ 
         status: "borrowed",
-        komputer_st: $("loan-komputer").checked ? 'missing' : 'ok',
-        monitor_st: $("loan-monitor").checked ? 'missing' : 'ok',
-        mouse_st: $("loan-mouse").checked ? 'missing' : 'ok',
-        keyboard_st: $("loan-keyboard").checked ? 'missing' : 'ok',
-        ups_st: $("loan-ups").checked ? 'missing' : 'ok'
-      }).eq("id", unit_id);
+        komputer_st: p.komputer ? 'missing' : 'ok',
+        monitor_st: p.monitor ? 'missing' : 'ok',
+        mouse_st: p.mouse ? 'missing' : 'ok',
+        keyboard_st: p.keyboard ? 'missing' : 'ok',
+        ups_st: p.ups ? 'missing' : 'ok'
+      }).eq("id", p.unit_id);
 
-      $("modal-loan").close();
-      e.target.reset();
+      $("modal-terms").close();
+      $("form-loan").reset();
+      state.pendingLoanPayload = null;
       await refreshAll();
+      alert("Peminjaman berhasil diverifikasi & disimpan!");
     };
 
     // MODAL RETURN DENGAN PENGISIAN RINGKASAN SPESIFIKASI & PENYIMPANAN LENGKAP
