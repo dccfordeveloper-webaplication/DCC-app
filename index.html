@@ -140,7 +140,7 @@
         <form id="form-login" class="space-y-4">
           <div>
             <label class="block text-xs font-semibold mb-1.5 opacity-80">Email</label>
-            <input required type="email" id="login-email" class="w-full app-input rounded-xl px-4 py-3 text-base md:text-sm focus:outline-none transition shadow-sm" placeholder="stafdcc@gmai.com" />
+            <input required type="email" id="login-email" class="w-full app-input rounded-xl px-4 py-3 text-base md:text-sm focus:outline-none transition shadow-sm" placeholder="staffdcc@gmail.com" />
           </div>
           <div>
             <label class="block text-xs font-semibold mb-1.5 opacity-80">Kata Sandi</label>
@@ -216,7 +216,7 @@
           <button data-view="computers" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center"><i class="fa-solid fa-computer w-6 text-center mr-2.5"></i>Stok Komputer</button>
           <button data-view="loans" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center"><i class="fa-solid fa-handshake w-6 text-center mr-2.5"></i>Peminjaman</button>
           <button data-view="checking" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center"><i class="fa-solid fa-clipboard-check w-6 text-center mr-2.5"></i>Pengecekan</button>
-          <button data-view="services" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center"><i class="fa-solid fa-screwdriver-wrench w-6 text-center mr-2.5"></i>Servis</button>
+          <button data-view="serviss" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center"><i class="fa-solid fa-screwdriver-wrench w-6 text-center mr-2.5"></i>Servis</button>
           <button data-view="recap" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center"><i class="fa-solid fa-chart-column w-6 text-center mr-2.5"></i>Rekap Statistik</button>
           <button data-view="chat" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center"><i class="fa-solid fa-comments w-6 text-center mr-2.5"></i>Chat Room</button>
         </nav>
@@ -284,7 +284,7 @@
                     <th>Status Tiket</th>
                   </tr>
                 </thead>
-                <tbody id="tbl-home-active-services"></tbody>
+                <tbody id="tbl-home-active-serviss"></tbody>
               </table>
             </div>
           </div>
@@ -433,32 +433,32 @@
                 <input id="svc-chk-notes" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none" placeholder="Deskripsi kerusakan..." />
               </div>
 
-              <button type="button" onclick="submitCheckingService()" class="w-full py-3.5 rounded-xl bg-ios-orange hover:opacity-90 active:scale-[0.98] text-white font-semibold text-sm transition shadow-lg flex items-center justify-center gap-2">
-                <i class="fa-solid fa-paper-plane"></i> Kirim service komponen
+              <button type="button" onclick="submitCheckingservis()" class="w-full py-3.5 rounded-xl bg-ios-orange hover:opacity-90 active:scale-[0.98] text-white font-semibold text-sm transition shadow-lg flex items-center justify-center gap-2">
+                <i class="fa-solid fa-paper-plane"></i> Kirim servis komponen
               </button>
             </div>
           </form>
         </section>
 
-        <!-- SERVICES -->
-        <section id="view-services" class="space-y-4 max-w-6xl mx-auto hide">
+        <!-- servisS -->
+        <section id="view-serviss" class="space-y-4 max-w-6xl mx-auto hide">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <h3 class="text-xl font-bold tracking-tight">Daftar Tiket & Log Servis</h3>
             
             <div class="flex flex-wrap items-center gap-2">
-              <button id="btn-svc-toggle-select" onclick="toggleServiceSelectMode()" class="px-3.5 py-2 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/10 text-xs font-semibold transition flex items-center gap-1.5">
+              <button id="btn-svc-toggle-select" onclick="toggleservisSelectMode()" class="px-3.5 py-2 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/10 text-xs font-semibold transition flex items-center gap-1.5">
                 <i class="fa-solid fa-list-check"></i> <span id="lbl-svc-select">Mode Pilih</span>
               </button>
 
-              <button id="btn-svc-select-all" onclick="toggleServiceSelectAll()" class="hide px-3.5 py-2 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/10 text-xs font-semibold transition flex items-center gap-1.5">
+              <button id="btn-svc-select-all" onclick="toggleservisSelectAll()" class="hide px-3.5 py-2 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/10 text-xs font-semibold transition flex items-center gap-1.5">
                 <i class="fa-regular fa-square-check"></i> <span>Pilih Semua</span>
               </button>
 
-              <button id="btn-svc-delete-selected" onclick="deleteSelectedServices()" class="hide px-3.5 py-2 rounded-xl bg-ios-pink/20 text-ios-pink hover:bg-ios-pink/30 text-xs font-semibold transition flex items-center gap-1.5">
+              <button id="btn-svc-delete-selected" onclick="deleteSelectedserviss()" class="hide px-3.5 py-2 rounded-xl bg-ios-pink/20 text-ios-pink hover:bg-ios-pink/30 text-xs font-semibold transition flex items-center gap-1.5">
                 <i class="fa-solid fa-trash-can"></i> <span>Hapus (<span id="svc-selected-count">0</span>)</span>
               </button>
 
-              <button data-open="modal-service" class="px-4 py-2.5 rounded-xl custom-accent-bg text-white text-xs md:text-sm font-semibold shadow-lg transition active:scale-95 flex items-center gap-2">
+              <button data-open="modal-servis" class="px-4 py-2.5 rounded-xl custom-accent-bg text-white text-xs md:text-sm font-semibold shadow-lg transition active:scale-95 flex items-center gap-2">
                 <i class="fa-solid fa-plus"></i>Tiket Servis
               </button>
             </div>
@@ -497,7 +497,7 @@
               <div class="flex flex-wrap gap-4 text-xs font-medium">
                 <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="filter-cat-loan" checked onchange="renderRecapTables()" class="rounded app-input h-4 w-4 accent-ios-blue" /> Peminjaman</label>
                 <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="filter-cat-checking" checked onchange="renderRecapTables()" class="rounded app-input h-4 w-4 accent-ios-blue" /> Pengecekan</label>
-                <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="filter-cat-service" checked onchange="renderRecapTables()" class="rounded app-input h-4 w-4 accent-ios-blue" /> Servis</label>
+                <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="filter-cat-servis" checked onchange="renderRecapTables()" class="rounded app-input h-4 w-4 accent-ios-blue" /> Servis</label>
               </div>
             </div>
           </div>
@@ -526,14 +526,14 @@
             </div>
           </div>
 
-          <div id="recap-sec-service" class="space-y-2">
+          <div id="recap-sec-servis" class="space-y-2">
             <h4 class="text-base font-bold flex items-center gap-2"><i class="fa-solid fa-screwdriver-wrench text-ios-pink"></i> Rekap Servis</h4>
             <div class="glass-card rounded-3xl shadow-lg overflow-x-auto">
               <table class="w-full text-left text-xs md:text-sm">
                 <thead class="uppercase tracking-wider">
                   <tr><th class="p-3.5 w-12 text-center">No</th><th>Tanggal Servis</th><th>Kode PC</th><th>Kendala & Catatan</th><th>Teknisi</th><th>Status Tiket</th></tr>
                 </thead>
-                <tbody id="tbl-recap-service"></tbody>
+                <tbody id="tbl-recap-servis"></tbody>
               </table>
             </div>
           </div>
@@ -602,7 +602,7 @@
       <button data-view="home" class="bottom-nav-btn active flex flex-col items-center gap-0.5 text-[10px] font-medium transition"><i class="fa-solid fa-house text-base"></i><span>Beranda</span></button>
       <button data-view="computers" class="bottom-nav-btn flex flex-col items-center gap-0.5 text-[10px] font-medium transition"><i class="fa-solid fa-computer text-base"></i><span>Stok</span></button>
       <button data-view="loans" class="bottom-nav-btn flex flex-col items-center gap-0.5 text-[10px] font-medium transition"><i class="fa-solid fa-handshake text-base"></i><span>Pinjam</span></button>
-      <button data-view="services" class="bottom-nav-btn flex flex-col items-center gap-0.5 text-[10px] font-medium transition"><i class="fa-solid fa-screwdriver-wrench text-base"></i><span>Servis</span></button>
+      <button data-view="serviss" class="bottom-nav-btn flex flex-col items-center gap-0.5 text-[10px] font-medium transition"><i class="fa-solid fa-screwdriver-wrench text-base"></i><span>Servis</span></button>
       <button data-view="chat" class="bottom-nav-btn flex flex-col items-center gap-0.5 text-[10px] font-medium transition"><i class="fa-solid fa-comments text-base"></i><span>Chat</span></button>
     </nav>
   </section>
@@ -691,7 +691,7 @@
       <div class="pt-2 border-t border-black/10 dark:border-white/10 space-y-1">
         <div class="flex justify-between"><span class="opacity-80">· Data Peminjaman:</span><span id="rep-count-loan" class="font-bold">0</span></div>
         <div class="flex justify-between"><span class="opacity-80">· Data Pengecekan:</span><span id="rep-count-checking" class="font-bold">0</span></div>
-        <div class="flex justify-between"><span class="opacity-80">· Data Servis:</span><span id="rep-count-service" class="font-bold">0</span></div>
+        <div class="flex justify-between"><span class="opacity-80">· Data Servis:</span><span id="rep-count-servis" class="font-bold">0</span></div>
       </div>
     </div>
     <div class="space-y-2.5 pt-2">
@@ -817,11 +817,11 @@
       <div class="pt-2 border-t border-black/10 dark:border-white/10">
         <label class="block text-xs font-bold mb-2 opacity-90">Status Indikator Perangkat Saat Ini</label>
         <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs font-medium">
-          <div><span class="block opacity-75 mb-1">PC</span><select id="pc-komputer-st" class="w-full app-input rounded-lg px-2 py-1.5 focus:outline-none"><option value="ok">🟢 Normal</option><option value="missing">🔴 Rusak</option><option value="service">🟡 Servis</option></select></div>
-          <div><span class="block opacity-75 mb-1">Monitor</span><select id="pc-monitor-st" class="w-full app-input rounded-lg px-2 py-1.5 focus:outline-none"><option value="ok">🟢 Normal</option><option value="missing">🔴 Rusak</option><option value="service">🟡 Servis</option></select></div>
-          <div><span class="block opacity-75 mb-1">Mouse</span><select id="pc-mouse-st" class="w-full app-input rounded-lg px-2 py-1.5 focus:outline-none"><option value="ok">🟢 Normal</option><option value="missing">🔴 Rusak</option><option value="service">🟡 Servis</option></select></div>
-          <div><span class="block opacity-75 mb-1">Keyboard</span><select id="pc-keyboard-st" class="w-full app-input rounded-lg px-2 py-1.5 focus:outline-none"><option value="ok">🟢 Normal</option><option value="missing">🔴 Rusak</option><option value="service">🟡 Servis</option></select></div>
-          <div><span class="block opacity-75 mb-1">UPS</span><select id="pc-ups-st" class="w-full app-input rounded-lg px-2 py-1.5 focus:outline-none"><option value="ok">🟢 Normal</option><option value="missing">🔴 Rusak</option><option value="service">🟡 Servis</option></select></div>
+          <div><span class="block opacity-75 mb-1">PC</span><select id="pc-komputer-st" class="w-full app-input rounded-lg px-2 py-1.5 focus:outline-none"><option value="ok">🟢 Normal</option><option value="missing">🔴 Rusak</option><option value="servis">🟡 Servis</option></select></div>
+          <div><span class="block opacity-75 mb-1">Monitor</span><select id="pc-monitor-st" class="w-full app-input rounded-lg px-2 py-1.5 focus:outline-none"><option value="ok">🟢 Normal</option><option value="missing">🔴 Rusak</option><option value="servis">🟡 Servis</option></select></div>
+          <div><span class="block opacity-75 mb-1">Mouse</span><select id="pc-mouse-st" class="w-full app-input rounded-lg px-2 py-1.5 focus:outline-none"><option value="ok">🟢 Normal</option><option value="missing">🔴 Rusak</option><option value="servis">🟡 Servis</option></select></div>
+          <div><span class="block opacity-75 mb-1">Keyboard</span><select id="pc-keyboard-st" class="w-full app-input rounded-lg px-2 py-1.5 focus:outline-none"><option value="ok">🟢 Normal</option><option value="missing">🔴 Rusak</option><option value="servis">🟡 Servis</option></select></div>
+          <div><span class="block opacity-75 mb-1">UPS</span><select id="pc-ups-st" class="w-full app-input rounded-lg px-2 py-1.5 focus:outline-none"><option value="ok">🟢 Normal</option><option value="missing">🔴 Rusak</option><option value="servis">🟡 Servis</option></select></div>
         </div>
       </div>
 
@@ -975,9 +975,9 @@
     </form>
   </dialog>
 
-  <!-- MODAL SERVICE -->
-  <dialog id="modal-service" class="glass-card rounded-3xl p-6 w-[min(92vw,480px)] shadow-2xl m-auto">
-    <form id="form-service" class="space-y-4">
+  <!-- MODAL servis -->
+  <dialog id="modal-servis" class="glass-card rounded-3xl p-6 w-[min(92vw,480px)] shadow-2xl m-auto">
+    <form id="form-servis" class="space-y-4">
       <h4 class="text-lg font-bold">Tiket Servis</h4>
       <div><label class="block text-xs font-semibold mb-1 opacity-80">Pilih Unit</label><select id="svc-unit" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm"></select></div>
       <div><label class="block text-xs font-semibold mb-1 opacity-80">Kerusakan / Keluhan</label><input id="svc-problem" required placeholder="Kerusakan / keluhan" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" /></div>
@@ -1031,15 +1031,15 @@
       member: null,
       computers: [],
       loans: [],
-      services: [],
+      serviss: [],
       members: [],
       messages: [],
       filterSender: null,
       replyingTo: null,
       attachmentData: null,
       charts: {},
-      serviceSelectMode: false,
-      selectedServiceIds: new Set(),
+      servisSelectMode: false,
+      selectedservisIds: new Set(),
       loanSelectMode: false,
       selectedLoanIds: new Set(),
       pendingLoanPayload: null // MENYIMPAN TRANSAKSI PEMINJAMAN SEMENTARA SEBELUM DI-VERIFIKASI
@@ -1130,7 +1130,7 @@
       document.querySelectorAll(".nav-item").forEach((x) => x.classList.toggle("active", x.dataset.view === targetView));
       document.querySelectorAll(".bottom-nav-btn").forEach((x) => x.classList.toggle("active", x.dataset.view === targetView));
 
-      ["home","computers","loans","checking","services","recap","chat"].forEach((v) => show($("view-" + v), v === targetView));
+      ["home","computers","loans","checking","serviss","recap","chat"].forEach((v) => show($("view-" + v), v === targetView));
       if (targetView === "recap") {
         renderRecapTables();
         renderCharts();
@@ -1229,13 +1229,13 @@
       const [c, l, s, m, ch] = await Promise.all([
         sb.from("computers").select("*").order("id"),
         sb.from("loans").select("*").order("created_at", { ascending: false }),
-        sb.from("services").select("*").order("created_at", { ascending: false }),
+        sb.from("serviss").select("*").order("created_at", { ascending: false }),
         sb.from("members").select("*").order("full_name"),
         sb.from("chat_messages").select("*").order("created_at", { ascending: true }).limit(200)
       ]);
       state.computers = c.data || [];
       state.loans = l.data || [];
-      state.services = s.data || [];
+      state.serviss = s.data || [];
       state.members = m.data || [];
       state.messages = ch.data || [];
       renderAll();
@@ -1287,7 +1287,7 @@
       if (st === 'missing') {
         color = 'bg-ios-pink shadow-[0_0_8px_rgba(255,45,85,0.6)]';
         title = 'Rusak / Tidak Ada';
-      } else if (st === 'service') {
+      } else if (st === 'servis') {
         color = 'bg-ios-orange shadow-[0_0_8px_rgba(255,149,0,0.6)]';
         title = 'Dalam Servis (Kuning)';
       }
@@ -1442,20 +1442,20 @@
 
       const showLoan = $("filter-cat-loan").checked;
       const showChecking = $("filter-cat-checking").checked;
-      const showService = $("filter-cat-service").checked;
+      const showservis = $("filter-cat-servis").checked;
 
       const filteredLoans = showLoan ? state.loans.filter(x => filterByDate(x.start_date || x.created_at)) : [];
-      const filteredChecking = showChecking ? state.services.filter(x => x.problem && x.problem.includes("[CHECKING") && filterByDate(x.created_at)) : [];
-      const filteredServices = showService ? state.services.filter(x => (!x.problem || !x.problem.includes("[CHECKING")) && filterByDate(x.created_at)) : [];
+      const filteredChecking = showChecking ? state.serviss.filter(x => x.problem && x.problem.includes("[CHECKING") && filterByDate(x.created_at)) : [];
+      const filteredserviss = showservis ? state.serviss.filter(x => (!x.problem || !x.problem.includes("[CHECKING")) && filterByDate(x.created_at)) : [];
 
-      return { filteredLoans, filteredChecking, filteredServices, showLoan, showChecking, showService };
+      return { filteredLoans, filteredChecking, filteredserviss, showLoan, showChecking, showservis };
     }
 
     function renderRecapTables() {
-      const { filteredLoans, filteredChecking, filteredServices, showLoan, showChecking, showService } = getFilteredData();
+      const { filteredLoans, filteredChecking, filteredserviss, showLoan, showChecking, showservis } = getFilteredData();
       show($("recap-sec-loan"), showLoan);
       show($("recap-sec-checking"), showChecking);
-      show($("recap-sec-service"), showService);
+      show($("recap-sec-servis"), showservis);
 
       $("tbl-recap-loan").innerHTML = filteredLoans.map((x, idx) => `
         <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition">
@@ -1477,7 +1477,7 @@
           <td><span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-ios-blue/20 text-ios-blue">${esc(x.status === 'open' ? 'checking' : 'baik/normal')}</span></td>
         </tr>`).join("") || `<tr><td class="p-6 text-center opacity-70" colspan="5">Tidak ada data pengecekan dalam rentang tanggal ini.</td></tr>`;
 
-      $("tbl-recap-service").innerHTML = filteredServices.map((x, idx) => `
+      $("tbl-recap-servis").innerHTML = filteredserviss.map((x, idx) => `
         <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition">
           <td class="p-3.5 text-center font-semibold opacity-70">${idx + 1}</td>
           <td>${formatDate(x.created_at)}</td>
@@ -1489,7 +1489,7 @@
     }
 
     function openReportModal() {
-      const { filteredLoans, filteredChecking, filteredServices, showLoan, showChecking, showService } = getFilteredData();
+      const { filteredLoans, filteredChecking, filteredserviss, showLoan, showChecking, showservis } = getFilteredData();
       const fromVal = $("recap-date-from").value;
       const toVal = $("recap-date-to").value;
       const periodStr = (fromVal || toVal) ? `${fromVal || 'Awal'} s/d ${toVal || 'Sekarang'}` : "Semua Tanggal";
@@ -1497,19 +1497,19 @@
       const catList = [];
       if (showLoan) catList.push("Peminjaman");
       if (showChecking) catList.push("Pengecekan");
-      if (showService) catList.push("Servis");
+      if (showservis) catList.push("Servis");
 
       $("rep-period-label").textContent = periodStr;
       $("rep-cat-label").textContent = catList.join(", ") || "Tidak ada";
       $("rep-count-loan").textContent = filteredLoans.length + " Record";
       $("rep-count-checking").textContent = filteredChecking.length + " Record";
-      $("rep-count-service").textContent = filteredServices.length + " Record";
+      $("rep-count-servis").textContent = filteredserviss.length + " Record";
 
       $("modal-report").showModal();
     }
 
     function exportToExcel() {
-      const { filteredLoans, filteredChecking, filteredServices, showLoan, showChecking, showService } = getFilteredData();
+      const { filteredLoans, filteredChecking, filteredserviss, showLoan, showChecking, showservis } = getFilteredData();
       const wb = XLSX.utils.book_new();
 
       if (showLoan) {
@@ -1525,11 +1525,11 @@
         }));
         XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(checkingData), "Pengecekan");
       }
-      if (showService) {
-        const serviceData = filteredServices.map((x, i) => ({
+      if (showservis) {
+        const servisData = filteredserviss.map((x, i) => ({
           "No": i + 1, "Tanggal Servis": formatDate(x.created_at), "Kode PC": x.unit_id, "Kendala Servis": x.problem, "Catatan": x.notes || "-", "Teknisi": x.technician || "-", "Status Tiket": x.status
         }));
-        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(serviceData), "Servis");
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(servisData), "Servis");
       }
 
       XLSX.writeFile(wb, `Laporan_Rekap_DCC_${new Date().toISOString().slice(0,10)}.xlsx`);
@@ -1537,7 +1537,7 @@
     }
 
     async function sendReportToChat() {
-      const { filteredLoans, filteredChecking, filteredServices, showLoan, showChecking, showService } = getFilteredData();
+      const { filteredLoans, filteredChecking, filteredserviss, showLoan, showChecking, showservis } = getFilteredData();
       const fromVal = $("recap-date-from").value;
       const toVal = $("recap-date-to").value;
       const periodStr = (fromVal || toVal) ? `${fromVal || 'Awal'} s/d ${toVal || 'Hari ini'}` : "Keseluruhan Tanggal";
@@ -1549,7 +1549,7 @@
       summaryMsg += `*📊 RINGKASAN DATA:*\n`;
       if (showLoan) summaryMsg += `• 🤝 *Peminjaman:* ${filteredLoans.length} Record\n`;
       if (showChecking) summaryMsg += `• 🔍 *Pengecekan:* ${filteredChecking.length} Record\n`;
-      if (showService) summaryMsg += `• 🛠️ *Servis:* ${filteredServices.length} Record\n`;
+      if (showservis) summaryMsg += `• 🛠️ *Servis:* ${filteredserviss.length} Record\n`;
 
       summaryMsg += `\n------------------------------------\n`;
       summaryMsg += `_ℹ️ Unduh laporan lengkap format Excel (.xlsx) di Laman Rekap Statistik._`;
@@ -1641,49 +1641,49 @@
       }).join("") || `<tr><td class="p-6 text-center opacity-70" colspan="${state.loanSelectMode ? 8 : 7}">Belum ada peminjaman.</td></tr>`;
     }
 
-    function toggleServiceSelectMode() {
-      state.serviceSelectMode = !state.serviceSelectMode;
-      state.selectedServiceIds.clear();
-      $("lbl-svc-select").textContent = state.serviceSelectMode ? "Batal Pilih" : "Mode Pilih";
-      show($("btn-svc-select-all"), state.serviceSelectMode);
-      show($("btn-svc-delete-selected"), state.serviceSelectMode);
-      updateServiceSelectedCount();
-      renderServicesList();
+    function toggleservisSelectMode() {
+      state.servisSelectMode = !state.servisSelectMode;
+      state.selectedservisIds.clear();
+      $("lbl-svc-select").textContent = state.servisSelectMode ? "Batal Pilih" : "Mode Pilih";
+      show($("btn-svc-select-all"), state.servisSelectMode);
+      show($("btn-svc-delete-selected"), state.servisSelectMode);
+      updateservisSelectedCount();
+      renderservissList();
     }
 
-    function toggleServiceSelectAll() {
-      if (state.selectedServiceIds.size === state.services.length) {
-        state.selectedServiceIds.clear();
+    function toggleservisSelectAll() {
+      if (state.selectedservisIds.size === state.serviss.length) {
+        state.selectedservisIds.clear();
       } else {
-        state.services.forEach(s => state.selectedServiceIds.add(String(s.id)));
+        state.serviss.forEach(s => state.selectedservisIds.add(String(s.id)));
       }
-      updateServiceSelectedCount();
-      renderServicesList();
+      updateservisSelectedCount();
+      renderservissList();
     }
 
-    function handleServiceCheckChange(id, checked) {
-      if (checked) state.selectedServiceIds.add(String(id));
-      else state.selectedServiceIds.delete(String(id));
-      updateServiceSelectedCount();
+    function handleservisCheckChange(id, checked) {
+      if (checked) state.selectedservisIds.add(String(id));
+      else state.selectedservisIds.delete(String(id));
+      updateservisSelectedCount();
     }
 
-    function updateServiceSelectedCount() {
-      const count = state.selectedServiceIds.size;
+    function updateservisSelectedCount() {
+      const count = state.selectedservisIds.size;
       $("svc-selected-count").textContent = count;
       $("btn-svc-delete-selected").disabled = count === 0;
       $("btn-svc-delete-selected").classList.toggle("opacity-50", count === 0);
     }
 
-    async function deleteSelectedServices() {
-      const idsToDelete = Array.from(state.selectedServiceIds);
+    async function deleteSelectedserviss() {
+      const idsToDelete = Array.from(state.selectedservisIds);
       if (idsToDelete.length === 0) return alert("Pilih minimal satu tiket servis!");
       if (!confirm(`Konfirmasi Hapus:\nApakah Anda yakin ingin menghapus ${idsToDelete.length} tiket servis terpilih?`)) return;
 
-      const { error } = await sb.from("services").delete().in("id", idsToDelete);
+      const { error } = await sb.from("serviss").delete().in("id", idsToDelete);
       if (error) return alert("Gagal menghapus: " + error.message);
 
-      state.selectedServiceIds.clear();
-      state.serviceSelectMode = false;
+      state.selectedservisIds.clear();
+      state.servisSelectMode = false;
       $("lbl-svc-select").textContent = "Mode Pilih";
       show($("btn-svc-select-all"), false);
       show($("btn-svc-delete-selected"), false);
@@ -1691,31 +1691,31 @@
       alert("Berhasil menghapus tiket servis terpilih.");
     }
 
-    function renderServicesList() {
-      $("svc-list").innerHTML = state.services.map((x) => {
-        const isChecked = state.selectedServiceIds.has(String(x.id));
+    function renderservissList() {
+      $("svc-list").innerHTML = state.serviss.map((x) => {
+        const isChecked = state.selectedservisIds.has(String(x.id));
         return `
         <article class="glass-card glass-card-hover rounded-3xl p-5 shadow-lg flex items-center justify-between gap-3">
           <div class="flex items-center gap-3.5 flex-1 min-w-0">
-            ${state.serviceSelectMode ? `<input type="checkbox" ${isChecked ? "checked" : ""} onchange="handleServiceCheckChange('${x.id}', this.checked)" class="h-5 w-5 rounded app-input shrink-0 cursor-pointer accent-ios-blue" />` : ""}
+            ${state.servisSelectMode ? `<input type="checkbox" ${isChecked ? "checked" : ""} onchange="handleservisCheckChange('${x.id}', this.checked)" class="h-5 w-5 rounded app-input shrink-0 cursor-pointer accent-ios-blue" />` : ""}
             <div class="truncate">
               <h5 class="font-bold text-sm truncate"><span class="custom-accent-text cursor-pointer hover:underline" onclick="viewPCDetail('${esc(x.unit_id)}')">${esc(x.unit_id || "Unit")}</span> · ${esc(x.problem)}</h5>
               <p class="text-xs opacity-75 mt-1 truncate">${esc(x.technician || "-")} · ${esc(x.notes || "")}</p>
             </div>
           </div>
           <div class="flex items-center gap-2 shrink-0">
-            <select onchange="setServiceStatus('${x.id}', this.value)" class="app-input rounded-xl px-3 py-1.5 text-xs font-semibold focus:outline-none shadow-sm">
+            <select onchange="setservisStatus('${x.id}', this.value)" class="app-input rounded-xl px-3 py-1.5 text-xs font-semibold focus:outline-none shadow-sm">
               ${["open","in_progress","done"].map((s) => `<option ${s===x.status?"selected":""}>${s}</option>`).join("")}
             </select>
-            ${!state.serviceSelectMode ? `<button onclick="deleteSingleService('${x.id}')" class="p-2 opacity-60 hover:opacity-100 hover:text-ios-pink text-xs transition" title="Hapus"><i class="fa-solid fa-trash"></i></button>` : ""}
+            ${!state.servisSelectMode ? `<button onclick="deleteSingleservis('${x.id}')" class="p-2 opacity-60 hover:opacity-100 hover:text-ios-pink text-xs transition" title="Hapus"><i class="fa-solid fa-trash"></i></button>` : ""}
           </div>
         </article>`;
       }).join("") || `<p class="opacity-70 text-sm p-4 text-center">Belum ada tiket servis.</p>`;
     }
 
-    async function deleteSingleService(id) {
+    async function deleteSingleservis(id) {
       if (!confirm("Apakah Anda yakin ingin menghapus tiket servis ini?")) return;
-      const { error } = await sb.from("services").delete().eq("id", id);
+      const { error } = await sb.from("serviss").delete().eq("id", id);
       if (error) return alert("Gagal menghapus: " + error.message);
       await refreshAll();
     }
@@ -1723,15 +1723,15 @@
     function renderAll() {
       fillUnitSelects();
 
-      const componentServices = state.services.filter(s => !s.problem || !s.problem.includes("[CHECKING"));
+      const componentserviss = state.serviss.filter(s => !s.problem || !s.problem.includes("[CHECKING"));
       const activeLoans = state.loans.filter(l => l.status !== "returned");
-      const activeComponentServices = componentServices.filter(s => s.status !== "done");
+      const activeComponentserviss = componentserviss.filter(s => s.status !== "done");
 
       $("home-cards").innerHTML = [
         ["Total Unit", state.computers.length, "fa-computer", "text-ios-blue"],
         ["Tersedia", state.computers.filter((x) => x.status === "available").length, "fa-circle-check", "text-ios-green"],
         ["Pinjaman Aktif", activeLoans.length, "fa-handshake", "text-ios-orange"],
-        ["service komponen", componentServices.length, "fa-screwdriver-wrench", "text-ios-pink"]
+        ["servis komponen", componentserviss.length, "fa-screwdriver-wrench", "text-ios-pink"]
       ].map(([t, n, i, color]) => `
         <div class="glass-card glass-card-hover rounded-3xl p-5 shadow-lg">
           <p class="text-xs font-semibold opacity-75 mb-1.5 flex items-center gap-2"><i class="fa-solid ${i} ${color} text-sm"></i>${t}</p>
@@ -1752,7 +1752,7 @@
         </tr>`;
       }).join("") || `<tr><td class="p-5 text-center opacity-70" colspan="6">Tidak ada peminjaman aktif.</td></tr>`;
 
-      $("tbl-home-active-services").innerHTML = activeComponentServices.map((x) => `
+      $("tbl-home-active-serviss").innerHTML = activeComponentserviss.map((x) => `
         <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition">
           <td class="p-3.5 font-semibold custom-accent-text cursor-pointer hover:underline" onclick="viewPCDetail('${esc(x.unit_id)}')">${esc(x.unit_id)}</td>
           <td>${esc(x.problem)} <span class="opacity-75">(${esc(x.notes || '-')})</span></td>
@@ -1781,7 +1781,7 @@
         </tr>`).join("") || `<tr><td class="p-6 text-center opacity-70" colspan="8">Belum ada data unit.</td></tr>`;
 
       renderLoansList();
-      renderServicesList();
+      renderservissList();
       renderRecapTables();
       renderChat();
     }
@@ -2014,7 +2014,7 @@
 
       if (uErr) return alert(uErr.message);
 
-      const { error } = await sb.from("services").insert({
+      const { error } = await sb.from("serviss").insert({
         unit_id,
         problem: "[CHECKING RUTIN] " + condition,
         technician: state.member?.full_name || "staff",
@@ -2027,49 +2027,49 @@
       alert("Status kelengkapan stok komputer berhasil diperbarui.");
     };
 
-    window.submitCheckingService = async () => {
+    window.submitCheckingservis = async () => {
       const unit_id = $("chk-unit").value;
       if (!unit_id) return alert("Pilih unit komputer terlebih dahulu!");
 
       const svcNotes = $("svc-chk-notes").value.trim();
       if (!svcNotes) return alert("Masukkan catatan kendala kerusakan komponen!");
 
-      const serviceComps = [];
-      const updateServiceIndicators = {};
+      const servisComps = [];
+      const updateservisIndicators = {};
 
-      if ($("svc-chk-komputer").checked) { serviceComps.push("Komputer"); updateServiceIndicators.komputer_st = "service"; }
-      if ($("svc-chk-monitor").checked) { serviceComps.push("Monitor"); updateServiceIndicators.monitor_st = "service"; }
-      if ($("svc-chk-mouse").checked) { serviceComps.push("Mouse"); updateServiceIndicators.mouse_st = "service"; }
-      if ($("svc-chk-keyboard").checked) { serviceComps.push("Keyboard"); updateServiceIndicators.keyboard_st = "service"; }
-      if ($("svc-chk-ups").checked) { serviceComps.push("UPS"); updateServiceIndicators.ups_st = "service"; }
+      if ($("svc-chk-komputer").checked) { servisComps.push("Komputer"); updateservisIndicators.komputer_st = "servis"; }
+      if ($("svc-chk-monitor").checked) { servisComps.push("Monitor"); updateservisIndicators.monitor_st = "servis"; }
+      if ($("svc-chk-mouse").checked) { servisComps.push("Mouse"); updateservisIndicators.mouse_st = "servis"; }
+      if ($("svc-chk-keyboard").checked) { servisComps.push("Keyboard"); updateservisIndicators.keyboard_st = "servis"; }
+      if ($("svc-chk-ups").checked) { servisComps.push("UPS"); updateservisIndicators.ups_st = "servis"; }
 
-      if (serviceComps.length === 0) return alert("Pilih minimal satu komponen yang akan diservis!");
+      if (servisComps.length === 0) return alert("Pilih minimal satu komponen yang akan diservis!");
 
-      if (!confirm(`[VERIFIKASI SERVIS]\nUnit: ${unit_id}\nKomponen: ${serviceComps.join(", ")}\nKendala: ${svcNotes}`)) return;
+      if (!confirm(`[VERIFIKASI SERVIS]\nUnit: ${unit_id}\nKomponen: ${servisComps.join(", ")}\nKendala: ${svcNotes}`)) return;
 
-      const { error: sErr } = await sb.from("services").insert({
+      const { error: sErr } = await sb.from("serviss").insert({
         unit_id,
-        problem: `[SERVIS KOMPONEN] ${serviceComps.join(", ")}`,
+        problem: `[SERVIS KOMPONEN] ${servisComps.join(", ")}`,
         technician: state.member?.full_name || "staff",
         notes: svcNotes,
         status: "open"
       });
       if (sErr) return alert(sErr.message);
 
-      updateServiceIndicators.status = "maintenance";
-      await sb.from("computers").update(updateServiceIndicators).eq("id", unit_id);
+      updateservisIndicators.status = "maintenance";
+      await sb.from("computers").update(updateservisIndicators).eq("id", unit_id);
 
       $("svc-chk-notes").value = "";
       ["svc-chk-komputer", "svc-chk-monitor", "svc-chk-mouse", "svc-chk-keyboard", "svc-chk-ups"].forEach(id => $(id).checked = false);
 
       await refreshAll();
-      alert("service komponen berhasil dikirim & indikator stok berubah menjadi Kuning.");
+      alert("servis komponen berhasil dikirim & indikator stok berubah menjadi Kuning.");
     };
 
-    $("form-service").onsubmit = async (e) => {
+    $("form-servis").onsubmit = async (e) => {
       e.preventDefault();
       const unit_id = $("svc-unit").value;
-      const { error } = await sb.from("services").insert({
+      const { error } = await sb.from("serviss").insert({
         unit_id,
         problem: $("svc-problem").value.trim(),
         technician: $("svc-tech").value.trim() || state.member?.full_name,
@@ -2078,13 +2078,13 @@
       });
       if (error) return alert(error.message);
       await sb.from("computers").update({ status: "maintenance" }).eq("id", unit_id);
-      $("modal-service").close();
+      $("modal-servis").close();
       e.target.reset();
       await refreshAll();
     };
 
-    window.setServiceStatus = async (id, status) => {
-      const { error } = await sb.from("services").update({ status }).eq("id", id);
+    window.setservisStatus = async (id, status) => {
+      const { error } = await sb.from("serviss").update({ status }).eq("id", id);
       if (error) return alert(error.message);
       await refreshAll();
     };
@@ -2319,7 +2319,7 @@
       draw("chart-type", "pie", { labels: Object.keys(typeCount), datasets: [{ data: Object.values(typeCount), backgroundColor: palette }] });
       draw("chart-ops", "bar", {
         labels: ["Komputer", "Pinjaman", "Servis", "Member"],
-        datasets: [{ label: "Rekap DCC", data: [state.computers.length, state.loans.length, state.services.length, state.members.length], backgroundColor: ["#007AFF", "#34C759", "#FF2D55", "#5856D6"] }]
+        datasets: [{ label: "Rekap DCC", data: [state.computers.length, state.loans.length, state.serviss.length, state.members.length], backgroundColor: ["#007AFF", "#34C759", "#FF2D55", "#5856D6"] }]
       });
     }
 
