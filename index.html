@@ -244,6 +244,7 @@
                     <th class="p-3.5">Kode PC</th>
                     <th>Peminjam</th>
                     <th>Keperluan</th>
+                    <th>Kantor / Lokasi</th>
                     <th>Periode Pinjam</th>
                     <th>Status</th>
                   </tr>
@@ -328,6 +329,7 @@
                   <th class="p-4">Unit</th>
                   <th>Peminjam</th>
                   <th>Keperluan</th>
+                  <th>Kantor / Lokasi</th>
                   <th>Periode Pinjam</th>
                   <th>Status</th>
                   <th class="text-right p-4">Aksi</th>
@@ -476,7 +478,7 @@
             <div class="glass-card rounded-3xl shadow-lg overflow-x-auto">
               <table class="w-full text-left text-xs md:text-sm">
                 <thead class="uppercase tracking-wider">
-                  <tr><th class="p-3.5 w-12 text-center">No</th><th>Tanggal Pinjam</th><th>Kode PC</th><th>Periode Pinjam</th><th>Keterangan</th><th>Status</th></tr>
+                  <tr><th class="p-3.5 w-12 text-center">No</th><th>Tanggal Pinjam</th><th>Kode PC</th><th>Periode Pinjam</th><th>Peminjam & Keperluan</th><th>Kantor / Lokasi</th><th>Status</th></tr>
                 </thead>
                 <tbody id="tbl-recap-loan"></tbody>
               </table>
@@ -801,13 +803,15 @@
     </form>
   </dialog>
 
-  <!-- MODAL LOAN -->
+  <!-- MODAL LOAN (DENGAN PENAMBAHAN KANTOR / HEAD OFFICE) -->
   <dialog id="modal-loan" class="glass-card rounded-3xl p-6 w-[min(92vw,480px)] shadow-2xl m-auto">
     <form id="form-loan" class="space-y-4">
       <h4 class="text-lg font-bold">Peminjaman Baru & Batas Waktu</h4>
       <div><label class="block text-xs font-semibold mb-1 opacity-80">Pilih Unit Komputer (Tersedia)</label><select id="loan-unit" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm"></select></div>
       <div><label class="block text-xs font-semibold mb-1 opacity-80">Nama Peminjam</label><input id="loan-borrower" required placeholder="Nama peminjam" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" /></div>
       <div><label class="block text-xs font-semibold mb-1 opacity-80">Keperluan</label><input id="loan-purpose" required placeholder="Keperluan peminjaman" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" /></div>
+      <!-- DITAMBAHKAN INPUT KANTOR / HEAD OFFICE -->
+      <div><label class="block text-xs font-semibold mb-1 opacity-80">Kantor / Head Office (Lokasi Unit Dipinjam)</label><input id="loan-office" required placeholder="Contoh: Kantor Pengasuhan / Gedung Indonesia 1" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" /></div>
       <div class="grid grid-cols-2 gap-3">
         <div><label class="block text-xs font-semibold mb-1 opacity-80">Dari Tanggal</label><input type="date" id="loan-start" required class="w-full app-input rounded-xl px-3.5 py-2 text-base md:text-sm focus:outline-none shadow-sm" /></div>
         <div><label class="block text-xs font-semibold mb-1 opacity-80">Sampai Tanggal</label><input type="date" id="loan-end" required class="w-full app-input rounded-xl px-3.5 py-2 text-base md:text-sm focus:outline-none shadow-sm" /></div>
@@ -838,6 +842,7 @@
         <p class="opacity-80">Unit PC: <span id="ret-unit-label" class="font-bold custom-accent-text text-sm"></span></p>
         <p class="opacity-80">Peminjam: <span id="ret-borrower-label" class="font-bold text-sm"></span></p>
         <p class="opacity-80">Keperluan: <span id="ret-purpose-label" class="font-bold italic"></span></p>
+        <p class="opacity-80">Lokasi Kantor: <span id="ret-office-label" class="font-bold custom-accent-text"></span></p>
         <p class="opacity-80">Periode: <span id="ret-period-label" class="font-bold"></span></p>
       </div>
       <div class="pt-2 border-t border-black/10 dark:border-white/10">
@@ -1027,7 +1032,6 @@
       btn.onclick = () => switchView(btn.dataset.view);
     });
 
-    // DAFTAR AKUN
     $("form-register").onsubmit = async (e) => {
       e.preventDefault();
       toast("Mendaftarkan...");
@@ -1045,7 +1049,6 @@
       $("login-email").value = email;
     };
 
-    // LOGIKA MASUK (LOGIN) YANG LEBIH AMAN DARI INVALID API KEY
     $("form-login").onsubmit = async (e) => {
       e.preventDefault();
       toast("Memeriksa...");
@@ -1057,7 +1060,6 @@
         return toast("Gagal Masuk: " + authErr.message);
       }
 
-      // Pastikan email selalu terdaftar di tabel members
       const { data: memberData } = await sb.from("members").select("*").eq("email", email).maybeSingle();
       if (!memberData) {
         await sb.from("members").upsert({
@@ -1153,7 +1155,6 @@
       return isNaN(d.getTime()) ? dStr : d.toLocaleDateString("id-ID", { year: 'numeric', month: 'short', day: 'numeric' });
     }
 
-    // INTERAKTIF: KLIK KODE PC
     window.viewPCDetail = (pcId) => {
       const pc = state.computers.find(x => x.id === pcId);
       if (!pc) return;
@@ -1188,7 +1189,7 @@
       $("modal-view-spec").showModal();
     };
 
-    // INTERAKTIF: KLIK STATUS PEMINJAM
+    // INTERAKTIF: KLIK STATUS PEMINJAM (DISESUAIKAN DENGAN KANTOR / HEAD OFFICE)
     window.viewBorrowerDetail = (pcId) => {
       const pc = state.computers.find(x => x.id === pcId);
       if (!pc) return;
@@ -1206,6 +1207,10 @@
             <div>
               <span class="opacity-70 block">Nama Peminjam:</span>
               <span class="font-bold text-sm custom-accent-text">${esc(activeLoan.borrower)}</span>
+            </div>
+            <div>
+              <span class="opacity-70 block">Kantor / Head Office (Lokasi):</span>
+              <span class="font-bold text-sm text-ios-indigo">${esc(activeLoan.office || '-')}</span>
             </div>
             <div>
               <span class="opacity-70 block">Keperluan:</span>
@@ -1268,8 +1273,9 @@
           <td class="font-semibold custom-accent-text cursor-pointer hover:underline" onclick="viewPCDetail('${esc(x.unit_id)}')">${esc(x.unit_id)}</td>
           <td>${formatDate(x.start_date)} s/d ${formatDate(x.end_date)}</td>
           <td><span class="font-medium">${esc(x.borrower)}</span> (${esc(x.purpose)})</td>
+          <td><span class="font-semibold text-ios-indigo">${esc(x.office || '-')}</span></td>
           <td><span class="px-2.5 py-0.5 rounded-full text-xs font-semibold ${x.status === 'returned' ? 'bg-ios-green/20 text-ios-green' : 'bg-ios-orange/20 text-ios-orange'}">${esc(x.status)}</span></td>
-        </tr>`).join("") || `<tr><td class="p-6 text-center opacity-70" colspan="6">Tidak ada data peminjaman dalam rentang tanggal ini.</td></tr>`;
+        </tr>`).join("") || `<tr><td class="p-6 text-center opacity-70" colspan="7">Tidak ada data peminjaman dalam rentang tanggal ini.</td></tr>`;
 
       $("tbl-recap-checking").innerHTML = filteredChecking.map((x, idx) => `
         <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition">
@@ -1318,7 +1324,7 @@
       if (showLoan) {
         const loanData = filteredLoans.map((x, i) => ({
           "No": i + 1, "Tanggal Pinjam": formatDate(x.start_date || x.created_at), "Kode PC": x.unit_id,
-          "Tanggal Dari": x.start_date || "-", "Tanggal Sampai": x.end_date || "-", "Peminjam": x.borrower, "Keperluan": x.purpose, "Status": x.status
+          "Tanggal Dari": x.start_date || "-", "Tanggal Sampai": x.end_date || "-", "Peminjam": x.borrower, "Keperluan": x.purpose, "Kantor / Lokasi": x.office || "-", "Status": x.status
         }));
         XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(loanData), "Peminjaman");
       }
@@ -1422,6 +1428,7 @@
       await refreshAll();
     }
 
+    // TABEL LOG PEMINJAMAN (DENGAN PENAMBAHAN KANTOR / LOKASI)
     function renderLoansList() {
       show($("th-loan-select"), state.loanSelectMode);
       $("tbl-loans").innerHTML = state.loans.map((x) => {
@@ -1432,14 +1439,15 @@
           <td class="p-4 font-semibold custom-accent-text cursor-pointer hover:underline" onclick="viewPCDetail('${esc(x.unit_id)}')">${esc(x.unit_id)}</td>
           <td>${esc(x.borrower)}</td>
           <td>${esc(x.purpose)}</td>
+          <td><span class="font-semibold text-ios-indigo">${esc(x.office || '-')}</span></td>
           <td><span class="text-xs font-medium opacity-90">${esc(x.start_date || '-')} s/d ${esc(x.end_date || '-')}</span></td>
           <td><span class="px-2.5 py-0.5 rounded-full text-xs font-semibold ${x.status === 'returned' ? 'bg-ios-green/20 text-ios-green' : 'bg-ios-orange/20 text-ios-orange'}">${esc(x.status)}</span></td>
           <td class="p-4 text-right flex items-center justify-end gap-2">
-            ${x.status !== "returned" ? `<button class="text-xs px-3 py-1.5 rounded-xl custom-accent-bg text-white font-semibold transition shadow-md active:scale-95" onclick="openReturnModal('${x.id}','${esc(x.unit_id)}','${esc(x.borrower)}','${esc(x.purpose)}','${esc(x.start_date || '')} s/d ${esc(x.end_date || '')}')">Kembalikan</button>` : ""}
+            ${x.status !== "returned" ? `<button class="text-xs px-3 py-1.5 rounded-xl custom-accent-bg text-white font-semibold transition shadow-md active:scale-95" onclick="openReturnModal('${x.id}','${esc(x.unit_id)}','${esc(x.borrower)}','${esc(x.purpose)}','${esc(x.office || '')}','${esc(x.start_date || '')} s/d ${esc(x.end_date || '')}')">Kembalikan</button>` : ""}
             ${!state.loanSelectMode ? `<button onclick="deleteSingleLoan('${x.id}')" class="p-1.5 opacity-60 hover:opacity-100 hover:text-ios-pink text-xs transition" title="Hapus"><i class="fa-solid fa-trash"></i></button>` : ""}
           </td>
         </tr>`;
-      }).join("") || `<tr><td class="p-6 text-center opacity-70" colspan="${state.loanSelectMode ? 7 : 6}">Belum ada peminjaman.</td></tr>`;
+      }).join("") || `<tr><td class="p-6 text-center opacity-70" colspan="${state.loanSelectMode ? 8 : 7}">Belum ada peminjaman.</td></tr>`;
     }
 
     function toggleServiceSelectMode() {
@@ -1544,9 +1552,10 @@
           <td class="p-3.5 font-semibold custom-accent-text cursor-pointer hover:underline" onclick="viewPCDetail('${esc(x.unit_id)}')">${esc(x.unit_id)}</td>
           <td><span class="font-medium">${esc(x.borrower)}</span></td>
           <td>${esc(x.purpose)}</td>
+          <td><span class="font-semibold text-ios-indigo">${esc(x.office || '-')}</span></td>
           <td><span class="text-xs font-medium opacity-90">${formatDate(x.start_date)} s/d ${formatDate(x.end_date)}</span></td>
           <td><span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-ios-orange/20 text-ios-orange cursor-pointer" onclick="viewBorrowerDetail('${esc(x.unit_id)}')">${esc(x.status)}</span></td>
-        </tr>`).join("") || `<tr><td class="p-5 text-center opacity-70" colspan="5">Tidak ada peminjaman aktif.</td></tr>`;
+        </tr>`).join("") || `<tr><td class="p-5 text-center opacity-70" colspan="6">Tidak ada peminjaman aktif.</td></tr>`;
 
       $("tbl-home-active-services").innerHTML = activeComponentServices.map((x) => `
         <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition">
@@ -1633,6 +1642,7 @@
       await refreshAll();
     };
 
+    // SUBMIT PEMINJAMAN DENGAN PENAMBAHAN FIELD OFFICE
     $("form-loan").onsubmit = async (e) => {
       e.preventDefault();
       const unit_id = $("loan-unit").value;
@@ -1646,11 +1656,12 @@
 
       const borrower = $("loan-borrower").value.trim();
       const purpose = $("loan-purpose").value.trim();
+      const office = $("loan-office").value.trim();
       const start_date = $("loan-start").value;
       const end_date = $("loan-end").value;
 
       const row = {
-        unit_id, borrower, purpose, start_date, end_date, status: "active"
+        unit_id, borrower, purpose, office, start_date, end_date, status: "active"
       };
       const { error } = await sb.from("loans").insert(row);
       if (error) return alert(error.message);
@@ -1669,12 +1680,13 @@
       await refreshAll();
     };
 
-    window.openReturnModal = (id, unit, borrower, purpose, period) => {
+    window.openReturnModal = (id, unit, borrower, purpose, office, period) => {
       $("ret-loan-id").value = id;
       $("ret-unit-id").value = unit;
       $("ret-unit-label").textContent = unit;
       $("ret-borrower-label").textContent = borrower;
       $("ret-purpose-label").textContent = purpose;
+      $("ret-office-label").textContent = office;
       $("ret-period-label").textContent = period;
       ["ret-komputer", "ret-monitor", "ret-mouse", "ret-keyboard", "ret-ups"].forEach(chkId => $(chkId).checked = true);
       $("modal-return").showModal();
