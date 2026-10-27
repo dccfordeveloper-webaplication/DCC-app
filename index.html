@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>DCC Monitor v1.1.2</title>
+  <title>DCC Monitor</title>
   
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
@@ -292,7 +292,7 @@
         <section id="view-computers" class="space-y-4 max-w-6xl mx-auto hide">
           <div class="flex items-center justify-between">
             <h3 class="text-xl font-bold tracking-tight">Stok Komputer & Kelengkapan</h3>
-            <button data-open="modal-computer" class="px-4 py-2.5 rounded-xl custom-accent-bg text-white text-xs md:text-sm font-semibold shadow-lg transition active:scale-95 flex items-center gap-2"><i class="fa-solid fa-plus"></i>Unit Baru</button>
+            <button onclick="openNewComputerModal()" class="px-4 py-2.5 rounded-xl custom-accent-bg text-white text-xs md:text-sm font-semibold shadow-lg transition active:scale-95 flex items-center gap-2"><i class="fa-solid fa-plus"></i>Unit Baru</button>
           </div>
           <div class="glass-card rounded-3xl shadow-lg overflow-x-auto">
             <table class="w-full text-left text-sm">
@@ -720,7 +720,7 @@
   <dialog id="modal-computer" class="glass-card rounded-3xl p-6 w-[min(92vw,600px)] shadow-2xl m-auto max-h-[90vh] overflow-y-auto">
     <form id="form-computer" class="space-y-4">
       <div class="flex items-center justify-between border-b border-black/10 dark:border-white/10 pb-3">
-        <h4 class="text-lg font-bold">Tambah / Perbarui Unit Komputer</h4>
+        <h4 id="modal-computer-title" class="text-lg font-bold">Tambah / Perbarui Unit Komputer</h4>
         <button type="button" data-close class="opacity-70 hover:opacity-100"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
 
@@ -1013,7 +1013,6 @@
     const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkd2d0b2hvaXptZ3pjbWFyeWJqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIzMzYzNTYsImV4cCI6MjEwNzkxMjM1Nn0._uxw-rNIysobQATHIOTha5Zhfk0HtYNwq4wQiejhlW8";
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-    // KUNCI PERBAIKAN SCHEMA DATABASE: Gunakan 'services' (huruf s tunggal)
     const DB_SERVICE_TABLE = "services";
 
     const state = {
@@ -1758,7 +1757,8 @@
           <td class="text-center">${renderIndicator(x.mouse_st || 'ok')}</td>
           <td class="text-center">${renderIndicator(x.keyboard_st || 'ok')}</td>
           <td class="text-center">${renderIndicator(x.ups_st || 'ok')}</td>
-          <td class="p-4 text-right">
+          <td class="p-4 text-right flex items-center justify-end gap-1.5">
+            <button class="opacity-70 hover:text-ios-blue p-1 transition" onclick="openEditComputer('${esc(x.id)}')" title="Edit Unit Komputer"><i class="fa-solid fa-pen-to-square"></i></button>
             <button class="opacity-70 hover:text-ios-pink p-1 transition" onclick="removeComputer('${esc(x.id)}')"><i class="fa-solid fa-trash"></i></button>
           </td>
         </tr>`).join("") || `<tr><td class="p-6 text-center opacity-70" colspan="8">Belum ada data unit.</td></tr>`;
@@ -1772,6 +1772,63 @@
     function esc(s) {
       return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[c]));
     }
+
+    // Fungsi Buka Modal Tambah Unit Baru
+    function openNewComputerModal() {
+      $("form-computer").reset();
+      $("pc-id").disabled = false;
+      $("modal-computer-title").textContent = "Tambah Unit Komputer Baru";
+      $("modal-computer").showModal();
+    }
+
+    // Fungsi Buka Modal Edit Unit Komputer Berdasarkan ID
+    window.openEditComputer = (id) => {
+      const pc = state.computers.find(x => x.id === id);
+      if (!pc) return;
+
+      $("modal-computer-title").textContent = "Edit Unit Komputer: " + pc.id;
+      $("pc-id").value = pc.id;
+      $("pc-id").disabled = true; // Kunci ID agar primary key tidak berubah saat diedit
+      $("pc-status").value = pc.status || "available";
+
+      let specs = {};
+      try { specs = JSON.parse(pc.specs || "{}"); } catch(e) {}
+
+      $("spec-processor").value = specs.processor || pc.model || "";
+      $("spec-motherboard").value = specs.motherboard || "";
+      $("spec-psu").value = specs.psu || "";
+      $("spec-gpu").value = specs.gpu || pc.type || "";
+      $("spec-mouse").value = specs.mouse || "";
+      $("spec-keyboard").value = specs.keyboard || "";
+      $("spec-monitor").value = specs.monitor || "";
+
+      const ram = specs.ram || {};
+      $("spec-ram-brand").value = ram.brand || "";
+      $("spec-ram-qty").value = ram.qty || 1;
+      $("spec-ram-cap").value = ram.capacity || "";
+
+      const ssd = specs.ssd || {};
+      $("spec-ssd-brand").value = ssd.brand || "";
+      $("spec-ssd-qty").value = ssd.qty || 1;
+      $("spec-ssd-cap").value = ssd.capacity || "";
+
+      const hdd = specs.hdd || {};
+      $("spec-hdd-brand").value = hdd.brand || "";
+      $("spec-hdd-qty").value = hdd.qty || 0;
+      $("spec-hdd-cap").value = hdd.capacity || "";
+
+      const ups = specs.ups || {};
+      $("spec-ups-brand").value = ups.brand || "";
+      $("spec-ups-cap").value = ups.capacity || "";
+
+      $("pc-komputer-st").value = pc.komputer_st || "ok";
+      $("pc-monitor-st").value = pc.monitor_st || "ok";
+      $("pc-mouse-st").value = pc.mouse_st || "ok";
+      $("pc-keyboard-st").value = pc.keyboard_st || "ok";
+      $("pc-ups-st").value = pc.ups_st || "ok";
+
+      $("modal-computer").showModal();
+    };
 
     $("form-computer").onsubmit = async (e) => {
       e.preventDefault();
@@ -1810,7 +1867,7 @@
       $("modal-computer").close();
       e.target.reset();
       await refreshAll();
-      alert("Unit komputer berhasil disimpan!");
+      alert("Data unit komputer berhasil disimpan!");
     };
 
     window.removeComputer = async (id) => {
