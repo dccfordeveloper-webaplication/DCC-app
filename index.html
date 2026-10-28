@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>DCC Monitor</title>
+  <title>DCC Monitor v1.1.2</title>
   
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
@@ -208,10 +208,11 @@
           <span class="font-bold text-sm">Menu DCC</span>
           <button id="btn-close-sidebar" class="p-1 opacity-70 hover:opacity-100"><i class="fa-solid fa-xmark text-lg"></i></button>
         </div>
-        <nav class="space-y-1.5 flex-1">
+        <nav class="space-y-1.5 flex-1 overflow-y-auto">
           <button data-view="home" class="nav-item active w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center"><i class="fa-solid fa-house w-6 text-center mr-2.5"></i>Beranda</button>
           <button data-view="computers" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center"><i class="fa-solid fa-computer w-6 text-center mr-2.5"></i>Stok Komputer</button>
           <button data-view="loans" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center"><i class="fa-solid fa-handshake w-6 text-center mr-2.5"></i>Peminjaman</button>
+          <button data-view="special-loans" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center"><i class="fa-solid fa-box-open w-6 text-center mr-2.5"></i>Peminjaman Spesial</button>
           <button data-view="checking" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center"><i class="fa-solid fa-clipboard-check w-6 text-center mr-2.5"></i>Pengecekan</button>
           <button data-view="serviss" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center"><i class="fa-solid fa-screwdriver-wrench w-6 text-center mr-2.5"></i>Servis</button>
           <button data-view="recap" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center"><i class="fa-solid fa-chart-column w-6 text-center mr-2.5"></i>Rekap Statistik</button>
@@ -238,7 +239,7 @@
 
           <div class="space-y-3">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <h4 class="text-base font-bold flex items-center gap-2"><i class="fa-solid fa-handshake text-ios-orange"></i> Peminjaman Sedang Berjalan</h4>
+              <h4 class="text-base font-bold flex items-center gap-2"><i class="fa-solid fa-handshake text-ios-orange"></i> Peminjaman Komputer Full-Set Sedang Berjalan</h4>
               
               <div class="flex flex-wrap items-center gap-2 text-[11px] font-semibold">
                 <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 border border-yellow-500/30">
@@ -266,6 +267,25 @@
                   </tr>
                 </thead>
                 <tbody id="tbl-home-active-loans"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="space-y-3">
+            <h4 class="text-base font-bold flex items-center gap-2"><i class="fa-solid fa-box-open text-ios-teal"></i> Peminjaman Spesial (Satuan/Komponen) Sedang Berjalan</h4>
+            <div class="glass-card rounded-3xl shadow-lg overflow-x-auto">
+              <table class="w-full text-left text-xs md:text-sm">
+                <thead class="uppercase tracking-wider">
+                  <tr>
+                    <th class="p-3.5">Jenis / Nama Barang</th>
+                    <th>Peminjam</th>
+                    <th>Keperluan</th>
+                    <th>Kantor / Lokasi</th>
+                    <th>Periode Pinjam</th>
+                    <th>Peringatan Batas Waktu</th>
+                  </tr>
+                </thead>
+                <tbody id="tbl-home-active-special-loans"></tbody>
               </table>
             </div>
           </div>
@@ -316,7 +336,7 @@
         <!-- LOANS -->
         <section id="view-loans" class="space-y-4 max-w-6xl mx-auto hide">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <h3 class="text-xl font-bold tracking-tight">Log Peminjaman</h3>
+            <h3 class="text-xl font-bold tracking-tight">Log Peminjaman Komputer Full-Set</h3>
             
             <div class="flex flex-wrap items-center gap-2">
               <button id="btn-loan-toggle-select" onclick="toggleLoanSelectMode()" class="px-3.5 py-2 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/10 text-xs font-semibold transition flex items-center gap-1.5">
@@ -352,6 +372,44 @@
                 </tr>
               </thead>
               <tbody id="tbl-loans"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- SPECIAL LOANS -->
+        <section id="view-special-loans" class="space-y-4 max-w-6xl mx-auto hide">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <h3 class="text-xl font-bold tracking-tight">Log Peminjaman Spesial (Satuan / Komponen)</h3>
+            
+            <div class="flex flex-wrap items-center gap-2">
+              <div class="flex items-center gap-1.5">
+                <label class="text-xs font-semibold opacity-80">Filter Jenis:</label>
+                <select id="filter-special-type" onchange="renderSpecialLoansList()" class="app-input rounded-xl px-3 py-1.5 text-xs focus:outline-none shadow-sm">
+                  <option value="">Semua Jenis Barang</option>
+                </select>
+              </div>
+
+              <button onclick="openNewSpecialLoanModal()" class="px-4 py-2.5 rounded-xl custom-accent-bg text-white text-xs md:text-sm font-semibold shadow-lg transition active:scale-95 flex items-center gap-2">
+                <i class="fa-solid fa-plus"></i>Tambah Peminjaman Spesial
+              </button>
+            </div>
+          </div>
+
+          <div class="glass-card rounded-3xl shadow-lg overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead class="text-xs uppercase tracking-wider">
+                <tr>
+                  <th class="p-4">Jenis Barang</th>
+                  <th>Nama Barang</th>
+                  <th>Spesifikasi & Qty</th>
+                  <th>Peminjam</th>
+                  <th>Keperluan & Kantor</th>
+                  <th>Periode Pinjam</th>
+                  <th>Status</th>
+                  <th class="text-right p-4">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="tbl-special-loans"></tbody>
             </table>
           </div>
         </section>
@@ -491,7 +549,8 @@
             <div class="pt-3 border-t border-black/10 dark:border-white/10">
               <label class="block text-xs font-semibold mb-2 custom-accent-text">Filter Kategori Tampilan Data</label>
               <div class="flex flex-wrap gap-4 text-xs font-medium">
-                <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="filter-cat-loan" checked onchange="renderRecapTables()" class="rounded app-input h-4 w-4 accent-ios-blue" /> Peminjaman</label>
+                <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="filter-cat-loan" checked onchange="renderRecapTables()" class="rounded app-input h-4 w-4 accent-ios-blue" /> Peminjaman Komputer</label>
+                <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="filter-cat-special" checked onchange="renderRecapTables()" class="rounded app-input h-4 w-4 accent-ios-blue" /> Peminjaman Spesial</label>
                 <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="filter-cat-checking" checked onchange="renderRecapTables()" class="rounded app-input h-4 w-4 accent-ios-blue" /> Pengecekan</label>
                 <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="filter-cat-servis" checked onchange="renderRecapTables()" class="rounded app-input h-4 w-4 accent-ios-blue" /> Servis</label>
               </div>
@@ -499,13 +558,25 @@
           </div>
 
           <div id="recap-sec-loan" class="space-y-2">
-            <h4 class="text-base font-bold flex items-center gap-2"><i class="fa-solid fa-handshake text-ios-orange"></i> Rekap Peminjaman</h4>
+            <h4 class="text-base font-bold flex items-center gap-2"><i class="fa-solid fa-handshake text-ios-orange"></i> Rekap Peminjaman Komputer Full-Set</h4>
             <div class="glass-card rounded-3xl shadow-lg overflow-x-auto">
               <table class="w-full text-left text-xs md:text-sm">
                 <thead class="uppercase tracking-wider">
                   <tr><th class="p-3.5 w-12 text-center">No</th><th>Tanggal Pinjam</th><th>Kode PC</th><th>Periode Pinjam</th><th>Peminjam & Keperluan</th><th>Kantor / Lokasi</th><th>Status</th></tr>
                 </thead>
                 <tbody id="tbl-recap-loan"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div id="recap-sec-special" class="space-y-2">
+            <h4 class="text-base font-bold flex items-center gap-2"><i class="fa-solid fa-box-open text-ios-teal"></i> Rekap Peminjaman Spesial</h4>
+            <div class="glass-card rounded-3xl shadow-lg overflow-x-auto">
+              <table class="w-full text-left text-xs md:text-sm">
+                <thead class="uppercase tracking-wider">
+                  <tr><th class="p-3.5 w-12 text-center">No</th><th>Tanggal Pinjam</th><th>Jenis & Nama Barang</th><th>Spesifikasi / Qty</th><th>Periode Pinjam</th><th>Peminjam & Keperluan</th><th>Kantor / Lokasi</th><th>Status</th></tr>
+                </thead>
+                <tbody id="tbl-recap-special"></tbody>
               </table>
             </div>
           </div>
@@ -601,6 +672,7 @@
       <button data-view="home" class="bottom-nav-btn active flex flex-col items-center gap-0.5 text-[10px] font-medium transition"><i class="fa-solid fa-house text-base"></i><span>Beranda</span></button>
       <button data-view="computers" class="bottom-nav-btn flex flex-col items-center gap-0.5 text-[10px] font-medium transition"><i class="fa-solid fa-computer text-base"></i><span>Stok</span></button>
       <button data-view="loans" class="bottom-nav-btn flex flex-col items-center gap-0.5 text-[10px] font-medium transition"><i class="fa-solid fa-handshake text-base"></i><span>Pinjam</span></button>
+      <button data-view="special-loans" class="bottom-nav-btn flex flex-col items-center gap-0.5 text-[10px] font-medium transition"><i class="fa-solid fa-box-open text-base"></i><span>Spesial</span></button>
       <button data-view="serviss" class="bottom-nav-btn flex flex-col items-center gap-0.5 text-[10px] font-medium transition"><i class="fa-solid fa-screwdriver-wrench text-base"></i><span>Servis</span></button>
       <button data-view="chat" class="bottom-nav-btn flex flex-col items-center gap-0.5 text-[10px] font-medium transition"><i class="fa-solid fa-comments text-base"></i><span>Chat</span></button>
     </nav>
@@ -688,7 +760,8 @@
       <div class="flex justify-between"><span class="opacity-75">Rentang Tanggal:</span><span id="rep-period-label" class="font-bold custom-accent-text"></span></div>
       <div class="flex justify-between"><span class="opacity-75">Kategori Aktif:</span><span id="rep-cat-label" class="font-bold"></span></div>
       <div class="pt-2 border-t border-black/10 dark:border-white/10 space-y-1">
-        <div class="flex justify-between"><span class="opacity-80">· Data Peminjaman:</span><span id="rep-count-loan" class="font-bold">0</span></div>
+        <div class="flex justify-between"><span class="opacity-80">· Peminjaman Komputer:</span><span id="rep-count-loan" class="font-bold">0</span></div>
+        <div class="flex justify-between"><span class="opacity-80">· Peminjaman Spesial:</span><span id="rep-count-special" class="font-bold">0</span></div>
         <div class="flex justify-between"><span class="opacity-80">· Data Pengecekan:</span><span id="rep-count-checking" class="font-bold">0</span></div>
         <div class="flex justify-between"><span class="opacity-80">· Data Servis:</span><span id="rep-count-servis" class="font-bold">0</span></div>
       </div>
@@ -831,6 +904,107 @@
     </form>
   </dialog>
 
+  <!-- MODAL SPECIAL LOAN (TAMBAH / EDIT PEMINJAMAN SPESIAL) -->
+  <dialog id="modal-special-loan" class="glass-card rounded-3xl p-6 w-[min(92vw,500px)] shadow-2xl m-auto max-h-[90vh] overflow-y-auto">
+    <form id="form-special-loan" class="space-y-4">
+      <input type="hidden" id="special-loan-id" />
+      <div class="flex items-center justify-between border-b border-black/10 dark:border-white/10 pb-3">
+        <h4 id="modal-special-title" class="text-lg font-bold">Catat Peminjaman Spesial</h4>
+        <button type="button" data-close class="opacity-70 hover:opacity-100"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold mb-1 opacity-80">Jenis Barang</label>
+        <input id="spl-item-type" required placeholder="Contoh: Monitor, Printer, Kabel, dll." class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" />
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold mb-1 opacity-80">Nama Barang</label>
+        <input id="spl-item-name" required placeholder="Contoh: LG 24 inch / Epson L3210" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" />
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-semibold mb-1 opacity-80">Spesifikasi</label>
+          <input id="spl-specification" placeholder="Contoh: Full HD / Warna Hitam" class="w-full app-input rounded-xl px-3.5 py-2 text-xs md:text-sm focus:outline-none shadow-sm" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1 opacity-80">Jumlah (Qty)</label>
+          <input type="number" id="spl-qty" min="1" value="1" required class="w-full app-input rounded-xl px-3.5 py-2 text-xs md:text-sm focus:outline-none shadow-sm" />
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold mb-1 opacity-80">Nama Peminjam</label>
+        <input id="spl-borrower" required placeholder="Nama peminjam" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" />
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold mb-1 opacity-80">Keperluan</label>
+        <input id="spl-purpose" required placeholder="Keperluan peminjaman" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" />
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold mb-1 opacity-80">Kantor / Tempat</label>
+        <input id="spl-office" required placeholder="Contoh: Kantor Pengasuhan / Gedung Serbaguna" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" />
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-semibold mb-1 opacity-80">Tanggal Pinjam</label>
+          <input type="date" id="spl-start" required class="w-full app-input rounded-xl px-3.5 py-2 text-base md:text-sm focus:outline-none shadow-sm" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1 opacity-80">Tanggal Kembali</label>
+          <input type="date" id="spl-end" required class="w-full app-input rounded-xl px-3.5 py-2 text-base md:text-sm focus:outline-none shadow-sm" />
+        </div>
+      </div>
+
+      <div class="flex gap-2 justify-end pt-2 border-t border-black/10 dark:border-white/10">
+        <button type="button" data-close class="px-4 py-2 text-xs opacity-75 hover:opacity-100 font-semibold">Batal</button>
+        <button type="submit" class="px-5 py-2.5 custom-accent-bg text-white text-xs rounded-xl font-semibold shadow-md">Simpan Peminjaman Spesial</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- MODAL SPECIAL RETURN (PENGEMBALIAN SPESIAL DENGAN 2 PILIHAN) -->
+  <dialog id="modal-special-return" class="glass-card rounded-3xl p-6 w-[min(92vw,480px)] shadow-2xl m-auto">
+    <div class="space-y-4">
+      <div class="flex items-center justify-between border-b border-black/10 dark:border-white/10 pb-3">
+        <h4 class="text-lg font-bold text-ios-teal"><i class="fa-solid fa-box-archive mr-1"></i> Pengembalian Barang Spesial</h4>
+        <button onclick="$('modal-special-return').close()" class="opacity-70 hover:opacity-100"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      
+      <input type="hidden" id="ret-special-id" />
+      <div class="space-y-1 bg-black/5 dark:bg-white/5 p-3.5 rounded-2xl text-xs font-medium">
+        <p class="opacity-80">Barang: <span id="ret-spl-item" class="font-bold custom-accent-text text-sm"></span></p>
+        <p class="opacity-80">Peminjam: <span id="ret-spl-borrower" class="font-bold"></span></p>
+        <p class="opacity-80">Lokasi: <span id="ret-spl-office" class="font-bold"></span></p>
+      </div>
+
+      <p class="text-xs font-bold opacity-90">Pilih kondisi pengembalian barang:</p>
+
+      <div class="space-y-2.5">
+        <button onclick="executeSpecialReturn('normal')" class="w-full py-3.5 rounded-xl bg-ios-green hover:opacity-90 active:scale-[0.98] text-white font-semibold text-xs md:text-sm transition shadow-md flex items-center justify-center gap-2">
+          <i class="fa-solid fa-circle-check"></i> Berfungsi Normal (Kondisi Baik)
+        </button>
+        <button onclick="openSpecialReturnIssue()" class="w-full py-3.5 rounded-xl bg-ios-pink hover:opacity-90 active:scale-[0.98] text-white font-semibold text-xs md:text-sm transition shadow-md flex items-center justify-center gap-2">
+          <i class="fa-solid fa-triangle-exclamation"></i> Tidak Berfungsi Normal / Ada Kendala
+        </button>
+      </div>
+
+      <div id="special-issue-box" class="hide pt-3 border-t border-black/10 dark:border-white/10 space-y-2">
+        <label class="block text-xs font-semibold text-ios-pink">Masukkan Keterangan Kendala / Kerusakan:</label>
+        <textarea id="spl-issue-note" rows="3" class="w-full app-input rounded-xl p-3 text-xs focus:outline-none" placeholder="Jelaskan kendala atau kerusakan barang..."></textarea>
+        <button onclick="executeSpecialReturn('damaged')" class="w-full py-2.5 rounded-xl bg-ios-pink text-white font-semibold text-xs transition">Simpan Laporan Kendala & Kembalikan</button>
+      </div>
+
+      <div class="flex justify-end pt-2 border-t border-black/10 dark:border-white/10">
+        <button onclick="$('modal-special-return').close()" class="px-4 py-2 text-xs opacity-75 hover:opacity-100 font-semibold">Tutup</button>
+      </div>
+    </div>
+  </dialog>
+
   <!-- MODAL LOAN -->
   <dialog id="modal-loan" class="glass-card rounded-3xl p-6 w-[min(92vw,480px)] shadow-2xl m-auto">
     <form id="form-loan" class="space-y-4">
@@ -881,22 +1055,22 @@
 
         <p class="font-semibold text-ios-blue">1. KETENTUAN UMUM PEMINJAMAN:</p>
         <ul class="list-disc pl-4 space-y-1 opacity-90">
-          <li>Peminjam bertanggung jawab penuh atas unit komputer beserta seluruh periferal yang diterima dalam kondisi baik.</li>
-          <li>Unit komputer hanya boleh dipergunakan untuk kepentingan operasional kantor/lembaga resmi yang telah disetujui.</li>
-          <li>Peminjam dilarang memindah tangankan unit kepada pihak ketiga tanpa persetujuan tertulis dari pihak pengelola DCC.</li>
+          <li>Peminjam bertanggung jawab penuh atas barang atau unit komputer beserta seluruh periferal yang diterima dalam kondisi baik.</li>
+          <li>Barang hanya boleh dipergunakan untuk kepentingan operasional kantor/lembaga resmi yang telah disetujui.</li>
+          <li>Peminjam dilarang memindah tangankan barang kepada pihak ketiga tanpa persetujuan tertulis dari pihak pengelola DCC.</li>
         </ul>
 
         <p class="font-semibold text-ios-orange">2. TATA TERTIB PEMAKAIAN & PERAWATAN:</p>
         <ul class="list-disc pl-4 space-y-1 opacity-90">
-          <li>Peminjam wajib menjaga kebersihan, kerapihan, dan keamanan unit selama masa peminjaman.</li>
+          <li>Peminjam wajib menjaga kebersihan, kerapihan, dan keamanan barang selama masa peminjaman.</li>
           <li>Dilarang membongkar, mengganti komponen internal, atau merusak segel perangkat.</li>
-          <li>Wajib mematikan perangkat secara benar setelah selesai digunakan.</li>
+          <li>Wajib mematikan dan menyimpan perangkat secara benar setelah selesai digunakan.</li>
         </ul>
 
         <p class="font-semibold text-ios-pink">3. TANGGUNG JAWAB RISIKO & KERUSAKAN:</p>
         <ul class="list-disc pl-4 space-y-1 opacity-90">
-          <li>Apabila terjadi kerusakan akibat kelalaian pemakai, peminjam bersedia menanggung biaya perbaikan atau penggantian unit.</li>
-          <li>Apabila terjadi kehilangan unit atau komponen, peminjam wajib mengganti unit sesuai dengan spesifikasi semula.</li>
+          <li>Apabila terjadi kerusakan akibat kelalaian pemakai, peminjam bersedia menanggung biaya perbaikan atau penggantian barang.</li>
+          <li>Apabila terjadi kehilangan barang atau komponen, peminjam wajib mengganti barang sesuai dengan spesifikasi semula.</li>
         </ul>
 
         <div class="pt-3 border-t border-black/10 dark:border-white/10 text-center font-bold text-ios-green">
@@ -1019,6 +1193,7 @@
       member: null,
       computers: [],
       loans: [],
+      specialLoans: [],
       serviss: [],
       members: [],
       messages: [],
@@ -1030,7 +1205,8 @@
       selectedservisIds: new Set(),
       loanSelectMode: false,
       selectedLoanIds: new Set(),
-      pendingLoanPayload: null
+      pendingLoanPayload: null,
+      pendingSpecialPayload: null
     };
 
     const $ = (id) => document.getElementById(id);
@@ -1118,7 +1294,7 @@
       document.querySelectorAll(".nav-item").forEach((x) => x.classList.toggle("active", x.dataset.view === targetView));
       document.querySelectorAll(".bottom-nav-btn").forEach((x) => x.classList.toggle("active", x.dataset.view === targetView));
 
-      ["home","computers","loans","checking","serviss","recap","chat"].forEach((v) => show($("view-" + v), v === targetView));
+      ["home","computers","loans","special-loans","checking","serviss","recap","chat"].forEach((v) => show($("view-" + v), v === targetView));
       if (targetView === "recap") {
         renderRecapTables();
         renderCharts();
@@ -1216,15 +1392,17 @@
     }
 
     async function refreshAll() {
-      const [c, l, s, m, ch] = await Promise.all([
+      const [c, l, sl, s, m, ch] = await Promise.all([
         sb.from("computers").select("*").order("id"),
         sb.from("loans").select("*").order("created_at", { ascending: false }),
+        sb.from("special_loans").select("*").order("created_at", { ascending: false }),
         sb.from(DB_SERVICE_TABLE).select("*").order("created_at", { ascending: false }),
         sb.from("members").select("*").order("full_name"),
         sb.from("chat_messages").select("*").order("created_at", { ascending: true }).limit(200)
       ]);
       state.computers = c.data || [];
       state.loans = l.data || [];
+      state.specialLoans = sl.data || [];
       state.serviss = s.data || [];
       state.members = m.data || [];
       state.messages = ch.data || [];
@@ -1424,19 +1602,22 @@
       };
 
       const showLoan = $("filter-cat-loan").checked;
+      const showSpecial = $("filter-cat-special").checked;
       const showChecking = $("filter-cat-checking").checked;
       const showservis = $("filter-cat-servis").checked;
 
       const filteredLoans = showLoan ? state.loans.filter(x => filterByDate(x.start_date || x.created_at)) : [];
+      const filteredSpecial = showSpecial ? state.specialLoans.filter(x => filterByDate(x.start_date || x.created_at)) : [];
       const filteredChecking = showChecking ? state.serviss.filter(x => x.problem && x.problem.includes("[CHECKING") && filterByDate(x.created_at)) : [];
       const filteredserviss = showservis ? state.serviss.filter(x => (!x.problem || !x.problem.includes("[CHECKING")) && filterByDate(x.created_at)) : [];
 
-      return { filteredLoans, filteredChecking, filteredserviss, showLoan, showChecking, showservis };
+      return { filteredLoans, filteredSpecial, filteredChecking, filteredserviss, showLoan, showSpecial, showChecking, showservis };
     }
 
     function renderRecapTables() {
-      const { filteredLoans, filteredChecking, filteredserviss, showLoan, showChecking, showservis } = getFilteredData();
+      const { filteredLoans, filteredSpecial, filteredChecking, filteredserviss, showLoan, showSpecial, showChecking, showservis } = getFilteredData();
       show($("recap-sec-loan"), showLoan);
+      show($("recap-sec-special"), showSpecial);
       show($("recap-sec-checking"), showChecking);
       show($("recap-sec-servis"), showservis);
 
@@ -1449,7 +1630,19 @@
           <td><span class="font-medium">${esc(x.borrower)}</span> (${esc(x.purpose)})</td>
           <td><span class="font-semibold text-ios-indigo">${esc(x.office || '-')}</span></td>
           <td><span class="px-2.5 py-0.5 rounded-full text-xs font-semibold ${x.status === 'returned' ? 'bg-ios-green/20 text-ios-green' : 'bg-ios-orange/20 text-ios-orange'}">${esc(x.status)}</span></td>
-        </tr>`).join("") || `<tr><td class="p-6 text-center opacity-70" colspan="7">Tidak ada data peminjaman dalam rentang tanggal ini.</td></tr>`;
+        </tr>`).join("") || `<tr><td class="p-6 text-center opacity-70" colspan="7">Tidak ada data peminjaman komputer dalam rentang tanggal ini.</td></tr>`;
+
+      $("tbl-recap-special").innerHTML = filteredSpecial.map((x, idx) => `
+        <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition">
+          <td class="p-3.5 text-center font-semibold opacity-70">${idx + 1}</td>
+          <td>${formatDate(x.start_date || x.created_at)}</td>
+          <td><span class="font-bold custom-accent-text">${esc(x.item_type)}</span><br/><span class="text-xs opacity-75">${esc(x.item_name)}</span></td>
+          <td>${esc(x.specification || '-')} (${x.qty} Unit)</td>
+          <td>${formatDate(x.start_date)} s/d ${formatDate(x.end_date)}</td>
+          <td><span class="font-medium">${esc(x.borrower)}</span> (${esc(x.purpose)})</td>
+          <td><span class="font-semibold text-ios-indigo">${esc(x.office || '-')}</span></td>
+          <td><span class="px-2.5 py-0.5 rounded-full text-xs font-semibold ${x.status === 'returned' ? 'bg-ios-green/20 text-ios-green' : 'bg-ios-orange/20 text-ios-orange'}">${esc(x.status)}</span></td>
+        </tr>`).join("") || `<tr><td class="p-6 text-center opacity-70" colspan="8">Tidak ada data peminjaman spesial dalam rentang tanggal ini.</td></tr>`;
 
       $("tbl-recap-checking").innerHTML = filteredChecking.map((x, idx) => `
         <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition">
@@ -1472,19 +1665,21 @@
     }
 
     function openReportModal() {
-      const { filteredLoans, filteredChecking, filteredserviss, showLoan, showChecking, showservis } = getFilteredData();
+      const { filteredLoans, filteredSpecial, filteredChecking, filteredserviss, showLoan, showSpecial, showChecking, showservis } = getFilteredData();
       const fromVal = $("recap-date-from").value;
       const toVal = $("recap-date-to").value;
       const periodStr = (fromVal || toVal) ? `${fromVal || 'Awal'} s/d ${toVal || 'Sekarang'}` : "Semua Tanggal";
 
       const catList = [];
-      if (showLoan) catList.push("Peminjaman");
+      if (showLoan) catList.push("Peminjaman Komputer");
+      if (showSpecial) catList.push("Peminjaman Spesial");
       if (showChecking) catList.push("Pengecekan");
       if (showservis) catList.push("Servis");
 
       $("rep-period-label").textContent = periodStr;
       $("rep-cat-label").textContent = catList.join(", ") || "Tidak ada";
       $("rep-count-loan").textContent = filteredLoans.length + " Record";
+      $("rep-count-special").textContent = filteredSpecial.length + " Record";
       $("rep-count-checking").textContent = filteredChecking.length + " Record";
       $("rep-count-servis").textContent = filteredserviss.length + " Record";
 
@@ -1492,7 +1687,7 @@
     }
 
     function exportToExcel() {
-      const { filteredLoans, filteredChecking, filteredserviss, showLoan, showChecking, showservis } = getFilteredData();
+      const { filteredLoans, filteredSpecial, filteredChecking, filteredserviss, showLoan, showSpecial, showChecking, showservis } = getFilteredData();
       const wb = XLSX.utils.book_new();
 
       if (showLoan) {
@@ -1500,7 +1695,14 @@
           "No": i + 1, "Tanggal Pinjam": formatDate(x.start_date || x.created_at), "Kode PC": x.unit_id,
           "Tanggal Dari": x.start_date || "-", "Tanggal Sampai": x.end_date || "-", "Peminjam": x.borrower, "Keperluan": x.purpose, "Kantor / Lokasi": x.office || "-", "Status": x.status
         }));
-        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(loanData), "Peminjaman");
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(loanData), "Peminjaman Komputer");
+      }
+      if (showSpecial) {
+        const specialData = filteredSpecial.map((x, i) => ({
+          "No": i + 1, "Tanggal Pinjam": formatDate(x.start_date || x.created_at), "Jenis Barang": x.item_type, "Nama Barang": x.item_name,
+          "Spesifikasi": x.specification || "-", "Jumlah": x.qty, "Peminjam": x.borrower, "Keperluan": x.purpose, "Kantor / Lokasi": x.office || "-", "Status": x.status, "Keterangan Kondisi": x.condition_note || "-"
+        }));
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(specialData), "Peminjaman Spesial");
       }
       if (showChecking) {
         const checkingData = filteredChecking.map((x, i) => ({
@@ -1520,7 +1722,7 @@
     }
 
     async function sendReportToChat() {
-      const { filteredLoans, filteredChecking, filteredserviss, showLoan, showChecking, showservis } = getFilteredData();
+      const { filteredLoans, filteredSpecial, filteredChecking, filteredserviss, showLoan, showSpecial, showChecking, showservis } = getFilteredData();
       const fromVal = $("recap-date-from").value;
       const toVal = $("recap-date-to").value;
       const periodStr = (fromVal || toVal) ? `${fromVal || 'Awal'} s/d ${toVal || 'Hari ini'}` : "Keseluruhan Tanggal";
@@ -1530,7 +1732,8 @@
       summaryMsg += `📅 *Periode:* ${periodStr}\n`;
       summaryMsg += `------------------------------------\n\n`;
       summaryMsg += `*📊 RINGKASAN DATA:*\n`;
-      if (showLoan) summaryMsg += `• 🤝 *Peminjaman:* ${filteredLoans.length} Record\n`;
+      if (showLoan) summaryMsg += `• 🤝 *Pinjam Komputer:* ${filteredLoans.length} Record\n`;
+      if (showSpecial) summaryMsg += `• 📦 *Pinjam Spesial:* ${filteredSpecial.length} Record\n`;
       if (showChecking) summaryMsg += `• 🔍 *Pengecekan:* ${filteredChecking.length} Record\n`;
       if (showservis) summaryMsg += `• 🛠️ *Servis:* ${filteredserviss.length} Record\n`;
 
@@ -1621,7 +1824,186 @@
             ${!state.loanSelectMode ? `<button onclick="deleteSingleLoan('${x.id}')" class="p-1.5 opacity-60 hover:opacity-100 hover:text-ios-pink text-xs transition" title="Hapus"><i class="fa-solid fa-trash"></i></button>` : ""}
           </td>
         </tr>`;
-      }).join("") || `<tr><td class="p-6 text-center opacity-70" colspan="${state.loanSelectMode ? 8 : 7}">Belum ada peminjaman.</td></tr>`;
+      }).join("") || `<tr><td class="p-6 text-center opacity-70" colspan="${state.loanSelectMode ? 8 : 7}">Belum ada peminjaman komputer full-set.</td></tr>`;
+    }
+
+    // --- LOGIKA PEMINJAMAN SPESIAL (SATUAN/KOMPONEN) ---
+    function openNewSpecialLoanModal() {
+      $("form-special-loan").reset();
+      $("special-loan-id").value = "";
+      $("modal-special-title").textContent = "Catat Peminjaman Spesial Baru";
+      $("modal-special-loan").showModal();
+    }
+
+    window.openEditSpecialLoan = (id) => {
+      const item = state.specialLoans.find(x => x.id === id);
+      if (!item) return;
+
+      $("special-loan-id").value = item.id;
+      $("modal-special-title").textContent = "Edit Peminjaman Spesial: " + item.item_name;
+      $("spl-item-type").value = item.item_type || "";
+      $("spl-item-name").value = item.item_name || "";
+      $("spl-specification").value = item.specification || "";
+      $("spl-qty").value = item.qty || 1;
+      $("spl-borrower").value = item.borrower || "";
+      $("spl-purpose").value = item.purpose || "";
+      $("spl-office").value = item.office || "";
+      $("spl-start").value = item.start_date || "";
+      $("spl-end").value = item.end_date || "";
+
+      $("modal-special-loan").showModal();
+    };
+
+    $("form-special-loan").onsubmit = (e) => {
+      e.preventDefault();
+      state.pendingSpecialPayload = {
+        id: $("special-loan-id").value || null,
+        item_type: $("spl-item-type").value.trim(),
+        item_name: $("spl-item-name").value.trim(),
+        specification: $("spl-specification").value.trim(),
+        qty: parseInt($("spl-qty").value) || 1,
+        borrower: $("spl-borrower").value.trim(),
+        purpose: $("spl-purpose").value.trim(),
+        office: $("spl-office").value.trim(),
+        start_date: $("spl-start").value,
+        end_date: $("spl-end").value,
+        status: "active"
+      };
+
+      $("modal-special-loan").close();
+      
+      // Jika mode tambah baru, tampilkan syarat dan ketentuan peminjaman
+      if (!state.pendingSpecialPayload.id) {
+        const chk = $("chk-agree-terms");
+        const btn = $("btn-confirm-loan");
+        const statusBox = $("terms-scroll-status");
+
+        chk.checked = false;
+        chk.disabled = true;
+        btn.disabled = true;
+        $("lbl-agree-terms").classList.add("opacity-50");
+        statusBox.innerHTML = `<i class="fa-solid fa-arrow-down-long animate-bounce"></i> Silakan scroll teks di atas sampai ke bagian paling bawah`;
+        statusBox.className = "text-[11px] text-ios-orange font-semibold flex items-center justify-center gap-1.5 bg-ios-orange/10 py-1.5 rounded-xl";
+
+        $("modal-terms").showModal();
+        setTimeout(() => checkTermsScroll(), 200);
+      } else {
+        // Jika edit langsung simpan
+        executeSpecialSubmission();
+      }
+    };
+
+    async function executeSpecialSubmission() {
+      const p = state.pendingSpecialPayload;
+      if (!p) return;
+
+      if (p.id) {
+        // Update
+        const { error } = await sb.from("special_loans").update({
+          item_type: p.item_type,
+          item_name: p.item_name,
+          specification: p.specification,
+          qty: p.qty,
+          borrower: p.borrower,
+          purpose: p.purpose,
+          office: p.office,
+          start_date: p.start_date,
+          end_date: p.end_date
+        }).eq("id", p.id);
+        if (error) return alert("Gagal update: " + error.message);
+        alert("Peminjaman spesial berhasil diperbarui!");
+      } else {
+        // Insert baru
+        const { error } = await sb.from("special_loans").insert({
+          item_type: p.item_type,
+          item_name: p.item_name,
+          specification: p.specification,
+          qty: p.qty,
+          borrower: p.borrower,
+          purpose: p.purpose,
+          office: p.office,
+          start_date: p.start_date,
+          end_date: p.end_date,
+          status: "active"
+        });
+        if (error) return alert("Gagal menyimpan: " + error.message);
+        alert("Peminjaman spesial berhasil disimpan!");
+      }
+
+      if ($("modal-terms").open) $("modal-terms").close();
+      state.pendingSpecialPayload = null;
+      await refreshAll();
+    }
+
+    window.openSpecialReturnModal = (id, itemName, borrower, office) => {
+      $("ret-special-id").value = id;
+      $("ret-spl-item").textContent = itemName;
+      $("ret-spl-borrower").textContent = borrower;
+      $("ret-spl-office").textContent = office;
+      $("special-issue-box").classList.add("hide");
+      $("spl-issue-note").value = "";
+      $("modal-special-return").showModal();
+    };
+
+    window.openSpecialReturnIssue = () => {
+      $("special-issue-box").classList.toggle("hide");
+    };
+
+    async function executeSpecialReturn(returnType) {
+      const id = $("ret-special-id").value;
+      const note = $("spl-issue-note").value.trim();
+
+      const updateData = { status: "returned" };
+      if (returnType === 'normal') {
+        updateData.condition_note = "Normal / Berfungsi Baik";
+        alert("Terima kasih sudah menjaga barang dengan baik!");
+      } else {
+        if (!note) return alert("Masukkan keterangan kendala kerusakan barang terlebih dahulu!");
+        updateData.condition_note = "Kendala: " + note;
+      }
+
+      const { error } = await sb.from("special_loans").update(updateData).eq("id", id);
+      if (error) return alert("Gagal mengembalikan: " + error.message);
+
+      $("modal-special-return").close();
+      await refreshAll();
+    }
+
+    async function deleteSpecialLoan(id) {
+      if (!confirm("Apakah Anda yakin ingin menghapus data peminjaman spesial ini?")) return;
+      const { error } = await sb.from("special_loans").delete().eq("id", id);
+      if (error) return alert("Gagal menghapus: " + error.message);
+      await refreshAll();
+    }
+
+    function renderSpecialLoansList() {
+      const typeFilter = $("filter-special-type").value;
+      
+      // Update dropdown filter berdasarkan data unik yang ada
+      const types = [...new Set(state.specialLoans.map(x => x.item_type))];
+      const typeSelect = $("filter-special-type");
+      const currentSelected = typeSelect.value;
+      typeSelect.innerHTML = `<option value="">Semua Jenis Barang</option>` + types.map(t => `<option value="${t}" ${t===currentSelected?"selected":""}>${t}</option>`).join("");
+
+      const filtered = typeFilter ? state.specialLoans.filter(x => x.item_type === typeFilter) : state.specialLoans;
+
+      $("tbl-special-loans").innerHTML = filtered.map((x) => {
+        return `
+        <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition">
+          <td class="p-4 font-bold custom-accent-text">${esc(x.item_type)}</td>
+          <td>${esc(x.item_name)}</td>
+          <td><span class="text-xs">${esc(x.specification || '-')}</span><br/><span class="font-semibold">(${x.qty} Unit)</span></td>
+          <td>${esc(x.borrower)}</td>
+          <td><span class="font-medium">${esc(x.purpose)}</span><br/><span class="text-xs text-ios-indigo font-semibold">${esc(x.office || '-')}</span></td>
+          <td><span class="text-xs font-medium opacity-90">${formatDate(x.start_date)} s/d ${formatDate(x.end_date)}</span></td>
+          <td><span class="px-2.5 py-0.5 rounded-full text-xs font-semibold ${x.status === 'returned' ? 'bg-ios-green/20 text-ios-green' : 'bg-ios-orange/20 text-ios-orange'}">${esc(x.status)}</span></td>
+          <td class="p-4 text-right flex items-center justify-end gap-2">
+            ${x.status !== "returned" ? `<button class="text-xs px-3 py-1.5 rounded-xl custom-accent-bg text-white font-semibold transition shadow-md active:scale-95" onclick="openSpecialReturnModal('${x.id}','${esc(x.item_name)}','${esc(x.borrower)}','${esc(x.office || '')}')">Kembalikan</button>` : ""}
+            <button class="opacity-70 hover:text-ios-blue p-1.5 transition text-xs" onclick="openEditSpecialLoan('${x.id}')" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
+            <button onclick="deleteSpecialLoan('${x.id}')" class="p-1.5 opacity-60 hover:opacity-100 hover:text-ios-pink text-xs transition" title="Hapus"><i class="fa-solid fa-trash"></i></button>
+          </td>
+        </tr>`;
+      }).join("") || `<tr><td class="p-6 text-center opacity-70" colspan="8">Belum ada peminjaman spesial.</td></tr>`;
     }
 
     function toggleservisSelectMode() {
@@ -1708,13 +2090,14 @@
 
       const componentserviss = state.serviss.filter(s => !s.problem || !s.problem.includes("[CHECKING"));
       const activeLoans = state.loans.filter(l => l.status !== "returned");
+      const activeSpecialLoans = state.specialLoans.filter(l => l.status !== "returned");
       const activeComponentserviss = componentserviss.filter(s => s.status !== "done");
 
       $("home-cards").innerHTML = [
         ["Total Unit", state.computers.length, "fa-computer", "text-ios-blue"],
         ["Tersedia", state.computers.filter((x) => x.status === "available").length, "fa-circle-check", "text-ios-green"],
-        ["Pinjaman Aktif", activeLoans.length, "fa-handshake", "text-ios-orange"],
-        ["servis komponen", componentserviss.length, "fa-screwdriver-wrench", "text-ios-pink"]
+        ["Pinjaman PC", activeLoans.length, "fa-handshake", "text-ios-orange"],
+        ["Pinjam Spesial", activeSpecialLoans.length, "fa-box-open", "text-ios-teal"]
       ].map(([t, n, i, color]) => `
         <div class="glass-card glass-card-hover rounded-3xl p-5 shadow-lg">
           <p class="text-xs font-semibold opacity-75 mb-1.5 flex items-center gap-2"><i class="fa-solid ${i} ${color} text-sm"></i>${t}</p>
@@ -1732,7 +2115,20 @@
           <td><span class="text-xs font-medium opacity-90">${formatDate(x.start_date)} s/d ${formatDate(x.end_date)}</span></td>
           <td class="cursor-pointer" onclick="viewBorrowerDetail('${esc(x.unit_id)}')">${deadline.badge}</td>
         </tr>`;
-      }).join("") || `<tr><td class="p-5 text-center opacity-70" colspan="6">Tidak ada peminjaman aktif.</td></tr>`;
+      }).join("") || `<tr><td class="p-5 text-center opacity-70" colspan="6">Tidak ada peminjaman komputer aktif.</td></tr>`;
+
+      $("tbl-home-active-special-loans").innerHTML = activeSpecialLoans.map((x) => {
+        const deadline = getDeadlineStatus(x.end_date);
+        return `
+        <tr class="transition hover:opacity-90 ${deadline.rowBg}">
+          <td class="p-3.5"><span class="font-bold custom-accent-text">${esc(x.item_type)}</span><br/><span class="text-xs opacity-75">${esc(x.item_name)} (${x.qty} Unit)</span></td>
+          <td><span class="font-semibold">${esc(x.borrower)}</span></td>
+          <td>${esc(x.purpose)}</td>
+          <td><span class="font-semibold text-ios-indigo">${esc(x.office || '-')}</span></td>
+          <td><span class="text-xs font-medium opacity-90">${formatDate(x.start_date)} s/d ${formatDate(x.end_date)}</span></td>
+          <td>${deadline.badge}</td>
+        </tr>`;
+      }).join("") || `<tr><td class="p-5 text-center opacity-70" colspan="6">Tidak ada peminjaman spesial aktif.</td></tr>`;
 
       $("tbl-home-active-serviss").innerHTML = activeComponentserviss.map((x) => `
         <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition">
@@ -1764,6 +2160,7 @@
         </tr>`).join("") || `<tr><td class="p-6 text-center opacity-70" colspan="8">Belum ada data unit.</td></tr>`;
 
       renderLoansList();
+      renderSpecialLoansList();
       renderservissList();
       renderRecapTables();
       renderChat();
@@ -1773,7 +2170,6 @@
       return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[c]));
     }
 
-    // Fungsi Buka Modal Tambah Unit Baru
     function openNewComputerModal() {
       $("form-computer").reset();
       $("pc-id").disabled = false;
@@ -1781,14 +2177,13 @@
       $("modal-computer").showModal();
     }
 
-    // Fungsi Buka Modal Edit Unit Komputer Berdasarkan ID
     window.openEditComputer = (id) => {
       const pc = state.computers.find(x => x.id === id);
       if (!pc) return;
 
       $("modal-computer-title").textContent = "Edit Unit Komputer: " + pc.id;
       $("pc-id").value = pc.id;
-      $("pc-id").disabled = true; // Kunci ID agar primary key tidak berubah saat diedit
+      $("pc-id").disabled = true;
       $("pc-status").value = pc.status || "available";
 
       let specs = {};
@@ -1940,6 +2335,12 @@
     };
 
     window.executeLoanSubmission = async () => {
+      // Cek apakah ini konfirmasi untuk peminjaman reguler atau spesial
+      if (state.pendingSpecialPayload) {
+        await executeSpecialSubmission();
+        return;
+      }
+
       if (!state.pendingLoanPayload) return;
 
       const p = state.pendingLoanPayload;
@@ -2356,8 +2757,8 @@
       draw("chart-status", "doughnut", { labels: Object.keys(statusCount), datasets: [{ data: Object.values(statusCount), backgroundColor: palette }] });
       draw("chart-type", "pie", { labels: Object.keys(typeCount), datasets: [{ data: Object.values(typeCount), backgroundColor: palette }] });
       draw("chart-ops", "bar", {
-        labels: ["Komputer", "Pinjaman", "Servis", "Member"],
-        datasets: [{ label: "Rekap DCC v1.1.2", data: [state.computers.length, state.loans.length, state.serviss.length, state.members.length], backgroundColor: ["#007AFF", "#34C759", "#FF2D55", "#5856D6"] }]
+        labels: ["Komputer", "Pinjaman", "Pinj. Spesial", "Servis", "Member"],
+        datasets: [{ label: "Rekap DCC v1.1.2", data: [state.computers.length, state.loans.length, state.specialLoans.length, state.serviss.length, state.members.length], backgroundColor: ["#007AFF", "#34C759", "#5AC8FA", "#FF2D55", "#5856D6"] }]
       });
     }
 
