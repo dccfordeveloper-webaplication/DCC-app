@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>DCC Monitor v1.1.2</title>
+  <title>DCC APP</title>
   
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
@@ -119,7 +119,7 @@
   <section id="screen-auth" class="min-h-screen grid lg:grid-cols-2">
     <div class="p-8 md:p-12 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-slate-300/40 dark:border-slate-700/30">
       <div class="max-w-md mx-auto w-full">
-        <span class="inline-block px-3.5 py-1 rounded-full bg-ios-blue/10 text-ios-blue text-xs font-bold tracking-wider mb-4 shadow-sm">DCC GONTOR v1.1.2</span>
+        <span class="inline-block px-3.5 py-1 rounded-full bg-ios-blue/10 text-ios-blue text-xs font-bold tracking-wider mb-4 shadow-sm">DCC GONTOR Versi 2.0</span>
         <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">Darussalam<br />Computer Center</h1>
         <p class="text-sm opacity-85 mb-8 leading-relaxed">Sistem Monitoring Stok Komputer, Peminjaman, Pengecekan, Servis, dan Ruang Chat Realtime.</p>
         <p class="text-sm opacity-85 mb-8 leading-relaxed">NB: Mohon Konfirmasi Terlebih Dahulu Melalui Email Setelah Melakukan Pendaftaran.</p>
@@ -351,7 +351,7 @@
                 <i class="fa-solid fa-trash-can"></i> <span>Hapus (<span id="loan-selected-count">0</span>)</span>
               </button>
 
-              <button data-open="modal-loan" class="px-4 py-2.5 rounded-xl custom-accent-bg text-white text-xs md:text-sm font-semibold shadow-lg transition active:scale-95 flex items-center gap-2">
+              <button onclick="openNewLoanModal()" class="px-4 py-2.5 rounded-xl custom-accent-bg text-white text-xs md:text-sm font-semibold shadow-lg transition active:scale-95 flex items-center gap-2">
                 <i class="fa-solid fa-plus"></i>Catat Pinjam
               </button>
             </div>
@@ -1005,11 +1005,12 @@
     </div>
   </dialog>
 
-  <!-- MODAL LOAN -->
+  <!-- MODAL LOAN (TAMBAH / EDIT PEMINJAMAN KOMPUTER) -->
   <dialog id="modal-loan" class="glass-card rounded-3xl p-6 w-[min(92vw,480px)] shadow-2xl m-auto">
     <form id="form-loan" class="space-y-4">
-      <h4 class="text-lg font-bold">Peminjaman Baru & Batas Waktu</h4>
-      <div><label class="block text-xs font-semibold mb-1 opacity-80">Pilih Unit Komputer (Tersedia)</label><select id="loan-unit" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm"></select></div>
+      <input type="hidden" id="loan-id" />
+      <h4 id="modal-loan-title" class="text-lg font-bold">Peminjaman Baru & Batas Waktu</h4>
+      <div><label class="block text-xs font-semibold mb-1 opacity-80">Pilih Unit Komputer</label><select id="loan-unit" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm"></select></div>
       <div><label class="block text-xs font-semibold mb-1 opacity-80">Nama Peminjam</label><input id="loan-borrower" required placeholder="Nama peminjam" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" /></div>
       <div><label class="block text-xs font-semibold mb-1 opacity-80">Keperluan</label><input id="loan-purpose" required placeholder="Keperluan peminjaman" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" /></div>
       <div><label class="block text-xs font-semibold mb-1 opacity-80">Kantor / Head Office (Lokasi Unit Dipinjam)</label><input id="loan-office" required placeholder="Contoh: Kantor Pengasuhan / Gedung Indonesia 1" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" /></div>
@@ -1821,6 +1822,7 @@
           <td><span class="px-2.5 py-0.5 rounded-full text-xs font-semibold ${x.status === 'returned' ? 'bg-ios-green/20 text-ios-green' : 'bg-ios-orange/20 text-ios-orange'}">${esc(x.status)}</span></td>
           <td class="p-4 text-right flex items-center justify-end gap-2">
             ${x.status !== "returned" ? `<button class="text-xs px-3 py-1.5 rounded-xl custom-accent-bg text-white font-semibold transition shadow-md active:scale-95" onclick="openReturnModal('${x.id}','${esc(x.unit_id)}','${esc(x.borrower)}','${esc(x.purpose)}','${esc(x.office || '')}','${esc(x.start_date || '')} s/d ${esc(x.end_date || '')}')">Kembalikan</button>` : ""}
+            <button class="opacity-70 hover:text-ios-blue p-1.5 transition text-xs" onclick="openEditLoan('${x.id}')" title="Edit Peminjaman"><i class="fa-solid fa-pen-to-square"></i></button>
             ${!state.loanSelectMode ? `<button onclick="deleteSingleLoan('${x.id}')" class="p-1.5 opacity-60 hover:opacity-100 hover:text-ios-pink text-xs transition" title="Hapus"><i class="fa-solid fa-trash"></i></button>` : ""}
           </td>
         </tr>`;
@@ -1872,7 +1874,6 @@
 
       $("modal-special-loan").close();
       
-      // Jika mode tambah baru, tampilkan syarat dan ketentuan peminjaman
       if (!state.pendingSpecialPayload.id) {
         const chk = $("chk-agree-terms");
         const btn = $("btn-confirm-loan");
@@ -1888,7 +1889,6 @@
         $("modal-terms").showModal();
         setTimeout(() => checkTermsScroll(), 200);
       } else {
-        // Jika edit langsung simpan
         executeSpecialSubmission();
       }
     };
@@ -1898,7 +1898,6 @@
       if (!p) return;
 
       if (p.id) {
-        // Update
         const { error } = await sb.from("special_loans").update({
           item_type: p.item_type,
           item_name: p.item_name,
@@ -1913,7 +1912,6 @@
         if (error) return alert("Gagal update: " + error.message);
         alert("Peminjaman spesial berhasil diperbarui!");
       } else {
-        // Insert baru
         const { error } = await sb.from("special_loans").insert({
           item_type: p.item_type,
           item_name: p.item_name,
@@ -1978,8 +1976,6 @@
 
     function renderSpecialLoansList() {
       const typeFilter = $("filter-special-type").value;
-      
-      // Update dropdown filter berdasarkan data unik yang ada
       const types = [...new Set(state.specialLoans.map(x => x.item_type))];
       const typeSelect = $("filter-special-type");
       const currentSelected = typeSelect.value;
@@ -2272,18 +2268,52 @@
       await refreshAll();
     };
 
+    function openNewLoanModal() {
+      $("form-loan").reset();
+      $("loan-id").value = "";
+      $("modal-loan-title").textContent = "Peminjaman Baru & Batas Waktu";
+      $("loan-unit").disabled = false;
+      $("modal-loan").showModal();
+    }
+
+    window.openEditLoan = (id) => {
+      const loan = state.loans.find(x => x.id == id);
+      if (!loan) return;
+
+      $("loan-id").value = loan.id;
+      $("modal-loan-title").textContent = "Edit Peminjaman Komputer: " + loan.unit_id;
+      
+      // Masukkan unit ke select lalu disable agar tidak mengubah unit komputer saat edit
+      $("loan-unit.innerHTML") = `<option value="${loan.unit_id}">${loan.unit_id}</option>`;
+      $("loan-unit").value = loan.unit_id;
+      $("loan-unit").disabled = true;
+
+      $("loan-borrower").value = loan.borrower || "";
+      $("loan-purpose").value = loan.purpose || "";
+      $("loan-office").value = loan.office || "";
+      $("loan-start").value = loan.start_date || "";
+      $("loan-end").value = loan.end_date || "";
+
+      $("modal-loan").showModal();
+    };
+
     $("form-loan").onsubmit = (e) => {
       e.preventDefault();
+      const loanId = $("loan-id").value;
       const unit_id = $("loan-unit").value;
-      const alreadyActive = state.loans.some(l => l.unit_id === unit_id && l.status === 'active');
-      const targetComp = state.computers.find(c => c.id === unit_id);
+      
+      if (!loanId) {
+        const alreadyActive = state.loans.some(l => l.unit_id === unit_id && l.status === 'active');
+        const targetComp = state.computers.find(c => c.id === unit_id);
 
-      if (alreadyActive || (targetComp && targetComp.status === 'borrowed')) {
-        alert("Gagal: Unit komputer " + unit_id + " sedang dipinjam!");
-        return;
+        if (alreadyActive || (targetComp && targetComp.status === 'borrowed')) {
+          alert("Gagal: Unit komputer " + unit_id + " sedang dipinjam!");
+          return;
+        }
       }
 
       state.pendingLoanPayload = {
+        id: loanId || null,
         unit_id,
         borrower: $("loan-borrower").value.trim(),
         purpose: $("loan-purpose").value.trim(),
@@ -2297,21 +2327,26 @@
         ups: $("loan-ups").checked
       };
 
-      const chk = $("chk-agree-terms");
-      const btn = $("btn-confirm-loan");
-      const statusBox = $("terms-scroll-status");
-
-      chk.checked = false;
-      chk.disabled = true;
-      btn.disabled = true;
-      $("lbl-agree-terms").classList.add("opacity-50");
-      statusBox.innerHTML = `<i class="fa-solid fa-arrow-down-long animate-bounce"></i> Silakan scroll teks di atas sampai ke bagian paling bawah`;
-      statusBox.className = "text-[11px] text-ios-orange font-semibold flex items-center justify-center gap-1.5 bg-ios-orange/10 py-1.5 rounded-xl";
-
       $("modal-loan").close();
-      $("modal-terms").showModal();
 
-      setTimeout(() => checkTermsScroll(), 200);
+      // Jika edit langsung simpan tanpa S&K, jika baru tampilkan S&K
+      if (loanId) {
+        executeLoanSubmission();
+      } else {
+        const chk = $("chk-agree-terms");
+        const btn = $("btn-confirm-loan");
+        const statusBox = $("terms-scroll-status");
+
+        chk.checked = false;
+        chk.disabled = true;
+        btn.disabled = true;
+        $("lbl-agree-terms").classList.add("opacity-50");
+        statusBox.innerHTML = `<i class="fa-solid fa-arrow-down-long animate-bounce"></i> Silakan scroll teks di atas sampai ke bagian paling bawah`;
+        statusBox.className = "text-[11px] text-ios-orange font-semibold flex items-center justify-center gap-1.5 bg-ios-orange/10 py-1.5 rounded-xl";
+
+        $("modal-terms").showModal();
+        setTimeout(() => checkTermsScroll(), 200);
+      }
     };
 
     const termsBox = $("terms-scroll-box");
@@ -2335,7 +2370,6 @@
     };
 
     window.executeLoanSubmission = async () => {
-      // Cek apakah ini konfirmasi untuk peminjaman reguler atau spesial
       if (state.pendingSpecialPayload) {
         await executeSpecialSubmission();
         return;
@@ -2344,33 +2378,50 @@
       if (!state.pendingLoanPayload) return;
 
       const p = state.pendingLoanPayload;
-      const row = {
-        unit_id: p.unit_id,
-        borrower: p.borrower,
-        purpose: p.purpose,
-        office: p.office,
-        start_date: p.start_date,
-        end_date: p.end_date,
-        status: "active"
-      };
 
-      const { error } = await sb.from("loans").insert(row);
-      if (error) return alert(error.message);
+      if (p.id) {
+        // Mode Edit Update
+        const { error } = await sb.from("loans").update({
+          borrower: p.borrower,
+          purpose: p.purpose,
+          office: p.office,
+          start_date: p.start_date,
+          end_date: p.end_date
+        }).eq("id", p.id);
 
-      await sb.from("computers").update({ 
-        status: "borrowed",
-        komputer_st: p.komputer ? 'missing' : 'ok',
-        monitor_st: p.monitor ? 'missing' : 'ok',
-        mouse_st: p.mouse ? 'missing' : 'ok',
-        keyboard_st: p.keyboard ? 'missing' : 'ok',
-        ups_st: p.ups ? 'missing' : 'ok'
-      }).eq("id", p.unit_id);
+        if (error) return alert("Gagal update peminjaman: " + error.message);
+        alert("Data peminjaman berhasil diperbarui!");
+      } else {
+        // Mode Insert Baru
+        const row = {
+          unit_id: p.unit_id,
+          borrower: p.borrower,
+          purpose: p.purpose,
+          office: p.office,
+          start_date: p.start_date,
+          end_date: p.end_date,
+          status: "active"
+        };
 
-      $("modal-terms").close();
+        const { error } = await sb.from("loans").insert(row);
+        if (error) return alert(error.message);
+
+        await sb.from("computers").update({ 
+          status: "borrowed",
+          komputer_st: p.komputer ? 'missing' : 'ok',
+          monitor_st: p.monitor ? 'missing' : 'ok',
+          mouse_st: p.mouse ? 'missing' : 'ok',
+          keyboard_st: p.keyboard ? 'missing' : 'ok',
+          ups_st: p.ups ? 'missing' : 'ok'
+        }).eq("id", p.unit_id);
+        
+        alert("Peminjaman berhasil disimpan!");
+      }
+
+      if ($("modal-terms").open) $("modal-terms").close();
       $("form-loan").reset();
       state.pendingLoanPayload = null;
       await refreshAll();
-      alert("Peminjaman berhasil disimpan!");
     };
 
     window.openReturnModal = (id, unit, borrower, purpose, office, period) => {
