@@ -119,7 +119,7 @@
   <section id="screen-auth" class="min-h-screen grid lg:grid-cols-2">
     <div class="p-8 md:p-12 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-slate-300/40 dark:border-slate-700/30">
       <div class="max-w-md mx-auto w-full">
-        <span class="inline-block px-3.5 py-1 rounded-full bg-ios-blue/10 text-ios-blue text-xs font-bold tracking-wider mb-4 shadow-sm">DCC GONTOR Versi 2.0</span>
+        <span class="inline-block px-3.5 py-1 rounded-full bg-ios-blue/10 text-ios-blue text-xs font-bold tracking-wider mb-4 shadow-sm">DCC APP Versi 2.2</span>
         <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">Darussalam<br />Computer Center</h1>
         <p class="text-sm opacity-85 mb-8 leading-relaxed">Sistem Monitoring Stok Komputer, Peminjaman, Pengecekan, Servis, dan Ruang Chat Realtime.</p>
         <p class="text-sm opacity-85 mb-8 leading-relaxed">NB: Mohon Konfirmasi Terlebih Dahulu Melalui Email Setelah Melakukan Pendaftaran.</p>
@@ -179,7 +179,7 @@
           <img src="favicon-32x32.png" alt="Logo DCC" class="h-full w-full object-cover" />
         </div>
         <div>
-          <h2 class="font-bold text-sm tracking-tight">DCC MONITOR v1.1.2</h2>
+          <h2 class="font-bold text-sm tracking-tight">DCC APP Versi 2.2</h2>
           <p id="whoami" class="text-[11px] opacity-75 truncate">Staff</p>
         </div>
       </div>
@@ -224,7 +224,7 @@
           </a>
         </nav>
         <div class="text-[11px] opacity-70 text-center pt-4 border-t border-black/10 dark:border-white/10 font-medium">
-          Darussalam Computer Center v1.1.2
+          Darussalam Computer Center Versi 2.2
         </div>
       </aside>
 
@@ -1728,7 +1728,7 @@
       const toVal = $("recap-date-to").value;
       const periodStr = (fromVal || toVal) ? `${fromVal || 'Awal'} s/d ${toVal || 'Hari ini'}` : "Keseluruhan Tanggal";
 
-      let summaryMsg = `*📋 LAPORAN REKAP OPERASIONAL DCC (v1.1.2)*\n`;
+      let summaryMsg = `*📋 LAPORAN REKAP OPERASIONAL DCC APP*\n`;
       summaryMsg += `------------------------------------\n`;
       summaryMsg += `📅 *Periode:* ${periodStr}\n`;
       summaryMsg += `------------------------------------\n\n`;
@@ -2807,7 +2807,7 @@
       draw("chart-type", "pie", { labels: Object.keys(typeCount), datasets: [{ data: Object.values(typeCount), backgroundColor: palette }] });
       draw("chart-ops", "bar", {
         labels: ["Komputer", "Pinjaman", "Pinj. Spesial", "Servis", "Member"],
-        datasets: [{ label: "Rekap DCC v1.1.2", data: [state.computers.length, state.loans.length, state.specialLoans.length, state.serviss.length, state.members.length], backgroundColor: ["#007AFF", "#34C759", "#5AC8FA", "#FF2D55", "#5856D6"] }]
+        datasets: [{ label: "Rekap DCC APP", data: [state.computers.length, state.loans.length, state.specialLoans.length, state.serviss.length, state.members.length], backgroundColor: ["#007AFF", "#34C759", "#5AC8FA", "#FF2D55", "#5856D6"] }]
       });
     }
 
