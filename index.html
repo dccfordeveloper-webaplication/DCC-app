@@ -2277,16 +2277,16 @@
     }
 
     window.openEditLoan = (id) => {
-      const loan = state.loans.find(x => x.id == id);
+      const loan = state.loans.find(x => String(x.id) === String(id));
       if (!loan) return;
 
       $("loan-id").value = loan.id;
       $("modal-loan-title").textContent = "Edit Peminjaman Komputer: " + loan.unit_id;
       
-      // Masukkan unit ke select lalu disable agar tidak mengubah unit komputer saat edit
-      $("loan-unit.innerHTML") = `<option value="${loan.unit_id}">${loan.unit_id}</option>`;
+      const allOpts = state.computers.map((x) => `<option value="${x.id}">${x.id}</option>`).join("");
+      $("loan-unit").innerHTML = allOpts;
       $("loan-unit").value = loan.unit_id;
-      $("loan-unit").disabled = true;
+      $("loan-unit").disabled = false;
 
       $("loan-borrower").value = loan.borrower || "";
       $("loan-purpose").value = loan.purpose || "";
@@ -2329,7 +2329,6 @@
 
       $("modal-loan").close();
 
-      // Jika edit langsung simpan tanpa S&K, jika baru tampilkan S&K
       if (loanId) {
         executeLoanSubmission();
       } else {
@@ -2380,8 +2379,8 @@
       const p = state.pendingLoanPayload;
 
       if (p.id) {
-        // Mode Edit Update
         const { error } = await sb.from("loans").update({
+          unit_id: p.unit_id,
           borrower: p.borrower,
           purpose: p.purpose,
           office: p.office,
@@ -2392,7 +2391,6 @@
         if (error) return alert("Gagal update peminjaman: " + error.message);
         alert("Data peminjaman berhasil diperbarui!");
       } else {
-        // Mode Insert Baru
         const row = {
           unit_id: p.unit_id,
           borrower: p.borrower,
