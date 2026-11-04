@@ -40,6 +40,8 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
   <style>
     :root {
       --cust-bg1: #f8fafc;
@@ -237,6 +239,8 @@
           <button data-view="special-loans" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center"><i class="fa-solid fa-box-open w-6 text-center mr-2.5"></i>Peminjaman Spesial</button>
           <button data-view="checking" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center"><i class="fa-solid fa-clipboard-check w-6 text-center mr-2.5"></i>Pengecekan</button>
           <button data-view="serviss" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center"><i class="fa-solid fa-screwdriver-wrench w-6 text-center mr-2.5"></i>Servis</button>
+          <button data-view="inventory" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center"><i class="fa-solid fa-boxes-stacked w-6 text-center mr-2.5"></i>Inventarisasi</button>
+          <button data-view="inv-reports" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center"><i class="fa-solid fa-triangle-exclamation w-6 text-center mr-2.5"></i>Laporan Inventaris</button>
           <button data-view="recap" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center"><i class="fa-solid fa-chart-column w-6 text-center mr-2.5"></i>Rekap Statistik</button>
           <button data-view="chat" class="nav-item w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium flex items-center"><i class="fa-solid fa-comments w-6 text-center mr-2.5"></i>Chat Room</button>
           
@@ -543,6 +547,98 @@
           <div id="svc-list" class="grid gap-3"></div>
         </section>
 
+<!-- INVENTARISASI -->
+        <section id="view-inventory" class="space-y-4 max-w-6xl mx-auto hide">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+            <div>
+              <h3 class="text-xl font-bold tracking-tight">Inventarisasi DCC</h3>
+              <p class="text-xs opacity-70">Data seluruh inventaris dan perlengkapan Darussalam Computer Center.</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <button id="btn-inv-toggle-select" onclick="invToggleSelectMode()" class="px-3.5 py-2 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/10 text-xs font-semibold transition flex items-center gap-1.5"><i class="fa-solid fa-list-check"></i> <span id="lbl-inv-select">Mode Pilih</span></button>
+              <button id="btn-inv-select-all" onclick="invToggleSelectAll()" class="hide px-3.5 py-2 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/10 text-xs font-semibold transition flex items-center gap-1.5"><i class="fa-regular fa-square-check"></i> <span>Pilih Semua</span></button>
+              <button id="btn-inv-delete-selected" onclick="invDeleteSelected()" class="hide px-3.5 py-2 rounded-xl bg-ios-pink/20 text-ios-pink hover:bg-ios-pink/30 text-xs font-semibold transition flex items-center gap-1.5"><i class="fa-solid fa-trash-can"></i> <span>Hapus (<span id="inv-selected-count">0</span>)</span></button>
+              <button onclick="switchView('inv-reports')" class="px-3.5 py-2 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/10 text-xs font-semibold transition flex items-center gap-1.5"><i class="fa-solid fa-clipboard-list"></i> Rekap Laporan</button>
+              <button onclick="openInvReport()" class="px-3.5 py-2 rounded-xl bg-ios-pink/15 text-ios-pink hover:bg-ios-pink/25 text-xs font-semibold transition flex items-center gap-1.5"><i class="fa-solid fa-triangle-exclamation"></i> Laporkan</button>
+              <button onclick="openInvModal()" class="px-4 py-2.5 rounded-xl custom-accent-bg text-white text-xs md:text-sm font-semibold shadow-lg transition active:scale-95 flex items-center gap-2"><i class="fa-solid fa-plus"></i>Tambah Inventaris</button>
+            </div>
+          </div>
+
+          <div class="inv-setup-warn hide rounded-2xl p-4 text-xs bg-ios-orange/15 text-ios-orange border border-ios-orange/40"></div>
+
+          <div id="inv-cards" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3"></div>
+
+          <div class="glass-card rounded-3xl p-3 md:p-4 shadow-lg flex flex-col md:flex-row md:flex-wrap md:items-center gap-2">
+            <div class="relative flex-1 min-w-[180px]">
+              <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-xs opacity-50"></i>
+              <input id="inv-search" oninput="renderInventory()" placeholder="Cari barang, keterangan, penginput..." autocomplete="off" class="w-full app-input rounded-xl pl-9 pr-3 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" />
+            </div>
+            <select id="inv-filter-type" onchange="renderInventory()" class="app-input rounded-xl px-3 py-2.5 text-base md:text-xs focus:outline-none shadow-sm"><option value="">Semua Jenis Barang</option></select>
+            <select id="inv-filter-cond" onchange="renderInventory()" class="app-input rounded-xl px-3 py-2.5 text-base md:text-xs focus:outline-none shadow-sm">
+              <option value="">Semua Kondisi</option><option>Sangat Layak</option><option>Layak</option><option>Tidak Layak</option>
+            </select>
+            <button onclick="invResetFilter()" class="px-3.5 py-2 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/10 text-xs font-semibold transition flex items-center gap-1.5" title="Reset filter"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+            <div class="flex gap-2 md:ml-auto">
+              <button onclick="invDownloadPdf()" class="flex-1 md:flex-none px-3.5 py-2.5 rounded-xl bg-ios-pink text-white text-xs font-semibold shadow-md transition active:scale-95 flex items-center justify-center gap-1.5"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
+              <button onclick="invDownloadExcel()" class="flex-1 md:flex-none px-3.5 py-2.5 rounded-xl bg-ios-green text-white text-xs font-semibold shadow-md transition active:scale-95 flex items-center justify-center gap-1.5"><i class="fa-solid fa-file-excel"></i> Download Excel</button>
+            </div>
+          </div>
+          <p id="inv-export-hint" class="text-[11px] opacity-70 px-1"></p>
+
+          <div class="glass-card rounded-3xl shadow-lg overflow-x-auto hidden md:block">
+            <table class="w-full text-left text-sm">
+              <thead class="text-xs uppercase tracking-wider">
+                <tr>
+                  <th id="inv-th-check" class="hide px-4 py-3 w-10"></th>
+                  <th class="px-4 py-3">Tanggal</th>
+                  <th class="px-3 py-3">Jenis Barang</th>
+                  <th class="px-3 py-3 text-center">Jumlah</th>
+                  <th class="px-3 py-3">Kondisi</th>
+                  <th class="px-3 py-3">Keterangan</th>
+                  <th class="px-3 py-3">Penginput</th>
+                  <th class="px-4 py-3 text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="tbl-inventory"></tbody>
+            </table>
+          </div>
+          <div id="inv-list-mobile" class="grid gap-3 md:hidden"></div>
+        </section>
+
+        <!-- LAPORAN INVENTARIS -->
+        <section id="view-inv-reports" class="space-y-4 max-w-6xl mx-auto hide">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+            <div>
+              <h3 class="text-xl font-bold tracking-tight">Rekap Laporan Inventaris</h3>
+              <p class="text-xs opacity-70">Laporan barang hilang atau rusak yang dikirim dari halaman Inventarisasi.</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <button onclick="switchView('inventory')" class="px-3.5 py-2 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/10 text-xs font-semibold transition flex items-center gap-1.5"><i class="fa-solid fa-boxes-stacked"></i> Inventarisasi</button>
+              <button onclick="openInvReport()" class="px-4 py-2.5 rounded-xl custom-accent-bg text-white text-xs md:text-sm font-semibold shadow-lg transition active:scale-95 flex items-center gap-2"><i class="fa-solid fa-plus"></i>Buat Laporan</button>
+            </div>
+          </div>
+
+          <div class="inv-setup-warn hide rounded-2xl p-4 text-xs bg-ios-orange/15 text-ios-orange border border-ios-orange/40"></div>
+
+          <div id="irp-cards" class="grid grid-cols-3 gap-3"></div>
+
+          <div class="glass-card rounded-3xl p-3 md:p-4 shadow-lg flex flex-col md:flex-row md:flex-wrap md:items-center gap-2">
+            <div class="relative flex-1 min-w-[180px]">
+              <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-xs opacity-50"></i>
+              <input id="irp-search" oninput="renderInvReports()" placeholder="Cari pelapor, barang, catatan..." autocomplete="off" class="w-full app-input rounded-xl pl-9 pr-3 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" />
+            </div>
+            <select id="irp-filter-kind" onchange="renderInvReports()" class="app-input rounded-xl px-3 py-2.5 text-base md:text-xs focus:outline-none shadow-sm">
+              <option value="">Hilang &amp; Rusak</option><option>Hilang</option><option>Rusak</option>
+            </select>
+            <div class="flex gap-2 md:ml-auto">
+              <button onclick="irpDownloadPdf()" class="flex-1 md:flex-none px-3.5 py-2.5 rounded-xl bg-ios-pink text-white text-xs font-semibold shadow-md transition active:scale-95 flex items-center justify-center gap-1.5"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
+              <button onclick="irpDownloadExcel()" class="flex-1 md:flex-none px-3.5 py-2.5 rounded-xl bg-ios-green text-white text-xs font-semibold shadow-md transition active:scale-95 flex items-center justify-center gap-1.5"><i class="fa-solid fa-file-excel"></i> Download Excel</button>
+            </div>
+          </div>
+
+          <div id="irp-list" class="grid gap-3"></div>
+        </section>
+
         <!-- RECAP -->
         <section id="view-recap" class="space-y-6 max-w-6xl mx-auto hide">
           <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -696,6 +792,7 @@
       <button data-view="loans" class="bottom-nav-btn flex flex-col items-center gap-0.5 text-[10px] font-medium transition"><i class="fa-solid fa-handshake text-base"></i><span>Pinjam</span></button>
       <button data-view="special-loans" class="bottom-nav-btn flex flex-col items-center gap-0.5 text-[10px] font-medium transition"><i class="fa-solid fa-box-open text-base"></i><span>Spesial</span></button>
       <button data-view="serviss" class="bottom-nav-btn flex flex-col items-center gap-0.5 text-[10px] font-medium transition"><i class="fa-solid fa-screwdriver-wrench text-base"></i><span>Servis</span></button>
+      <button data-view="inventory" class="bottom-nav-btn flex flex-col items-center gap-0.5 text-[10px] font-medium transition"><i class="fa-solid fa-boxes-stacked text-base"></i><span>Inventaris</span></button>
       <button data-view="chat" class="bottom-nav-btn flex flex-col items-center gap-0.5 text-[10px] font-medium transition"><i class="fa-solid fa-comments text-base"></i><span>Chat</span></button>
     </nav>
   </section>
@@ -1204,6 +1301,102 @@
     </form>
   </dialog>
 
+  <!-- MODAL INVENTARIS (TAMBAH / EDIT) -->
+  <dialog id="modal-inv" class="glass-card rounded-3xl p-6 w-[min(92vw,520px)] shadow-2xl m-auto max-h-[90vh] overflow-y-auto">
+    <form id="form-inv" class="space-y-4">
+      <input type="hidden" id="inv-id" />
+      <div class="flex items-center justify-between border-b border-black/10 dark:border-white/10 pb-3">
+        <h4 id="modal-inv-title" class="text-lg font-bold">Tambah Inventaris</h4>
+        <button type="button" data-close class="opacity-70 hover:opacity-100"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-semibold mb-1 opacity-80">Nama Penginput</label>
+          <input id="inv-inputter" required placeholder="Nama penginput" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1 opacity-80">Tanggal</label>
+          <input type="date" id="inv-date" required class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" />
+        </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div class="sm:col-span-2">
+          <label class="block text-xs font-semibold mb-1 opacity-80">Jenis Barang</label>
+          <input id="inv-type" list="inv-type-list" required autocomplete="off" placeholder="Contoh: Monitor, Kabel LAN, Kursi" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" />
+          <datalist id="inv-type-list"></datalist>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1 opacity-80">Jumlah</label>
+          <input type="number" id="inv-qty" min="1" step="1" value="1" required class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" />
+        </div>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold mb-1.5 opacity-80">Kondisi</label>
+        <div class="grid grid-cols-3 gap-2">
+          <label class="cursor-pointer"><input type="radio" name="inv-cond" value="Sangat Layak" required class="peer sr-only" /><span class="block text-center py-2.5 rounded-xl border border-black/15 dark:border-white/20 text-xs font-semibold transition peer-checked:bg-ios-green peer-checked:text-white peer-checked:border-ios-green peer-focus-visible:ring-2 ring-ios-green">Sangat Layak</span></label>
+          <label class="cursor-pointer"><input type="radio" name="inv-cond" value="Layak" class="peer sr-only" /><span class="block text-center py-2.5 rounded-xl border border-black/15 dark:border-white/20 text-xs font-semibold transition peer-checked:bg-ios-blue peer-checked:text-white peer-checked:border-ios-blue peer-focus-visible:ring-2 ring-ios-blue">Layak</span></label>
+          <label class="cursor-pointer"><input type="radio" name="inv-cond" value="Tidak Layak" class="peer sr-only" /><span class="block text-center py-2.5 rounded-xl border border-black/15 dark:border-white/20 text-xs font-semibold transition peer-checked:bg-ios-pink peer-checked:text-white peer-checked:border-ios-pink peer-focus-visible:ring-2 ring-ios-pink">Tidak Layak</span></label>
+        </div>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold mb-1 opacity-80">Keterangan</label>
+        <textarea id="inv-notes" rows="3" placeholder="Contoh: merk, lokasi penyimpanan, kelengkapan, catatan lain" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm"></textarea>
+      </div>
+      <div class="flex gap-2 justify-end pt-2 border-t border-black/10 dark:border-white/10">
+        <button type="button" data-close class="px-4 py-2 text-xs opacity-75 hover:opacity-100 font-semibold">Batal</button>
+        <button type="submit" id="btn-inv-save" class="px-5 py-2.5 custom-accent-bg text-white text-xs rounded-xl font-semibold shadow-md">Simpan</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- MODAL LAPORKAN BARANG HILANG / RUSAK -->
+  <dialog id="modal-inv-report" class="glass-card rounded-3xl p-6 w-[min(94vw,640px)] shadow-2xl m-auto max-h-[92vh] overflow-y-auto">
+    <form id="form-inv-report" class="space-y-4">
+      <div class="flex items-center justify-between border-b border-black/10 dark:border-white/10 pb-3">
+        <h4 class="text-lg font-bold flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation text-ios-pink"></i> Laporkan Barang Hilang / Rusak</h4>
+        <button type="button" data-close class="opacity-70 hover:opacity-100"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-semibold mb-1 opacity-80">Nama Pelapor</label>
+          <input id="rep-name" required placeholder="Nama pelapor" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1 opacity-80">Tanggal Laporan</label>
+          <div id="rep-date-label" class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm font-semibold opacity-90"></div>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <label class="block text-xs font-semibold opacity-80">Cari &amp; pilih barang yang dilaporkan</label>
+        <div class="flex flex-col sm:flex-row gap-2">
+          <div class="relative flex-1">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-xs opacity-50"></i>
+            <input id="rep-search" oninput="renderRepPicker()" autocomplete="off" placeholder="Cari barang..." class="w-full app-input rounded-xl pl-9 pr-3 py-2.5 text-base md:text-sm focus:outline-none shadow-sm" />
+          </div>
+          <select id="rep-filter-type" onchange="renderRepPicker()" class="app-input rounded-xl px-3 py-2.5 text-base md:text-xs focus:outline-none shadow-sm sm:w-48"><option value="">Semua Jenis Barang</option></select>
+        </div>
+        <div id="rep-avail" class="max-h-56 overflow-y-auto space-y-1.5 pr-0.5"></div>
+      </div>
+
+      <div id="rep-selected-wrap" class="hide space-y-2">
+        <p class="text-xs font-bold text-ios-pink flex items-center gap-1.5"><i class="fa-solid fa-circle-exclamation"></i> Barang yang dilaporkan (<span id="rep-selected-count">0</span>)</p>
+        <div id="rep-selected" class="space-y-2"></div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold mb-1 opacity-80">Catatan <span class="font-normal opacity-70">(opsional)</span></label>
+        <textarea id="rep-notes" rows="3" placeholder="Contoh: terakhir terlihat di ruang lab, rusak karena jatuh, dll." class="w-full app-input rounded-xl px-3.5 py-2.5 text-base md:text-sm focus:outline-none shadow-sm"></textarea>
+      </div>
+      <div class="flex gap-2 justify-end pt-2 border-t border-black/10 dark:border-white/10">
+        <button type="button" data-close class="px-4 py-2 text-xs opacity-75 hover:opacity-100 font-semibold">Batal</button>
+        <button type="submit" class="px-5 py-2.5 bg-ios-pink text-white text-xs rounded-xl font-semibold shadow-md">Kirim Laporan</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="inv-toast" class="hide"></div>
+
   <!-- SUPABASE & APP LOGIC -->
   <script>
     const SUPABASE_URL = "https://rdwgtohoizmgzcmarybj.supabase.co";
@@ -1317,7 +1510,7 @@
       document.querySelectorAll(".nav-item").forEach((x) => x.classList.toggle("active", x.dataset.view === targetView));
       document.querySelectorAll(".bottom-nav-btn").forEach((x) => x.classList.toggle("active", x.dataset.view === targetView));
 
-      ["home","computers","loans","special-loans","checking","serviss","recap","chat"].forEach((v) => show($("view-" + v), v === targetView));
+      ["home","computers","loans","special-loans","checking","serviss","inventory","inv-reports","recap","chat"].forEach((v) => show($("view-" + v), v === targetView));
       if (targetView === "recap") {
         renderRecapTables();
         renderCharts();
@@ -1429,6 +1622,7 @@
       state.serviss = s.data || [];
       state.members = m.data || [];
       state.messages = ch.data || [];
+      try { await loadInventory(false); } catch (e) { console.error(e); }
       renderAll();
     }
 
@@ -2182,6 +2376,8 @@
       renderservissList();
       renderRecapTables();
       renderChat();
+      renderInventory();
+      renderInvReports();
     }
 
     function esc(s) {
@@ -2838,6 +3034,599 @@
       if (!canvas) return;
       if (state.charts[id]) state.charts[id].destroy();
       state.charts[id] = new Chart(canvas, { type, data, options: { responsive: true, plugins: { legend: { labels: { color: "#8E8E93" } } } } });
+    }
+
+    // =====================================================================
+    // INVENTARISASI & LAPORAN INVENTARIS
+    // =====================================================================
+    const INV_COND_CLS = {
+      "Sangat Layak": "bg-ios-green/20 text-ios-green",
+      "Layak": "bg-ios-blue/20 text-ios-blue",
+      "Tidak Layak": "bg-ios-pink/20 text-ios-pink"
+    };
+    const INV_TYPE_HINTS = ["Komputer", "Laptop", "Monitor", "Keyboard", "Mouse", "Printer", "Proyektor", "Router", "Switch", "Access Point", "Kabel LAN", "Kabel HDMI", "UPS", "Headset", "Webcam", "Meja", "Kursi", "Lemari", "Stop Kontak"];
+
+    Object.assign(state, {
+      invItems: [], invReports: [], invSetup: false, invSetupMsg: "", invRt: false,
+      invSelectMode: false, invSelected: new Set(), repSel: new Map()
+    });
+
+    const invClean = (s) => String(s ?? "").trim().replace(/\s+/g, " ");
+    const invKey = (s) => invClean(s).toLowerCase();
+    const pad2 = (n) => String(n).padStart(2, "0");
+    function invToday() { const d = new Date(); return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`; }
+    function invDateObj(s) {
+      const m = String(s || "").match(/^(\d{4})-(\d{2})-(\d{2})/);
+      return m ? new Date(+m[1], +m[2] - 1, +m[3], 12, 0, 0) : new Date();
+    }
+    function invFmtDate(s) {
+      if (!s) return "-";
+      return invDateObj(s).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" });
+    }
+    function invStamp() { return new Date().toLocaleString("id-ID", { day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" }); }
+
+    function invNotify(msg, isErr) {
+      const t = $("inv-toast");
+      t.textContent = msg;
+      t.className = `fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-[60] px-4 py-2.5 rounded-xl text-xs font-semibold shadow-xl max-w-[90vw] text-center text-white ${isErr ? "bg-rose-600" : "bg-slate-900"}`;
+      clearTimeout(invNotify.t);
+      invNotify.t = setTimeout(() => show(t, false), 2800);
+    }
+
+    function invDbMsg(error) {
+      const m = (error && error.message) || "";
+      if ((error && error.code === "42P01") || /inventory_(items|reports)/.test(m) && /(does not exist|schema cache|relation)/i.test(m)) {
+        return "Tabel inventarisasi belum dibuat. Jalankan migrasi_inventarisasi.sql di Supabase (SQL Editor), lalu coba lagi.";
+      }
+      return "Gagal: " + m;
+    }
+
+    // ---------- Data ----------
+    async function loadInventory(render = true) {
+      const [a, b] = await Promise.all([
+        sb.from("inventory_items").select("*").order("item_date", { ascending: false }).order("created_at", { ascending: false }),
+        sb.from("inventory_reports").select("*").order("created_at", { ascending: false })
+      ]);
+      const err = a.error || b.error;
+      state.invSetup = !!err;
+      state.invSetupMsg = err ? invDbMsg(err) : "";
+      state.invItems = a.data || [];
+      state.invReports = b.data || [];
+      if (!state.invRt) {
+        state.invRt = true;
+        let tm;
+        const again = () => { clearTimeout(tm); tm = setTimeout(() => loadInventory(true), 300); };
+        sb.channel("dcc-inventory")
+          .on("postgres_changes", { event: "*", schema: "public", table: "inventory_items" }, again)
+          .on("postgres_changes", { event: "*", schema: "public", table: "inventory_reports" }, again)
+          .subscribe();
+      }
+      if (render) { renderInventory(); renderInvReports(); }
+    }
+
+    function invRenderWarn() {
+      document.querySelectorAll(".inv-setup-warn").forEach((el) => {
+        show(el, state.invSetup);
+        el.innerHTML = `<b><i class="fa-solid fa-circle-info mr-1"></i>Perlu pengaturan database.</b> ${esc(state.invSetupMsg)}`;
+      });
+    }
+
+    // ---------- Daftar inventaris ----------
+    function invFiltered() {
+      const q = ($("inv-search").value || "").trim().toLowerCase();
+      const t = $("inv-filter-type").value;
+      const c = $("inv-filter-cond").value;
+      return state.invItems.filter((x) =>
+        (!t || invKey(x.item_type) === t) &&
+        (!c || x.condition === c) &&
+        (!q || `${x.item_type} ${x.notes || ""} ${x.inputter} ${x.condition}`.toLowerCase().includes(q))
+      );
+    }
+
+    function invTypeOptions() {
+      const map = new Map();
+      state.invItems.forEach((x) => { const k = invKey(x.item_type); if (k && !map.has(k)) map.set(k, invClean(x.item_type)); });
+      return [...map.entries()].sort((a, b) => a[1].localeCompare(b[1], "id"));
+    }
+
+    function invResetFilter() {
+      $("inv-search").value = ""; $("inv-filter-type").value = ""; $("inv-filter-cond").value = "";
+      renderInventory();
+    }
+
+    function invActionBtns(id) {
+      return `<button class="opacity-70 hover:text-ios-blue p-1.5 transition" onclick="openInvModal('${id}')" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
+              <button class="opacity-70 hover:text-ios-pink p-1.5 transition" onclick="invDelete('${id}')" title="Hapus"><i class="fa-solid fa-trash"></i></button>`;
+    }
+
+    function renderInventory() {
+      if (!$("tbl-inventory")) return;
+      invRenderWarn();
+
+      const typeSel = $("inv-filter-type");
+      const cur = typeSel.value;
+      const opts = invTypeOptions();
+      typeSel.innerHTML = `<option value="">Semua Jenis Barang</option>` + opts.map(([k, l]) => `<option value="${esc(k)}" ${k === cur ? "selected" : ""}>${esc(l)}</option>`).join("");
+
+      const valid = new Set(state.invItems.map((x) => String(x.id)));
+      [...state.invSelected].forEach((i) => { if (!valid.has(i)) state.invSelected.delete(i); });
+
+      const rows = invFiltered();
+      const sumQty = (arr) => arr.reduce((a, x) => a + (+x.qty || 0), 0);
+      const byCond = (c) => sumQty(rows.filter((x) => x.condition === c));
+      $("inv-cards").innerHTML = [
+        ["Jenis Barang", new Set(rows.map((x) => invKey(x.item_type))).size, "fa-tags", "text-ios-indigo"],
+        ["Total Unit", sumQty(rows), "fa-boxes-stacked", "text-ios-blue"],
+        ["Sangat Layak", byCond("Sangat Layak"), "fa-circle-check", "text-ios-green"],
+        ["Layak", byCond("Layak"), "fa-thumbs-up", "text-ios-teal"],
+        ["Tidak Layak", byCond("Tidak Layak"), "fa-circle-xmark", "text-ios-pink"]
+      ].map(([t, n, i, color]) => `
+        <div class="glass-card rounded-2xl p-4 shadow-md">
+          <p class="text-[11px] font-semibold opacity-75 mb-1 flex items-center gap-1.5"><i class="fa-solid ${i} ${color}"></i>${t}</p>
+          <p class="text-2xl font-bold tracking-tight">${n}</p>
+        </div>`).join("");
+
+      const sm = state.invSelectMode;
+      show($("inv-th-check"), sm);
+      const n = state.invSelected.size;
+      $("inv-selected-count").textContent = n;
+      const delBtn = $("btn-inv-delete-selected");
+      delBtn.disabled = n === 0;
+      delBtn.classList.toggle("opacity-50", n === 0);
+      $("inv-export-hint").innerHTML = `<i class="fa-solid fa-circle-info mr-1"></i>Unduhan PDF / Excel berisi <b>${n ? n + " data terpilih" : rows.length + " data sesuai filter"}</b>.`;
+
+      const check = (id, on) => `<input type="checkbox" class="h-4 w-4 accent-[#007AFF]" ${on ? "checked" : ""} onchange="invCheck('${id}', this.checked)" />`;
+
+      $("tbl-inventory").innerHTML = rows.map((x) => {
+        const id = esc(x.id), on = state.invSelected.has(String(x.id));
+        return `
+        <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition ${on ? "bg-ios-blue/10" : ""}">
+          ${sm ? `<td class="px-4 py-3 w-10">${check(id, on)}</td>` : ""}
+          <td class="px-4 py-3 whitespace-nowrap text-xs font-medium">${invFmtDate(x.item_date)}</td>
+          <td class="px-3 py-3 font-bold custom-accent-text">${esc(x.item_type)}</td>
+          <td class="px-3 py-3 text-center font-bold">${esc(x.qty)}</td>
+          <td class="px-3 py-3"><span class="px-2.5 py-0.5 rounded-full text-xs font-semibold whitespace-nowrap ${INV_COND_CLS[x.condition] || ""}">${esc(x.condition)}</span></td>
+          <td class="px-3 py-3 text-xs max-w-[280px]">${esc(x.notes || "-")}</td>
+          <td class="px-3 py-3 text-xs">${esc(x.inputter)}</td>
+          <td class="px-4 py-3 text-right whitespace-nowrap">${invActionBtns(id)}</td>
+        </tr>`;
+      }).join("") || `<tr><td class="p-6 text-center opacity-70" colspan="8">${state.invItems.length ? "Tidak ada data yang cocok dengan filter." : "Belum ada data inventaris."}</td></tr>`;
+
+      $("inv-list-mobile").innerHTML = rows.map((x) => {
+        const id = esc(x.id), on = state.invSelected.has(String(x.id));
+        return `
+        <div class="glass-card rounded-2xl p-4 shadow-md ${on ? "ring-2 ring-ios-blue" : ""}">
+          <div class="flex items-start gap-3">
+            ${sm ? `<div class="pt-1">${check(id, on)}</div>` : ""}
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-2">
+                <p class="font-bold custom-accent-text break-words">${esc(x.item_type)}</p>
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap ${INV_COND_CLS[x.condition] || ""}">${esc(x.condition)}</span>
+              </div>
+              <p class="text-[11px] opacity-70 mt-0.5">${invFmtDate(x.item_date)} &bull; ${esc(x.inputter)}</p>
+              <p class="text-sm mt-1.5"><b>${esc(x.qty)}</b> unit</p>
+              ${x.notes ? `<p class="text-xs mt-1 opacity-80 break-words">${esc(x.notes)}</p>` : ""}
+            </div>
+          </div>
+          <div class="flex justify-end gap-1 mt-2 pt-2 border-t border-black/10 dark:border-white/10 text-sm">${invActionBtns(id)}</div>
+        </div>`;
+      }).join("") || `<div class="glass-card rounded-2xl p-6 text-center text-sm opacity-70">${state.invItems.length ? "Tidak ada data yang cocok dengan filter." : "Belum ada data inventaris."}</div>`;
+
+      $("inv-type-list").innerHTML = [...new Set([...opts.map((o) => o[1]), ...INV_TYPE_HINTS])].map((t) => `<option value="${esc(t)}"></option>`).join("");
+    }
+
+    // ---------- Mode pilih ----------
+    function invToggleSelectMode() {
+      state.invSelectMode = !state.invSelectMode;
+      state.invSelected.clear();
+      $("lbl-inv-select").textContent = state.invSelectMode ? "Batal Pilih" : "Mode Pilih";
+      show($("btn-inv-select-all"), state.invSelectMode);
+      show($("btn-inv-delete-selected"), state.invSelectMode);
+      renderInventory();
+    }
+    function invToggleSelectAll() {
+      const rows = invFiltered();
+      const all = rows.length > 0 && rows.every((x) => state.invSelected.has(String(x.id)));
+      rows.forEach((x) => all ? state.invSelected.delete(String(x.id)) : state.invSelected.add(String(x.id)));
+      renderInventory();
+    }
+    function invCheck(id, on) {
+      if (on) state.invSelected.add(String(id)); else state.invSelected.delete(String(id));
+      renderInventory();
+    }
+    async function invDeleteSelected() {
+      const ids = [...state.invSelected];
+      if (!ids.length) return;
+      if (!confirm(`Konfirmasi Hapus:\nApakah Anda yakin ingin menghapus ${ids.length} data inventaris terpilih?`)) return;
+      const { error } = await sb.from("inventory_items").delete().in("id", ids);
+      if (error) return alert(invDbMsg(error));
+      state.invSelected.clear();
+      await loadInventory();
+      invNotify(`${ids.length} data inventaris dihapus.`);
+    }
+
+    // ---------- Tambah / edit / hapus ----------
+    function openInvModal(id) {
+      const x = id ? state.invItems.find((i) => String(i.id) === String(id)) : null;
+      $("form-inv").reset();
+      $("inv-id").value = x ? x.id : "";
+      $("modal-inv-title").textContent = x ? "Edit Inventaris" : "Tambah Inventaris";
+      $("inv-inputter").value = x ? x.inputter : (state.member?.full_name || "");
+      $("inv-date").value = x ? String(x.item_date).slice(0, 10) : invToday();
+      $("inv-type").value = x ? x.item_type : "";
+      $("inv-qty").value = x ? x.qty : 1;
+      $("inv-notes").value = x ? (x.notes || "") : "";
+      document.querySelectorAll('input[name="inv-cond"]').forEach((r) => { r.checked = !!x && r.value === x.condition; });
+      $("modal-inv").showModal();
+    }
+
+    $("form-inv").onsubmit = async (e) => {
+      e.preventDefault();
+      const id = $("inv-id").value;
+      const cond = (document.querySelector('input[name="inv-cond"]:checked') || {}).value;
+      if (!cond) return alert("Pilih kondisi barang.");
+      const qty = parseInt($("inv-qty").value, 10);
+      if (!(qty >= 1)) return alert("Jumlah minimal 1.");
+      const payload = {
+        inputter: invClean($("inv-inputter").value),
+        item_date: $("inv-date").value || invToday(),
+        item_type: invClean($("inv-type").value),
+        qty,
+        condition: cond,
+        notes: $("inv-notes").value.trim()
+      };
+      if (!payload.inputter || !payload.item_type) return alert("Nama penginput dan jenis barang wajib diisi.");
+      const same = state.invItems.find((i) => invKey(i.item_type) === invKey(payload.item_type));
+      if (same) payload.item_type = same.item_type;
+
+      const btn = $("btn-inv-save");
+      btn.disabled = true;
+      const { error } = id
+        ? await sb.from("inventory_items").update(payload).eq("id", id)
+        : await sb.from("inventory_items").insert(payload);
+      btn.disabled = false;
+      if (error) return alert(invDbMsg(error));
+      $("modal-inv").close();
+      await loadInventory();
+      invNotify(id ? "Inventaris diperbarui." : "Inventaris ditambahkan.");
+    };
+
+    async function invDelete(id) {
+      const x = state.invItems.find((i) => String(i.id) === String(id));
+      if (!x || !confirm(`Apakah Anda yakin ingin menghapus "${x.item_type}" (${x.qty} unit) dari inventaris?`)) return;
+      const { error } = await sb.from("inventory_items").delete().eq("id", id);
+      if (error) return alert(invDbMsg(error));
+      await loadInventory();
+      invNotify("Inventaris dihapus.");
+    }
+
+    // ---------- Laporkan barang ----------
+    function openInvReport() {
+      state.repSel.clear();
+      $("rep-name").value = state.member?.full_name || "";
+      $("rep-date-label").textContent = invFmtDate(invToday());
+      $("rep-notes").value = "";
+      $("rep-search").value = "";
+      $("rep-filter-type").value = "";
+      renderRepPicker();
+      $("modal-inv-report").showModal();
+    }
+
+    function renderRepPicker() {
+      const sel = $("rep-filter-type");
+      const cur = sel.value;
+      sel.innerHTML = `<option value="">Semua Jenis Barang</option>` + invTypeOptions().map(([k, l]) => `<option value="${esc(k)}" ${k === cur ? "selected" : ""}>${esc(l)}</option>`).join("");
+
+      const q = ($("rep-search").value || "").trim().toLowerCase();
+      const t = sel.value;
+      const avail = state.invItems.filter((x) =>
+        !state.repSel.has(String(x.id)) && (+x.qty > 0) &&
+        (!t || invKey(x.item_type) === t) &&
+        (!q || `${x.item_type} ${x.condition} ${x.notes || ""}`.toLowerCase().includes(q))
+      );
+      $("rep-avail").innerHTML = avail.map((x) => `
+        <button type="button" onclick="repPick('${esc(x.id)}')" class="w-full text-left flex items-center justify-between gap-2 px-3.5 py-2.5 rounded-xl border border-black/10 dark:border-white/10 hover:border-ios-pink hover:bg-ios-pink/5 transition active:scale-[0.99]">
+          <span class="min-w-0">
+            <span class="block text-sm font-semibold truncate">${esc(x.item_type)}</span>
+            <span class="block text-[11px] opacity-70 truncate">${esc(x.qty)} unit &bull; ${esc(x.notes || "-")}</span>
+          </span>
+          <span class="flex items-center gap-2 shrink-0">
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold ${INV_COND_CLS[x.condition] || ""}">${esc(x.condition)}</span>
+            <i class="fa-solid fa-plus text-xs opacity-60"></i>
+          </span>
+        </button>`).join("") || `<p class="text-center text-xs opacity-70 py-5">${state.invItems.length ? "Tidak ada barang yang cocok (atau semua sudah dipilih)." : "Belum ada data inventaris."}</p>`;
+
+      const chosen = [...state.repSel.entries()]
+        .map(([id, v]) => ({ it: state.invItems.find((i) => String(i.id) === id), v }))
+        .filter((c) => c.it);
+      show($("rep-selected-wrap"), chosen.length > 0);
+      $("rep-selected-count").textContent = chosen.length;
+      $("rep-selected").innerHTML = chosen.map(({ it, v }) => {
+        const id = esc(it.id);
+        return `
+        <div class="rounded-2xl border border-ios-pink/50 bg-ios-pink/10 px-3.5 py-3 space-y-2">
+          <div class="flex items-start justify-between gap-2">
+            <div class="min-w-0">
+              <p class="text-sm font-bold text-ios-pink break-words">${esc(it.item_type)}</p>
+              <p class="text-[11px] opacity-75">${esc(it.condition)} &bull; tersedia ${esc(it.qty)} unit</p>
+            </div>
+            <button type="button" onclick="repUnpick('${id}')" class="text-ios-pink opacity-80 hover:opacity-100 p-1" title="Batalkan"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <div class="flex items-center rounded-xl overflow-hidden border border-ios-pink/40">
+              <button type="button" onclick="repQty('${id}', -1)" class="px-3 py-1.5 text-ios-pink hover:bg-ios-pink/15"><i class="fa-solid fa-minus text-xs"></i></button>
+              <input type="number" min="1" max="${esc(it.qty)}" value="${v.qty}" onchange="repQtySet('${id}', this.value)" style="color:inherit" class="w-14 text-center bg-transparent text-sm font-bold focus:outline-none" />
+              <button type="button" onclick="repQty('${id}', 1)" class="px-3 py-1.5 text-ios-pink hover:bg-ios-pink/15"><i class="fa-solid fa-plus text-xs"></i></button>
+            </div>
+            <span class="text-[11px] opacity-75">dari ${esc(it.qty)} unit</span>
+            <select onchange="repKind('${id}', this.value)" class="app-input rounded-xl px-2.5 py-1.5 text-xs focus:outline-none ml-auto">
+              <option ${v.kind === "Rusak" ? "selected" : ""}>Rusak</option>
+              <option ${v.kind === "Hilang" ? "selected" : ""}>Hilang</option>
+            </select>
+          </div>
+        </div>`;
+      }).join("");
+    }
+
+    function repPick(id) { state.repSel.set(String(id), { qty: 1, kind: "Rusak" }); renderRepPicker(); }
+    function repUnpick(id) { state.repSel.delete(String(id)); renderRepPicker(); }
+    function repQtySet(id, val) {
+      const it = state.invItems.find((i) => String(i.id) === String(id)), v = state.repSel.get(String(id));
+      if (!it || !v) return;
+      v.qty = Math.min(+it.qty, Math.max(1, parseInt(val, 10) || 1));
+      renderRepPicker();
+    }
+    function repQty(id, d) { const v = state.repSel.get(String(id)); if (v) repQtySet(id, v.qty + d); }
+    function repKind(id, kind) { const v = state.repSel.get(String(id)); if (v) v.kind = kind; }
+
+    $("form-inv-report").onsubmit = async (e) => {
+      e.preventDefault();
+      if (!state.repSel.size) return alert("Pilih minimal satu barang yang ingin dilaporkan.");
+      const reporter = invClean($("rep-name").value);
+      if (!reporter) return alert("Nama pelapor wajib diisi.");
+      const items = [...state.repSel.entries()].map(([id, v]) => {
+        const it = state.invItems.find((i) => String(i.id) === id);
+        return { item_id: it.id, item_type: it.item_type, condition: it.condition, qty: v.qty, kind: v.kind };
+      });
+      const { error } = await sb.from("inventory_reports").insert({ report_date: invToday(), reporter, items, notes: $("rep-notes").value.trim() });
+      if (error) return alert(invDbMsg(error));
+      state.repSel.clear();
+      $("modal-inv-report").close();
+      await loadInventory();
+      invNotify("Laporan terkirim. Lihat di Laporan Inventaris.");
+    };
+
+    // ---------- Rekap laporan ----------
+    function irpFiltered() {
+      const k = $("irp-filter-kind").value;
+      const q = ($("irp-search").value || "").trim().toLowerCase();
+      return state.invReports
+        .map((r) => ({ ...r, lines: (Array.isArray(r.items) ? r.items : []).filter((l) => !k || l.kind === k) }))
+        .filter((r) => r.lines.length && (!q || `${r.reporter} ${r.notes || ""} ${r.lines.map((l) => l.item_type).join(" ")}`.toLowerCase().includes(q)));
+    }
+
+    function renderInvReports() {
+      if (!$("irp-list")) return;
+      invRenderWarn();
+      const reps = irpFiltered();
+      const unit = (kind) => reps.reduce((a, r) => a + r.lines.filter((l) => l.kind === kind).reduce((b, l) => b + (+l.qty || 0), 0), 0);
+      $("irp-cards").innerHTML = [
+        ["Total Laporan", reps.length, "fa-clipboard-list", "text-ios-blue"],
+        ["Unit Hilang", unit("Hilang"), "fa-magnifying-glass-minus", "text-ios-orange"],
+        ["Unit Rusak", unit("Rusak"), "fa-screwdriver-wrench", "text-ios-pink"]
+      ].map(([t, n, i, color]) => `
+        <div class="glass-card rounded-2xl p-4 shadow-md">
+          <p class="text-[11px] font-semibold opacity-75 mb-1 flex items-center gap-1.5"><i class="fa-solid ${i} ${color}"></i>${t}</p>
+          <p class="text-2xl font-bold tracking-tight">${n}</p>
+        </div>`).join("");
+
+      $("irp-list").innerHTML = reps.map((r) => `
+        <div class="glass-card rounded-3xl p-4 md:p-5 shadow-lg space-y-3">
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <p class="font-bold flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation text-ios-pink"></i>Laporan ${invFmtDate(r.report_date)}</p>
+              <p class="text-xs opacity-75 mt-0.5">Pelapor: <b>${esc(r.reporter)}</b></p>
+            </div>
+            <button onclick="irpDelete('${esc(r.id)}')" class="opacity-60 hover:opacity-100 hover:text-ios-pink p-1.5 text-xs transition" title="Hapus laporan"><i class="fa-solid fa-trash"></i></button>
+          </div>
+          <div class="space-y-1.5">
+            ${r.lines.map((l) => `
+              <div class="flex items-center justify-between gap-2 rounded-xl bg-ios-pink/10 border border-ios-pink/30 px-3 py-2">
+                <div class="min-w-0">
+                  <p class="text-sm font-semibold break-words">${esc(l.item_type)}</p>
+                  <p class="text-[11px] opacity-70">Kondisi tercatat: ${esc(l.condition || "-")}</p>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                  <span class="text-sm font-bold">&times;${esc(l.qty)}</span>
+                  <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${l.kind === "Hilang" ? "bg-ios-orange/20 text-ios-orange" : "bg-ios-pink/20 text-ios-pink"}">${esc(l.kind)}</span>
+                </div>
+              </div>`).join("")}
+          </div>
+          ${r.notes ? `<p class="text-xs opacity-85 rounded-xl bg-black/5 dark:bg-white/10 px-3 py-2"><b>Catatan:</b> ${esc(r.notes)}</p>` : ""}
+        </div>`).join("") || `<div class="glass-card rounded-3xl p-8 text-center text-sm opacity-70">${state.invReports.length ? "Tidak ada laporan yang cocok dengan filter." : "Belum ada laporan inventaris."}</div>`;
+    }
+
+    async function irpDelete(id) {
+      if (!confirm("Apakah Anda yakin ingin menghapus laporan inventaris ini?")) return;
+      const { error } = await sb.from("inventory_reports").delete().eq("id", id);
+      if (error) return alert(invDbMsg(error));
+      await loadInventory();
+      invNotify("Laporan dihapus.");
+    }
+
+    // ---------- Pembuat PDF & Excel ----------
+    function invMakePdf(o) {
+      if (!window.jspdf || !window.jspdf.jsPDF) {
+        alert("Pustaka PDF belum termuat. Periksa koneksi internet lalu muat ulang halaman.");
+        return false;
+      }
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+      const W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight(), M = 14;
+      const top = 27.5 + o.info.length * 4.2 + 4;
+
+      const header = () => {
+        doc.setFont("helvetica", "bold"); doc.setFontSize(15); doc.setTextColor(0, 59, 135);
+        doc.text(o.title, M, 16);
+        doc.setFontSize(10); doc.setTextColor(60, 60, 60);
+        doc.text("Darussalam Computer Center (DCC)", M, 22);
+        doc.setFont("helvetica", "normal"); doc.setFontSize(8.5); doc.setTextColor(90, 90, 90);
+        o.info.forEach((t, i) => doc.text(t, M, 27.5 + i * 4.2));
+        doc.setDrawColor(0, 88, 196); doc.setLineWidth(0.6);
+        doc.line(M, top - 2.5, W - M, top - 2.5);
+      };
+
+      doc.autoTable({
+        head: [o.head], body: o.body, foot: o.foot ? [o.foot] : undefined, showFoot: "lastPage",
+        startY: top, margin: { top: top, left: M, right: M, bottom: 16 },
+        theme: "grid",
+        styles: { font: "helvetica", fontSize: 9, cellPadding: 2.2, valign: "middle", lineColor: [210, 215, 225], lineWidth: 0.2, overflow: "linebreak" },
+        headStyles: { fillColor: [0, 88, 196], textColor: 255, halign: "center", fontStyle: "bold" },
+        footStyles: { fillColor: [230, 238, 250], textColor: [0, 59, 135], fontStyle: "bold" },
+        alternateRowStyles: { fillColor: [246, 249, 253] },
+        columnStyles: o.colStyles,
+        didParseCell: (d) => {
+          if (d.section === "body" && o.colorCols && o.colorCols[d.column.index]) {
+            const c = o.colorCols[d.column.index](String(d.cell.raw));
+            if (c) { d.cell.styles.textColor = c; d.cell.styles.fontStyle = "bold"; }
+          }
+        },
+        didDrawPage: header
+      });
+
+      const n = doc.getNumberOfPages(), stamp = invStamp();
+      for (let i = 1; i <= n; i++) {
+        doc.setPage(i); doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(120, 120, 120);
+        doc.text(`Dicetak: ${stamp}`, M, H - 8);
+        doc.text(`Halaman ${i} dari ${n}`, W - M, H - 8, { align: "right" });
+      }
+      doc.save(o.fileName);   // langsung terunduh, tanpa pratinjau
+      return true;
+    }
+
+    function invMakeXlsx(o) {
+      if (!window.XLSX) { alert("Pustaka Excel belum termuat. Periksa koneksi internet lalu muat ulang halaman."); return false; }
+      const aoa = [[o.title], ["Darussalam Computer Center (DCC)"], ...o.info.map((t) => [t]), [], o.head, ...o.body];
+      if (o.foot) { aoa.push([]); aoa.push(o.foot); }
+      const ws = XLSX.utils.aoa_to_sheet(aoa, { cellDates: true });
+      const last = o.head.length - 1, hr = o.info.length + 3;
+      ws["!cols"] = o.widths.map((w) => ({ wch: w }));
+      ws["!merges"] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: last } }, { s: { r: 1, c: 0 }, e: { r: 1, c: last } }]
+        .concat(o.info.map((_, i) => ({ s: { r: 2 + i, c: 0 }, e: { r: 2 + i, c: last } })));
+      if (o.body.length) ws["!autofilter"] = { ref: XLSX.utils.encode_range({ s: { r: hr, c: 0 }, e: { r: hr + o.body.length, c: last } }) };
+      (o.dateCols || []).forEach((c) => {
+        for (let r = hr + 1; r <= hr + o.body.length; r++) {
+          const a = XLSX.utils.encode_cell({ r, c });
+          if (ws[a] && ws[a].t === "d") ws[a].z = "dd/mm/yyyy";
+        }
+      });
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, o.sheet);
+      (o.extra || []).forEach((x) => {
+        const w2 = XLSX.utils.aoa_to_sheet(x.aoa);
+        w2["!cols"] = x.widths.map((w) => ({ wch: w }));
+        XLSX.utils.book_append_sheet(wb, w2, x.name);
+      });
+      XLSX.writeFile(wb, o.fileName, { cellDates: true });
+      return true;
+    }
+
+    // ---------- Unduh inventaris ----------
+    function invExportData() {
+      const filtered = invFiltered();
+      const rows = state.invSelected.size ? state.invItems.filter((x) => state.invSelected.has(String(x.id))) : filtered;
+      const tSel = $("inv-filter-type");
+      const typeLbl = tSel.value ? tSel.options[tSel.selectedIndex].text : "Semua";
+      const sumQty = (arr) => arr.reduce((a, x) => a + (+x.qty || 0), 0);
+      const byCond = (c) => sumQty(rows.filter((x) => x.condition === c));
+      const q = ($("inv-search").value || "").trim();
+      const info = [
+        `Tanggal cetak: ${invStamp()}  |  Dicetak oleh: ${state.member?.full_name || "-"}`,
+        `Cakupan: ${state.invSelected.size ? state.invSelected.size + " data terpilih" : "Data sesuai filter"}  |  Jenis barang: ${typeLbl}  |  Kondisi: ${$("inv-filter-cond").value || "Semua"}${q ? `  |  Kata kunci: ${q}` : ""}`,
+        `Total: ${rows.length} data  |  ${sumQty(rows)} unit  |  Sangat Layak: ${byCond("Sangat Layak")}  |  Layak: ${byCond("Layak")}  |  Tidak Layak: ${byCond("Tidak Layak")}`
+      ];
+      return { rows, info, total: sumQty(rows) };
+    }
+
+    function invDownloadPdf() {
+      const d = invExportData();
+      if (!d.rows.length) return alert("Tidak ada data untuk diunduh.");
+      const ok = invMakePdf({
+        title: "DAFTAR INVENTARISASI", info: d.info, fileName: `Inventaris_DCC_${invToday()}.pdf`,
+        head: ["No", "Tanggal", "Jenis Barang", "Jumlah", "Kondisi", "Keterangan", "Penginput"],
+        body: d.rows.map((x, i) => [i + 1, invFmtDate(x.item_date), x.item_type, x.qty, x.condition, x.notes || "-", x.inputter]),
+        foot: ["", "", "TOTAL", d.total, "", "", ""],
+        colStyles: { 0: { halign: "center", cellWidth: 12 }, 1: { cellWidth: 28 }, 2: { cellWidth: 52 }, 3: { halign: "center", cellWidth: 20 }, 4: { halign: "center", cellWidth: 30 }, 6: { cellWidth: 42 } },
+        colorCols: { 4: (v) => v === "Sangat Layak" ? [22, 128, 61] : v === "Layak" ? [0, 88, 196] : v === "Tidak Layak" ? [200, 30, 50] : null }
+      });
+      if (ok) invNotify("PDF inventaris diunduh.");
+    }
+
+    function invDownloadExcel() {
+      const d = invExportData();
+      if (!d.rows.length) return alert("Tidak ada data untuk diunduh.");
+      const sum = new Map();
+      d.rows.forEach((x) => {
+        const k = invKey(x.item_type);
+        if (!sum.has(k)) sum.set(k, { t: x.item_type, total: 0, "Sangat Layak": 0, "Layak": 0, "Tidak Layak": 0 });
+        const e = sum.get(k); e.total += +x.qty || 0; e[x.condition] = (e[x.condition] || 0) + (+x.qty || 0);
+      });
+      const sumRows = [...sum.values()].sort((a, b) => a.t.localeCompare(b.t, "id"));
+      const ok = invMakeXlsx({
+        sheet: "Inventaris", title: "DAFTAR INVENTARISASI", info: d.info, fileName: `Inventaris_DCC_${invToday()}.xlsx`,
+        head: ["No", "Tanggal", "Jenis Barang", "Jumlah", "Kondisi", "Keterangan", "Penginput"],
+        body: d.rows.map((x, i) => [i + 1, invDateObj(x.item_date), x.item_type, +x.qty, x.condition, x.notes || "-", x.inputter]),
+        foot: ["", "", "TOTAL", d.total, "", "", ""],
+        dateCols: [1], widths: [6, 14, 30, 10, 15, 44, 24],
+        extra: [{
+          name: "Ringkasan per Jenis", widths: [30, 12, 14, 10, 14],
+          aoa: [["RINGKASAN INVENTARIS PER JENIS BARANG"], [], ["Jenis Barang", "Total Unit", "Sangat Layak", "Layak", "Tidak Layak"],
+            ...sumRows.map((e) => [e.t, e.total, e["Sangat Layak"], e["Layak"], e["Tidak Layak"]]),
+            [], ["TOTAL", d.total, ...["Sangat Layak", "Layak", "Tidak Layak"].map((c) => sumRows.reduce((a, e) => a + e[c], 0))]]
+        }]
+      });
+      if (ok) invNotify("Excel inventaris diunduh.");
+    }
+
+    // ---------- Unduh rekap laporan ----------
+    function irpExportData() {
+      const reps = irpFiltered();
+      const rows = [];
+      reps.forEach((r) => r.lines.forEach((l) => rows.push({ date: r.report_date, reporter: r.reporter, type: l.item_type, cond: l.condition || "-", qty: +l.qty || 0, kind: l.kind, notes: r.notes || "-" })));
+      const unit = (k) => rows.filter((x) => x.kind === k).reduce((a, x) => a + x.qty, 0);
+      const info = [
+        `Tanggal cetak: ${invStamp()}  |  Dicetak oleh: ${state.member?.full_name || "-"}`,
+        `Filter jenis laporan: ${$("irp-filter-kind").value || "Hilang & Rusak"}${($("irp-search").value || "").trim() ? `  |  Kata kunci: ${$("irp-search").value.trim()}` : ""}`,
+        `Total: ${reps.length} laporan  |  ${rows.length} baris barang  |  Hilang: ${unit("Hilang")} unit  |  Rusak: ${unit("Rusak")} unit`
+      ];
+      return { rows, info, total: rows.reduce((a, x) => a + x.qty, 0) };
+    }
+
+    function irpDownloadPdf() {
+      const d = irpExportData();
+      if (!d.rows.length) return alert("Tidak ada laporan untuk diunduh.");
+      const ok = invMakePdf({
+        title: "REKAP LAPORAN INVENTARIS (HILANG / RUSAK)", info: d.info, fileName: `Laporan_Inventaris_DCC_${invToday()}.pdf`,
+        head: ["No", "Tanggal", "Pelapor", "Jenis Barang", "Kondisi", "Jumlah", "Jenis Laporan", "Catatan"],
+        body: d.rows.map((x, i) => [i + 1, invFmtDate(x.date), x.reporter, x.type, x.cond, x.qty, x.kind, x.notes]),
+        foot: ["", "", "", "TOTAL", "", d.total, "", ""],
+        colStyles: { 0: { halign: "center", cellWidth: 11 }, 1: { cellWidth: 26 }, 2: { cellWidth: 34 }, 3: { cellWidth: 44 }, 4: { halign: "center", cellWidth: 26 }, 5: { halign: "center", cellWidth: 18 }, 6: { halign: "center", cellWidth: 26 } },
+        colorCols: { 6: (v) => v === "Hilang" ? [210, 120, 0] : v === "Rusak" ? [200, 30, 50] : null }
+      });
+      if (ok) invNotify("PDF laporan diunduh.");
+    }
+
+    function irpDownloadExcel() {
+      const d = irpExportData();
+      if (!d.rows.length) return alert("Tidak ada laporan untuk diunduh.");
+      const ok = invMakeXlsx({
+        sheet: "Laporan Inventaris", title: "REKAP LAPORAN INVENTARIS (HILANG / RUSAK)", info: d.info, fileName: `Laporan_Inventaris_DCC_${invToday()}.xlsx`,
+        head: ["No", "Tanggal", "Pelapor", "Jenis Barang", "Kondisi", "Jumlah", "Jenis Laporan", "Catatan"],
+        body: d.rows.map((x, i) => [i + 1, invDateObj(x.date), x.reporter, x.type, x.cond, x.qty, x.kind, x.notes]),
+        foot: ["", "", "", "TOTAL", "", d.total, "", ""],
+        dateCols: [1], widths: [6, 14, 24, 28, 15, 10, 15, 44]
+      });
+      if (ok) invNotify("Excel laporan diunduh.");
     }
 
     boot();
